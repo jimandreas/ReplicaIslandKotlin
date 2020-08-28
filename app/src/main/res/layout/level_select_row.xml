@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="70dp"
     android:background = "#000000"
+	tools:ignore="Deprecated,ContentDescription,RtlHardcoded"
     >
 	<ImageView 
           android:src="@drawable/ui_rack_green"
@@ -25,7 +27,7 @@
 	    android:layout_x="20dp" 
         android:layout_y="5dp" 
        	android:text="Level 1-1"
-	              />
+		tools:ignore="HardcodedText" />
 	              
 	<TextView android:id="@+id/time"
 		android:layout_width="60dp"
@@ -36,6 +38,6 @@
 	    android:layout_x="290dp" 
         android:layout_y="25dp" 
        	android:text="+ 0:02:031"
-	              />
+		tools:ignore="HardcodedText" />
 	              
 </AbsoluteLayout>

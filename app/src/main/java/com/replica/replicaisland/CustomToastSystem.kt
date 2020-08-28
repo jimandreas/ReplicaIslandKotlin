@@ -27,7 +27,6 @@ class CustomToastSystem(context: Context) : BaseObject() {
     private val mText: TextView
     private val mToast: Toast
     override fun reset() {
-        // TODO Auto-generated method stub
     }
 
     fun toast(text: String?, length: Int) {

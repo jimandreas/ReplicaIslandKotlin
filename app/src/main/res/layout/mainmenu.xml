@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-		android:layout_width="fill_parent"
+<FrameLayout xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="fill_parent"
   		android:layout_height="fill_parent" 
   		xmlns:android="http://schemas.android.com/apk/res/android">
 	<ImageView 
@@ -10,7 +10,8 @@
           android:gravity="center_vertical"
           android:scaleType="fitXY"
           android:layout_width="fill_parent"
-          android:layout_height="fill_parent"/>
+          android:layout_height="fill_parent"
+		tools:ignore="ContentDescription" />
 
 	
 	<ImageView 
@@ -20,13 +21,13 @@
 	      android:layout_width="336dp" 
 	      android:layout_height="153dp" 
 	      android:layout_gravity="center_horizontal" 
-	      android:layout_marginTop="20dp"/>
+	      android:layout_marginTop="20dp"
+		tools:ignore="ContentDescription" />
 	      
 	   <LinearLayout
 	     	android:layout_width="fill_parent"
-			android:layout_height="fill_parent" 
-			xmlns:android="http://schemas.android.com/apk/res/android"
-	     	android:orientation="vertical"
+			android:layout_height="fill_parent"
+		   android:orientation="vertical"
 	     	android:gravity="bottom"
 	     	android:id="@+id/mainSectionMenu">
 	    
@@ -37,7 +38,9 @@
 	        android:layout_width="wrap_content" 
 	        android:layout_height="wrap_content" 
 	        android:layout_gravity="center_horizontal"
-	        android:clickable="true" />
+	        android:clickable="true"
+			android:focusable="true"
+			tools:ignore="ContentDescription" />
 	
 	    <ImageView 
 	        android:id="@+id/extrasButton"
@@ -46,7 +49,9 @@
 	        android:layout_height="wrap_content" 
 	        android:layout_gravity="center_horizontal"
 	       	android:paddingTop="10dp"
-			android:clickable="true" />
+			android:clickable="true"
+			android:focusable="true"
+			tools:ignore="ContentDescription" />
 	        
 	        
 	        
@@ -57,7 +62,9 @@
 		    android:layout_height="wrap_content" 
 		    android:layout_gravity="center_horizontal"
 		    android:paddingTop="10dp"
-		    android:clickable="true" />
+		    android:clickable="true"
+			android:focusable="true"
+			tools:ignore="ContentDescription" />
 	       
 		
 	 
@@ -69,14 +76,16 @@
 			android:textColor= "#FFFFFF" 
 			android:textColorHighlight="#FFFFFF" 
 			android:text="@string/whats_new_ticker" 
-			android:lines="1" 
+
 			android:marqueeRepeatLimit="marquee_forever" 
 			android:textSize="14sp" 
 			android:fadingEdge="horizontal" 
 			android:fadingEdgeLength="5dp" 
 			android:focusable="false" 
 			android:id="@+id/ticker"
-			android:singleLine="true" android:layout_gravity="bottom|left"/>
+			android:singleLine="true"
+			android:layout_gravity="bottom|left"
+			tools:ignore="RtlHardcoded" />
 	</LinearLayout>
 
 	<ImageView
@@ -85,7 +94,9 @@
        	android:layout_height="wrap_content" 
        	android:layout_width="wrap_content" 
        	android:paddingLeft="280dp"
+       	android:paddingStart="280dp"
        	android:paddingTop="160dp"
-       	android:visibility="invisible"/>
+       	android:visibility="invisible"
+		tools:ignore="ContentDescription,RtlSymmetry" />
 	
-</FrameLayout> 
+</FrameLayout>

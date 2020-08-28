@@ -15,13 +15,13 @@
  */
 package com.replica.replicaisland
 
-import android.R
+import android.R.attr.yesNoPreferenceStyle
 import android.content.Context
 import android.preference.DialogPreference
 import android.util.AttributeSet
 
 class YesNoDialogPreference @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null,
-                                                      defStyle: Int = R.attr.yesNoPreferenceStyle) : DialogPreference(context, attrs, defStyle) {
+                                                      defStyle: Int = yesNoPreferenceStyle) : DialogPreference(context, attrs, defStyle) {
     private var mListener: YesNoDialogListener? = null
 
     interface YesNoDialogListener {
