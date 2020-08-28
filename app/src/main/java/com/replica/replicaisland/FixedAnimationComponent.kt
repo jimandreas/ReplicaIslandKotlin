@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "IfThenToSafeAccess")
 
 package com.replica.replicaisland
 
@@ -28,7 +28,7 @@ class FixedAnimationComponent : GameComponent() {
         val parentObject = parent as GameObject
         val sprite = parentObject.findByClass(SpriteComponent::class.java)
         if (sprite != null) {
-            (sprite as SpriteComponent).playAnimation(mAnimationIndex)
+            sprite.playAnimation(mAnimationIndex)
         }
     }
 

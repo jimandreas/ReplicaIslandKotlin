@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("unused", "UNUSED_PARAMETER", "UNCHECKED_CAST", "ConvertTwoComparisonsToRangeCheck", "RemoveEmptySecondaryConstructorBody")
+@file:Suppress("unused", "UNUSED_PARAMETER", "UNCHECKED_CAST", "ConvertTwoComparisonsToRangeCheck", "RemoveEmptySecondaryConstructorBody", "SENSELESS_COMPARISON")
 
 package com.replica.replicaisland
 

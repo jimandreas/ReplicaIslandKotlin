@@ -47,7 +47,7 @@ class HitPlayerComponent : GameComponent() {
                         if (!mHitDirection) {
                             // hit myself
                             val accepted = mHitReact!!.receivedHit(parentObject, player, mHitType)
-                            (playerHitReact as HitReactionComponent).hitVictim(player, parentObject, mHitType, accepted)
+                            playerHitReact.hitVictim(player, parentObject, mHitType, accepted)
                         } else {
                             // hit the player
                             val accepted =
