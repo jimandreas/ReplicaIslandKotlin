@@ -52,7 +52,7 @@ class ShellSorter<Type> : Sorter<Type>() {
      * @param start      the start position
      * @param increment  the increment
      */
-    fun insertionSort(array: Array<Type>, count: Int, start: Int, increment: Int,
+    private fun insertionSort(array: Array<Type>, count: Int, start: Int, increment: Int,
                       comparator: Comparator<Type>) {
         var j: Int
         var k: Int

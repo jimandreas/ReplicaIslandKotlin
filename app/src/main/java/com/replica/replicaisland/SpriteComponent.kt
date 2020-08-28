@@ -102,7 +102,7 @@ class SpriteComponent : GameComponent {
                         bitmap.width = mWidth
                         bitmap.height = mHeight
                         bitmap.setOpacity(mOpacity)
-                        updateFlip(bitmap, parentObject!!.facingDirection.x < 0.0f,
+                        updateFlip(bitmap, parentObject.facingDirection.x < 0.0f,
                                 parentObject.facingDirection.y < 0.0f)
                         bitmap.texture = currentFrame.texture
                         render.drawable = bitmap

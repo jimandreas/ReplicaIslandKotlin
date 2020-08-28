@@ -23,7 +23,7 @@ import java.util.*
 class SpriteAnimation(animationId: Int, frameCount: Int) : PhasedObject() {
     private val mFrames: FixedSizeArray<AnimationFrame> = FixedSizeArray(frameCount)
     private val mFrameStartTimes: FloatArray = FloatArray(frameCount)
-    var loop: Boolean
+    var loop: Boolean = false
     var length: Float
         private set
 
@@ -78,7 +78,6 @@ class SpriteAnimation(animationId: Int, frameCount: Int) : PhasedObject() {
     }
 
     init {
-        loop = false
         length = 0.0f
         setPhaseToThis(animationId)
     }

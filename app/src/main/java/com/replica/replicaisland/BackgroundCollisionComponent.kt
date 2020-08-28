@@ -131,7 +131,7 @@ class BackgroundCollisionComponent : GameComponent {
      */
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        parentObject!!.backgroundCollisionNormal = Vector2.ZERO
+        parentObject.backgroundCollisionNormal = Vector2.ZERO
         if (mPreviousPosition.length2() != 0f) {
             val collision = sSystemRegistry.collisionSystem
             if (collision != null) {

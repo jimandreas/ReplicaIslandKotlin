@@ -18,12 +18,12 @@ package com.replica.replicaisland
 import com.replica.replicaisland.HitReactionComponent
 
 class HitPlayerComponent : GameComponent() {
-    var mDistance2 = 0f
-    var mPlayerPosition: Vector2
-    var mMyPosition: Vector2
-    var mHitReact: HitReactionComponent? = null
-    var mHitType = 0
-    var mHitDirection = false
+    private var mDistance2 = 0f
+    private var mPlayerPosition: Vector2 = Vector2()
+    private var mMyPosition: Vector2
+    private var mHitReact: HitReactionComponent? = null
+    private var mHitType = 0
+    private var mHitDirection = false
     override fun reset() {
         mDistance2 = 0.0f
         mPlayerPosition.zero()
@@ -40,7 +40,7 @@ class HitPlayerComponent : GameComponent() {
             if (player != null && player.life > 0) {
                 mPlayerPosition[player.centeredPositionX] = player.centeredPositionY
                 val parentObject = parent as GameObject
-                mMyPosition[parentObject!!.centeredPositionX] = parentObject.centeredPositionY
+                mMyPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
                 if (mMyPosition.distance2(mPlayerPosition) <= mDistance2) {
                     val playerHitReact = player.findByClass(HitReactionComponent::class.java)
                     if (playerHitReact != null) {
@@ -51,7 +51,7 @@ class HitPlayerComponent : GameComponent() {
                         } else {
                             // hit the player
                             val accepted =
-                                    (playerHitReact as HitReactionComponent).receivedHit(player, parentObject, mHitType)
+                                    playerHitReact.receivedHit(player, parentObject, mHitType)
                             mHitReact!!.hitVictim(parentObject, player, mHitType, accepted)
                         }
                     }
@@ -68,7 +68,6 @@ class HitPlayerComponent : GameComponent() {
     }
 
     init {
-        mPlayerPosition = Vector2()
         mMyPosition = Vector2()
         reset()
         setPhaseToThis(ComponentPhases.THINK.ordinal)

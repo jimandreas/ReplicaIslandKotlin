@@ -46,7 +46,7 @@ class FixedSizeArray<T> : AllocationGuard {
         mContents = arrayOfNulls<Any>(size) as Array<T?>
         count = 0
         mSorted = false
-        mSorter = StandardSorter<T?>()
+        mSorter = StandardSorter()
     }
 
     constructor(size: Int, comparator: Comparator<T?>?) : super() {
@@ -55,7 +55,7 @@ class FixedSizeArray<T> : AllocationGuard {
         count = 0
         mComparator = comparator
         mSorted = false
-        mSorter = StandardSorter<T?>()
+        mSorter = StandardSorter()
     }
 
     /**

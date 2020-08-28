@@ -158,14 +158,13 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
     fun releaseHardwareBuffers(gl: GL10?) {
         if (mUseHardwareBuffers) {
             if (gl is GL11) {
-                val gl11 = gl
                 val buffer = IntArray(1)
                 buffer[0] = mVertBufferIndex
-                gl11.glDeleteBuffers(1, buffer, 0)
+                gl.glDeleteBuffers(1, buffer, 0)
                 buffer[0] = mTextureCoordBufferIndex
-                gl11.glDeleteBuffers(1, buffer, 0)
+                gl.glDeleteBuffers(1, buffer, 0)
                 buffer[0] = mIndexBufferIndex
-                gl11.glDeleteBuffers(1, buffer, 0)
+                gl.glDeleteBuffers(1, buffer, 0)
             }
             invalidateHardwareBuffers()
         }
@@ -182,41 +181,40 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         if (!mUseHardwareBuffers) {
             DebugLog.i("Grid", "Using Hardware Buffers")
             if (gl is GL11) {
-                val gl11 = gl
                 val buffer = IntArray(1)
 
                 // Allocate and fill the vertex buffer.
-                gl11.glGenBuffers(1, buffer, 0)
+                gl.glGenBuffers(1, buffer, 0)
                 mVertBufferIndex = buffer[0]
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertBufferIndex)
+                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertBufferIndex)
                 val vertexSize = mVertexBuffer!!.capacity() * mCoordinateSize
-                gl11.glBufferData(GL11.GL_ARRAY_BUFFER, vertexSize,
+                gl.glBufferData(GL11.GL_ARRAY_BUFFER, vertexSize,
                         mVertexBuffer, GL11.GL_STATIC_DRAW)
 
                 // Allocate and fill the texture coordinate buffer.
-                gl11.glGenBuffers(1, buffer, 0)
+                gl.glGenBuffers(1, buffer, 0)
                 mTextureCoordBufferIndex = buffer[0]
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER,
+                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER,
                         mTextureCoordBufferIndex)
                 val texCoordSize = mTexCoordBuffer!!.capacity() * mCoordinateSize
-                gl11.glBufferData(GL11.GL_ARRAY_BUFFER, texCoordSize,
+                gl.glBufferData(GL11.GL_ARRAY_BUFFER, texCoordSize,
                         mTexCoordBuffer, GL11.GL_STATIC_DRAW)
 
                 // Unbind the array buffer.
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
+                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
 
                 // Allocate and fill the index buffer.
-                gl11.glGenBuffers(1, buffer, 0)
+                gl.glGenBuffers(1, buffer, 0)
                 mIndexBufferIndex = buffer[0]
-                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER,
+                gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER,
                         mIndexBufferIndex)
                 // A char is 2 bytes.
                 val indexSize = mIndexBuffer.capacity() * 2
-                gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexSize, mIndexBuffer,
+                gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexSize, mIndexBuffer,
                         GL11.GL_STATIC_DRAW)
 
                 // Unbind the element array buffer.
-                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
+                gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
                 mUseHardwareBuffers = true
                 // TODO: fix assertions
 //                assert(mVertBufferIndex != 0)

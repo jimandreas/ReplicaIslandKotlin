@@ -42,7 +42,7 @@ class TheSourceComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        var currentAction = parentObject!!.currentAction
+        var currentAction = parentObject.currentAction
         val camera = sSystemRegistry.cameraSystem
         if (currentAction == ActionType.HIT_REACT) {
             if (parentObject.life > 0) {

@@ -23,7 +23,7 @@ package com.replica.replicaisland
  * instant death when entered).
  */
 class HotSpotSystem : BaseObject() {
-    var mWorld: TiledWorld? = null
+    private var mWorld: TiledWorld? = null
 
     object HotSpotType {
         const val NONE = -1

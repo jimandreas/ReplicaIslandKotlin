@@ -24,13 +24,13 @@ class CrusherAndouComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
         if (mSwap!!.currentlySwapped) {
-            if (parentObject!!.touchingGround()) {
+            if (parentObject.touchingGround()) {
                 parentObject.currentAction = GameObject.ActionType.IDLE
             }
         } else {
             val input = sSystemRegistry.inputSystem
             if (input!!.fetchTouchScreen().getTriggered(sSystemRegistry.timeSystem!!.gameTime)) {
-                parentObject!!.currentAction = GameObject.ActionType.ATTACK
+                parentObject.currentAction = GameObject.ActionType.ATTACK
                 mSwap!!.activate(parentObject)
             }
         }

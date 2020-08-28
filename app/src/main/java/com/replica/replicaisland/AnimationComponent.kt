@@ -78,7 +78,7 @@ class AnimationComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mSprite != null) {
             val parentObject = parent as GameObject
-            val velocityX = parentObject!!.velocity.x
+            val velocityX = parentObject.velocity.x
             val velocityY = parentObject.velocity.y
             val currentAction = parentObject.currentAction
             if (mJetSprite != null) {

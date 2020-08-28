@@ -51,7 +51,7 @@ class GhostComponent : GameComponent() {
         var timeToRelease = false
         val input = sSystemRegistry.inputGameInterface
         val camera = sSystemRegistry.cameraSystem
-        if (parentObject!!.life > 0) {
+        if (parentObject.life > 0) {
             if (mLifeTime > 0.0f) {
                 mLifeTime -= timeDelta
                 if (mLifeTime <= 0.0f) {
@@ -133,10 +133,10 @@ class GhostComponent : GameComponent() {
         }
         if (player != null) {
             if (mKillOnRelease) {
-                parentObject!!.life = 0
+                parentObject.life = 0
             } else {
                 // See if there's a component swap we can run.
-                val swap = parentObject!!.findByClass(ChangeComponentsComponent::class.java)
+                val swap = parentObject.findByClass(ChangeComponentsComponent::class.java)
                 if (swap != null) {
                     (swap as ChangeComponentsComponent).activate(parentObject)
                 }

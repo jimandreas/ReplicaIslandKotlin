@@ -45,7 +45,7 @@ class PhysicsComponent internal constructor() : GameComponent() {
         val parentObject = parent as GameObject
 
         // we look to user data so that other code can provide impulses
-        val impulseVector = parentObject!!.impulse
+        val impulseVector = parentObject.impulse
         val currentVelocity = parentObject.velocity
         val surfaceNormal = parentObject.backgroundCollisionNormal
         if (surfaceNormal.length2() > 0.0f) {
@@ -64,7 +64,7 @@ class PhysicsComponent internal constructor() : GameComponent() {
         val touchingFloor = parentObject.touchingGround()
         val gravity = parentObject.findByClass(GravityComponent::class.java)
         if (touchingFloor && currentVelocity.y <= 0.0f && abs(newVelocity.x) > 0.0f && gravity != null) {
-            val gravityVector = (gravity as GravityComponent).gravity
+            val gravityVector = gravity.gravity
 
             // if we were moving last frame, we'll use dynamic friction. Else
             // static.

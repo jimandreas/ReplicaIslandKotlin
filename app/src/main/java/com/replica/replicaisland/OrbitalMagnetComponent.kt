@@ -43,7 +43,7 @@ class OrbitalMagnetComponent : GameComponent() {
             if (player != null) {
                 val parentObject = parent as GameObject
                 applyMagnetism(player,
-                        parentObject!!.centeredPositionX,
+                        parentObject.centeredPositionX,
                         parentObject.centeredPositionY,
                         timeDelta)
             }
@@ -69,7 +69,7 @@ class OrbitalMagnetComponent : GameComponent() {
             val targetVelocity = target.velocity
             val gravity = target.findByClass(GravityComponent::class.java)
             //val gravityVector = gravity.gravity
-            val gravityVector = (gravity!! as GravityComponent).gravity
+            val gravityVector = gravity!!.gravity
             mVelocity.set(gravityVector)
             mVelocity.multiply(timeDelta)
             targetVelocity.subtract(mVelocity)
