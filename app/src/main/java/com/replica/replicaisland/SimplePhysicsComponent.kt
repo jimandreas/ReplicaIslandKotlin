@@ -28,7 +28,7 @@ class SimplePhysicsComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        val impulse = parentObject!!.impulse
+        val impulse = parentObject.impulse
         var velocityX = parentObject.velocity.x + impulse.x
         var velocityY = parentObject.velocity.y + impulse.y
         if (parentObject.touchingCeiling() && velocityY > 0.0f

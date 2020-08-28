@@ -42,7 +42,7 @@ class SleeperComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (parentObject!!.currentAction == ActionType.INVALID) {
+        if (parentObject.currentAction == ActionType.INVALID) {
             parentObject.currentAction = ActionType.IDLE
             mState = STATE_SLEEPING
         }

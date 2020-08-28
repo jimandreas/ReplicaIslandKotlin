@@ -81,8 +81,8 @@ class ExtrasMenuActivity : Activity() {
         if (extrasUnlocked) {
             mLinearModeButton!!.setOnClickListener(sLinearModeButtonListener)
             mLevelSelectButton!!.setOnClickListener(sLevelSelectButtonListener)
-            mLinearModeLocked!!.setVisibility(View.GONE)
-            mLevelSelectLocked!!.setVisibility(View.GONE)
+            mLinearModeLocked!!.visibility = View.GONE
+            mLevelSelectLocked!!.visibility = View.GONE
         } else {
             mLockedAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_out)
             mLinearModeButton!!.setOnClickListener(sLockedSelectButtonListener)
@@ -135,7 +135,7 @@ class ExtrasMenuActivity : Activity() {
         return dialog!!
     }
 
-    protected fun startGame(type: Int) {
+    private fun startGame(type: Int) {
         if (type == START_LINEAR_MODE) {
             val i = Intent(baseContext, DifficultyMenuActivity::class.java)
             i.putExtra("linearMode", true)
@@ -151,7 +151,7 @@ class ExtrasMenuActivity : Activity() {
         }
     }
 
-    protected inner class StartActivityAfterAnimation internal constructor(private val mIntent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation internal constructor(private val mIntent: Intent) : AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             mLinearModeButton!!.visibility = View.INVISIBLE
             mLinearModeButton!!.clearAnimation()

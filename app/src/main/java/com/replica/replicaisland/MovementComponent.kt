@@ -22,7 +22,7 @@ class MovementComponent : GameComponent() {
     override fun reset() {}
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val `object` = parent as GameObject
-        sInterpolator.setAll(`object`!!.velocity.x, `object`.targetVelocity.x, `object`.acceleration.x)
+        sInterpolator.setAll(`object`.velocity.x, `object`.targetVelocity.x, `object`.acceleration.x)
         val offsetX = sInterpolator.interpolate(timeDelta)
         val newX = `object`.position.x + offsetX
         val newVelocityX = sInterpolator.fetchCurrent()

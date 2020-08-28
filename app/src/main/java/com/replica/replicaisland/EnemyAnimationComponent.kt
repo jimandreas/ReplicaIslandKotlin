@@ -48,7 +48,7 @@ class EnemyAnimationComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mSprite != null) {
             val parentObject = parent as GameObject
-            val velocityX = parentObject!!.velocity.x
+            val velocityX = parentObject.velocity.x
             val currentAction = parentObject.currentAction
             when (mState) {
                 AnimationState.IDLING -> {
@@ -113,7 +113,7 @@ class EnemyAnimationComponent : GameComponent() {
         if (manager != null) {
             val player = manager.player
             if (player != null) {
-                if (player.position.x < parentObject!!.position.x) {
+                if (player.position.x < parentObject.position.x) {
                     parentObject.facingDirection.x = -1.0f
                 } else {
                     parentObject.facingDirection.x = 1.0f

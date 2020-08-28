@@ -1,45 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <TableRow>
     	<ImageView 
     			android:id="@+id/speaker"
 			    android:src="@drawable/wanda_smile"
 			    android:adjustViewBounds="true"
-			    android:gravity="center_vertical"/>
-			 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android">
+			    android:gravity="center_vertical"
+			tools:ignore="ContentDescription" />
+			 <TableLayout>
 		    	<TableRow>
 			    <TextView android:id="@+id/speakername"
 					    android:layout_width="wrap_content" 
 					    android:layout_height="20dp"
 					    android:text="Wanda"
 					    android:textSize = "15sp"
-					    android:textStyle = "bold"/>
+					    android:textStyle = "bold"
+					tools:ignore="HardcodedText" />
 		   	 	</TableRow>
 		    	<TableRow>
-					<view xmlns:android="http://schemas.android.com/apk/res/android" 
+					<view
 						class = "com.replica.replicaisland.ConversationDialogActivity$TypewriterTextView"
 						android:id="@+id/typewritertext"
 					    android:layout_width="300dp" 
 					    android:layout_height="110dp"
 					    
 					    android:text="Blah blah blah blah blah"
-					    android:textSize = "15sp"/>
+					    android:textSize = "15sp"
+						tools:ignore="HardcodedText" />
 				</TableRow>
 			</TableLayout>	
 		</TableRow>
 	<TableRow>
-		<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_span = "2" 
-				android:layout_gravity="right">
+		<FrameLayout
+			android:layout_span = "2"
+				android:layout_gravity="right"
+			tools:ignore="RtlHardcoded,UselessParent">
 			<ImageView 
     			android:id="@+id/ok"
 			    
 			    android:layout_width="wrap_content" 
 				android:layout_height="wrap_content"
-			    android:gravity="right"/>
+			    android:gravity="right"
+				tools:ignore="ContentDescription" />
 		</FrameLayout>
 	</TableRow>
 </TableLayout>

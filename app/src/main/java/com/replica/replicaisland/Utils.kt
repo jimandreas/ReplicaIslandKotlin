@@ -17,9 +17,6 @@
 
 package com.replica.replicaisland
 
-import java.math.BigInteger
-import kotlin.experimental.and
-
 
 /** A collection of miscellaneous utility functions.  */
 class Utils {

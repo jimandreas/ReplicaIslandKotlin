@@ -108,14 +108,14 @@ class RenderSystem : BaseObject() {
 
     private inner class RenderElementPool
         constructor(max: Int) : TObjectPool<RenderElement?>(max) {
-        override fun release(element: Any) {
-            val renderable = element as RenderElement
+        override fun release(entry: Any) {
+            val renderable = entry as RenderElement
             // if this drawable came out of a pool, make sure it is returned to that pool.
             val pool = renderable.mDrawable!!.parentPool
             pool?.release(renderable.mDrawable!!)
             // reset on release
             renderable.reset()
-            super.release(element)
+            super.release(entry)
         }
 
         override fun fill() {

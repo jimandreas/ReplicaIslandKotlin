@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content">
+  	android:layout_height="wrap_content"
+	tools:ignore="Deprecated,ContentDescription,RtlHardcoded">
 	  	
-	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<FrameLayout
 		android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
 	  	android:layout_centerHorizontal="true"
-	  	>
-		<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		tools:ignore="UselessParent">
+		<FrameLayout
 			android:layout_width="wrap_content"
 		  	android:layout_height="wrap_content"
 		  	>
-			<View xmlns:android="http://schemas.android.com/apk/res/android"
+			<View
 			    android:id="@+id/animation_background"
 			    android:background="@drawable/ui_bad_ending_rokudou_bg"
 			    android:layout_width="480dp"
@@ -23,11 +25,11 @@
 			</View>
 		</FrameLayout>
 		
-		<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<FrameLayout
 		android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
 	  	>
-			<View xmlns:android="http://schemas.android.com/apk/res/android"
+			<View
 			    android:id="@+id/animation_sphere"
 			    android:background="@drawable/ui_bad_ending_rokudou_sphere"
 			    android:layout_width="480dp"
@@ -38,11 +40,11 @@
 			</View>
 		</FrameLayout>
 		
-		<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<FrameLayout
 		android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
 	  	>
-			<View xmlns:android="http://schemas.android.com/apk/res/android"
+			<View
 			    android:id="@+id/animation_cliffs"
 			    android:background="@drawable/ui_bad_ending_rokudou_cliffs"
 			    android:layout_width="480dp"
@@ -53,11 +55,11 @@
 			</View>
 		</FrameLayout>
 		
-		<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<FrameLayout
 		android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
 	  	>
-			<View xmlns:android="http://schemas.android.com/apk/res/android"
+			<View
 			    android:id="@+id/animation_rokudou"
 			    android:background="@drawable/ui_bad_ending_rokudou_rokudou"
 			    android:layout_width="480dp"
@@ -68,11 +70,11 @@
 			</View>
 		</FrameLayout>
 		
-		<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<AbsoluteLayout
 				android:layout_width="wrap_content"
 	  			android:layout_height="wrap_content">
 			<TextView android:id="@+id/game_over" 
-					xmlns:android="http://schemas.android.com/apk/res/android"
+
 				    android:layout_width="160dp"
 				    android:layout_height="50dp"
 				    android:textSize = "20sp"

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("IfThenToSafeAccess")
+
 package com.replica.replicaisland
 
 import com.replica.replicaisland.GameObject.ActionType
@@ -51,7 +53,7 @@ class GhostComponent : GameComponent() {
         var timeToRelease = false
         val input = sSystemRegistry.inputGameInterface
         val camera = sSystemRegistry.cameraSystem
-        if (parentObject!!.life > 0) {
+        if (parentObject.life > 0) {
             if (mLifeTime > 0.0f) {
                 mLifeTime -= timeDelta
                 if (mLifeTime <= 0.0f) {
@@ -60,7 +62,7 @@ class GhostComponent : GameComponent() {
                     // Do we have a sprite we can fade out?
                     val sprite = parentObject.findByClass(SpriteComponent::class.java)
                     if (sprite != null) {
-                        (sprite as SpriteComponent).setOpacity(mLifeTime)
+                        sprite.setOpacity(mLifeTime)
                     }
                 }
             }
@@ -133,12 +135,12 @@ class GhostComponent : GameComponent() {
         }
         if (player != null) {
             if (mKillOnRelease) {
-                parentObject!!.life = 0
+                parentObject.life = 0
             } else {
                 // See if there's a component swap we can run.
-                val swap = parentObject!!.findByClass(ChangeComponentsComponent::class.java)
+                val swap = parentObject.findByClass(ChangeComponentsComponent::class.java)
                 if (swap != null) {
-                    (swap as ChangeComponentsComponent).activate(parentObject)
+                    swap.activate(parentObject)
                 }
 
             }

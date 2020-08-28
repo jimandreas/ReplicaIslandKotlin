@@ -40,7 +40,7 @@ class RenderComponent : GameComponent() {
         if (drawable != null) {
             val system = sSystemRegistry.renderSystem
             if (system != null) {
-                mPositionWorkspace.set((parent as GameObject)!!.position)
+                mPositionWorkspace.set((parent as GameObject).position)
                 mPositionWorkspace.add(mDrawOffset)
                 if (mCameraRelative) {
                     val camera = sSystemRegistry.cameraSystem

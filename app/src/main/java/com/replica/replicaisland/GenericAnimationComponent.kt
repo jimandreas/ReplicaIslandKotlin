@@ -26,7 +26,7 @@ class GenericAnimationComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mSprite != null) {
             val parentObject = parent as GameObject
-            if (parentObject!!.facingDirection.x != 0.0f && parentObject.velocity.x != 0.0f) {
+            if (parentObject.facingDirection.x != 0.0f && parentObject.velocity.x != 0.0f) {
                 parentObject.facingDirection.x = Utils.sign(parentObject.velocity.x).toFloat()
             }
             when (parentObject.currentAction) {

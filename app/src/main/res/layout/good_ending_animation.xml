@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
-  	>
-	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	tools:ignore="ContentDescription, RtlHardcoded">
+
+	<FrameLayout
 		android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
 	  	>
-		<View xmlns:android="http://schemas.android.com/apk/res/android"
+		<View
 		    android:id="@+id/animation_background"
 		    android:background="@drawable/ui_good_ending_background"
 		    android:layout_width="650dp"
-		    android:layout_height="320dp" 
+		    android:layout_height="320dp"
 		    android:adjustViewBounds="true"
-		    
-		    >
-		</View>
+
+		    />
+
 	</FrameLayout>
-	
-	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+	<FrameLayout
 	android:layout_width="wrap_content"
   	android:layout_height="wrap_content"
   	>
-		<View xmlns:android="http://schemas.android.com/apk/res/android"
+		<View
 		    android:id="@+id/animation_foreground"
 		    android:background="@drawable/ui_good_ending_foreground"
 		    android:layout_width="760dp"
-		    android:layout_height="320dp" 
+		    android:layout_height="320dp"
 		    android:adjustViewBounds="true"
-		   
-		    >
-		</View>
+
+		    />
+
 	</FrameLayout>
-	
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+	<RelativeLayout
 			android:layout_width="fill_parent"
   			android:layout_height="fill_parent">
-		<TextView android:id="@+id/game_over" 
-				xmlns:android="http://schemas.android.com/apk/res/android"
+		<TextView android:id="@+id/game_over"
+
 			    android:layout_width="160dp"
 			    android:layout_height="70dp"
 			    android:textSize = "20sp"
 			    android:textColor = "#FFFFFF"
 			    android:gravity = "center"
-			    android:layout_alignParentRight="true" 
+			    android:layout_alignParentRight="true"
 			    android:layout_marginTop = "20dp"
 			    android:layout_marginRight = "20dp"
 		       	android:text="@string/thanks_for_playing"
@@ -53,5 +55,5 @@
 		/>
 
 	</RelativeLayout>
-	
+
 </FrameLayout>

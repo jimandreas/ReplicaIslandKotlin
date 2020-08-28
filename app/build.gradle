@@ -7,6 +7,7 @@ android {
     defaultConfig {
         applicationId "com.replica.replicaisland"
         minSdkVersion 16
+        //noinspection OldTargetApi
         targetSdkVersion 28
     }
 

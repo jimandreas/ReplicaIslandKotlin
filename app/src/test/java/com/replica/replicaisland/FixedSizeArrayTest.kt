@@ -12,7 +12,7 @@ internal class FixedSizeArrayTest {
         var entityValue = 0
     }
 
-    lateinit var fsa : FixedSizeArray<TestEntity>
+    private lateinit var fsa : FixedSizeArray<TestEntity>
 
     @BeforeEach
     fun setUp() {

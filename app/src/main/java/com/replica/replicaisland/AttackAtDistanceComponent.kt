@@ -36,7 +36,7 @@ class AttackAtDistanceComponent : GameComponent() {
             val player = manager.player
             if (player != null) {
                 mDistance.set(player.position)
-                mDistance.subtract(parentObject!!.position)
+                mDistance.subtract(parentObject.position)
                 val time = sSystemRegistry.timeSystem
                 val currentTime = time!!.gameTime
                 val facingPlayer = (Utils.sign(player.position.x - parentObject.position.x)

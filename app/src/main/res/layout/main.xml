@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+	tools:ignore="Deprecated,ContentDescription,RtlHardcoded"
     >
     
-    <view xmlns:android="http://schemas.android.com/apk/res/android" 
+    <view
 		class = "com.replica.replicaisland.GLSurfaceView"
 		android:id="@+id/glsurfaceview"
 	    android:layout_width="fill_parent" 
@@ -34,12 +36,14 @@
    			android:layout_width="wrap_content" 
    			android:textColor="#FFFFFF" 
    			android:layout_gravity="center_horizontal" 
-   			android:text="Memory #001" android:textSize="20sp" 
+   			android:text="Memory #001"
+			android:textSize="20sp"
    			android:textStyle="bold" 
-   			android:typeface="sans"/>
+   			android:typeface="sans"
+			tools:ignore="HardcodedText" />
    </LinearLayout>
           
-   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   <LinearLayout
 		android:id="@+id/pleaseWaitMessage"
 		android:orientation="horizontal"
 		android:layout_width="wrap_content"
