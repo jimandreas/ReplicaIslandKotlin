@@ -56,7 +56,7 @@ class PatrolComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (parentObject!!.currentAction == ActionType.INVALID
+        if (parentObject.currentAction == ActionType.INVALID
                 || parentObject.currentAction == ActionType.HIT_REACT) {
             parentObject.currentAction = ActionType.MOVE
         }
@@ -174,7 +174,7 @@ class PatrolComponent : GameComponent() {
         var visible = true
         val camera = sSystemRegistry.cameraSystem
         val context = sSystemRegistry.contextParameters
-        val dx = abs(parentObject!!.centeredPositionX - camera!!.fetchFocusPositionX())
+        val dx = abs(parentObject.centeredPositionX - camera!!.fetchFocusPositionX())
         val dy = abs(parentObject.centeredPositionY - camera.fetchFocusPositionY())
         if (dx > context!!.gameWidth / 2.0f || dy > context.gameHeight / 2.0f) {
             visible = false

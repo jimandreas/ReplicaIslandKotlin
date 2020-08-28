@@ -29,7 +29,7 @@ class GravityComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         mScaledGravity.set(gravity)
         mScaledGravity.multiply(timeDelta)
-        (parent as GameObject)!!.velocity.add(mScaledGravity)
+        (parent as GameObject).velocity.add(mScaledGravity)
     }
 
     fun setGravityMultiplier(multiplier: Float) {

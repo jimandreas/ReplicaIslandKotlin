@@ -33,7 +33,7 @@ class SimpleCollisionComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
         if (mPreviousPosition.length2() > 0.0f) {
-            mCurrentPosition[parentObject!!.centeredPositionX] = parentObject.centeredPositionY
+            mCurrentPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
             mMovementDirection.set(mCurrentPosition)
             mMovementDirection.subtract(mPreviousPosition)
             if (mMovementDirection.length2() > 0.0f) {
@@ -70,7 +70,7 @@ class SimpleCollisionComponent : GameComponent() {
                 }
             }
         }
-        mPreviousPosition[parentObject!!.centeredPositionX] = parentObject.centeredPositionY
+        mPreviousPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
     }
 
     init {

@@ -100,7 +100,7 @@ class FadeDrawableComponent : GameComponent() {
                         val bitmap = factory.allocateDrawableBitmap()
                         bitmap.resize(mTexture!!.width, mTexture!!.height)
                         //TODO: Super tricky scale.  fix this!
-                        bitmap.width = parentObject!!.width.toInt()
+                        bitmap.width = parentObject.width.toInt()
                         bitmap.height = parentObject.height.toInt()
                         bitmap.setOpacity(opacity)
                         bitmap.texture = mTexture

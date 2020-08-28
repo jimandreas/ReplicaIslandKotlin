@@ -54,7 +54,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.playAnimation(Animation.OPEN)
                 mState = STATE_OPEN
                 if (mSolidSurface != null) {
-                    parentObject!!.remove(mSolidSurface)
+                    parentObject.remove(mSolidSurface)
                 }
             } else {
                 var timeOffset = timeSinceTriggered
@@ -66,7 +66,7 @@ class DoorAnimationComponent : GameComponent() {
                     timeOffset = openAnimationLength - mSprite!!.currentAnimationTime
                 } else {
                     if (mSolidSurface != null) {
-                        parentObject!!.remove(mSolidSurface)
+                        parentObject.remove(mSolidSurface)
                     }
                 }
                 mState = STATE_OPENING
@@ -88,7 +88,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.playAnimation(Animation.CLOSED)
                 mState = STATE_CLOSED
                 if (mSolidSurface != null) {
-                    parentObject!!.add(mSolidSurface as BaseObject)
+                    parentObject.add(mSolidSurface as BaseObject)
                 }
             } else {
                 var timeOffset = timeSinceTriggered - mStayOpenTime
@@ -130,7 +130,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.playAnimation(Animation.CLOSED)
                 mState = STATE_CLOSED
                 if (mSolidSurface != null) {
-                    (parent as GameObject)!!.add(mSolidSurface as BaseObject)
+                    (parent as GameObject).add(mSolidSurface as BaseObject)
                 }
             }
 

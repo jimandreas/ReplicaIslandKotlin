@@ -39,7 +39,7 @@ class ButtonAnimationComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mSprite != null) {
             val parentObject = parent as GameObject
-            if (parentObject!!.currentAction == GameObject.ActionType.HIT_REACT &&
+            if (parentObject.currentAction == GameObject.ActionType.HIT_REACT &&
                     parentObject.lastReceivedHitType == CollisionParameters.HitType.DEPRESS) {
                 if (mSprite!!.currentAnimation == Animation.UP) {
                     val sound = sSystemRegistry.soundSystem

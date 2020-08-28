@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("unused")
+@file:Suppress("unused", "SENSELESS_COMPARISON")
 
 package com.replica.replicaisland
 
@@ -90,7 +90,7 @@ class GameObjectCollisionSystem : BaseObject() {
             if (sSystemRegistry.debugSystem != null) {
                 drawDebugVolumes(record)
             }
-            val maxX = record.boundingVolume!!.maxXPosition(sFlip) + position!!.x
+            val maxX = record.boundingVolume!!.maxXPosition(sFlip) + position.x
             for (y in x + 1 until count) {
                 val other = mObjects[y]
                 val otherPosition = other!!.gameObject!!.position
@@ -98,7 +98,7 @@ class GameObjectCollisionSystem : BaseObject() {
                 sOtherFlip.flipY = other.gameObject!!.facingDirection.y < 0.0f
                 sOtherFlip.parentWidth = other.gameObject!!.width
                 sOtherFlip.parentHeight = other.gameObject!!.height
-                if (otherPosition!!.x + other.boundingVolume!!.minXPosition(sOtherFlip) > maxX) {
+                if (otherPosition.x + other.boundingVolume!!.minXPosition(sOtherFlip) > maxX) {
                     // These objects can't possibly be colliding.  And since the list is sorted,
                     // there are no potentially colliding objects after this object
                     // either, so we're done!
@@ -206,7 +206,7 @@ class GameObjectCollisionSystem : BaseObject() {
         if (mDrawDebugBoundingVolume) {
             val boundingVolume = record.boundingVolume
             sSystemRegistry.debugSystem!!.drawShape(
-                    position!!.x + boundingVolume!!.minXPosition(sFlip), position.y + boundingVolume.minYPosition(sFlip),
+                    position.x + boundingVolume!!.minXPosition(sFlip), position.y + boundingVolume.minYPosition(sFlip),
                     boundingVolume.fetchMaxX() - boundingVolume.fetchMinX(),
                     boundingVolume.fetchMaxY() - boundingVolume.fetchMinY(),
                     DebugSystem.SHAPE_CIRCLE,
@@ -218,7 +218,7 @@ class GameObjectCollisionSystem : BaseObject() {
                 for (y in 0 until attackVolumeCount) {
                     val volume = record.attackVolumes!![y]
                     sSystemRegistry.debugSystem!!.drawShape(
-                            position!!.x + volume!!.minXPosition(sFlip), position.y + volume.minYPosition(sFlip),
+                            position.x + volume!!.minXPosition(sFlip), position.y + volume.minYPosition(sFlip),
                             volume.fetchMaxX() - volume.fetchMinX(),
                             volume.fetchMaxY() - volume.fetchMinY(),
                             if (volume.javaClass == AABoxCollisionVolume::class.java) DebugSystem.SHAPE_BOX else DebugSystem.SHAPE_CIRCLE,
@@ -230,7 +230,7 @@ class GameObjectCollisionSystem : BaseObject() {
                 for (y in 0 until vulnVolumeCount) {
                     val volume = record.vulnerabilityVolumes!![y]
                     sSystemRegistry.debugSystem!!.drawShape(
-                            position!!.x + volume!!.minXPosition(sFlip), position.y + volume.minYPosition(sFlip),
+                            position.x + volume!!.minXPosition(sFlip), position.y + volume.minYPosition(sFlip),
                             volume.fetchMaxX() - volume.fetchMinX(),
                             volume.fetchMaxY() - volume.fetchMinY(),
                             if (volume.javaClass == AABoxCollisionVolume::class.java) DebugSystem.SHAPE_BOX else DebugSystem.SHAPE_CIRCLE,
@@ -290,13 +290,13 @@ class GameObjectCollisionSystem : BaseObject() {
                 sCompareFlip.flipY = object1.gameObject!!.facingDirection.y < 0.0f
                 sCompareFlip.parentWidth = object1.gameObject!!.width
                 sCompareFlip.parentHeight = object1.gameObject!!.height
-                val minX1 = (object1.gameObject!!.position!!.x
+                val minX1 = (object1.gameObject!!.position.x
                         + object1.boundingVolume!!.minXPosition(sCompareFlip))
                 sCompareFlip.flipX = object2.gameObject!!.facingDirection.x < 0.0f
                 sCompareFlip.flipY = object2.gameObject!!.facingDirection.y < 0.0f
                 sCompareFlip.parentWidth = object2.gameObject!!.width
                 sCompareFlip.parentHeight = object2.gameObject!!.height
-                val minX2 = (object2.gameObject!!.position!!.x
+                val minX2 = (object2.gameObject!!.position.x
                         + object2.boundingVolume!!.minXPosition(sCompareFlip))
                 val delta = minX1 - minX2
                 if (delta < 0.0f) {

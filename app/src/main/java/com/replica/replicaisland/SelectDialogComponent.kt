@@ -31,7 +31,7 @@ class SelectDialogComponent : GameComponent() {
         val hotSpot = sSystemRegistry.hotSpotSystem
         if (hotSpot != null && mHitReact != null) {
             val parentObject = parent as GameObject
-            val currentPosition = parentObject!!.position
+            val currentPosition = parentObject.position
             if (mLastPosition.distance2(parentObject.position) > 0.0f) {
                 mLastPosition.set(currentPosition)
                 val hitSpot = hotSpot.getHotSpot(parentObject.centeredPositionX, currentPosition.y + 10)

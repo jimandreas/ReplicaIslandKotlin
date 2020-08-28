@@ -78,7 +78,7 @@ class SolidSurfaceComponent : GameComponent {
         val surfaceCount = startPoints!!.count
         if (collision != null && surfaceCount > 0) {
             val parentObject = parent as GameObject
-            val position = parentObject!!.position
+            val position = parentObject.position
             val start = mStart
             val end = mEnd
             val normal = mNormal

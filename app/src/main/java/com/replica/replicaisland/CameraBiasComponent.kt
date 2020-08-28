@@ -20,7 +20,7 @@ class CameraBiasComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
         val camera = sSystemRegistry.cameraSystem
-        camera?.addCameraBias(parentObject!!.position)
+        camera?.addCameraBias(parentObject.position)
     }
 
     init {
