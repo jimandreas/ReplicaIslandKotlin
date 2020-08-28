@@ -1,0 +1,48 @@
+# Project information
+site_name: 'Replica Island Kotlin Conversion'
+site_description: 'A case study of converting Replica Island to Kotlin'
+site_author: 'Jim Andreas'
+site_url: 'https://jimandreas.github.io/ReplicaIslandKotlin'
+
+# Repository
+repo_name: 'jimandreas/ReplicaIslandKotlin'
+repo_url: 'https://github.com/jimandreas/ReplicaIslandKotlin'
+
+# Copyright
+copyright: 'Copyright &copy; 2020 Jim Andreas'
+
+# Configuration
+theme:
+  name: 'material'
+  language: 'en'
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+# Customization
+extra:
+  manifest: 'manifest.webmanifest'
+  social:
+    - type: 'github'
+      link: 'https://github.com/jimandreas'
+    - type: 'twitter'
+      link: 'https://twitter.com/jimandreasdev'
+    - type: 'linkedin'
+      link: 'https://linkedin.com/in/jimandreas'
+
+# Google Analytics
+#google_analytics:
+#  - 'UA-XXXXXXXX-X'
+#  - 'auto'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+
