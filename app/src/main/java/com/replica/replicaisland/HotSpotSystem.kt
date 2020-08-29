@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
 package com.replica.replicaisland
+
+import kotlin.math.floor
 
 /**
  * A system for testing positions against "hot spots" embedded in the level tile map data.
@@ -102,7 +105,7 @@ class HotSpotSystem : BaseObject() {
         val level = sSystemRegistry.levelSystem
         if (mWorld != null && level != null) {
             val worldPixelWidth = level.levelWidth
-            xTile = Math.floor(worldX / worldPixelWidth * mWorld!!.fetchWidth().toDouble()).toInt()
+            xTile = floor(worldX / worldPixelWidth * mWorld!!.fetchWidth().toDouble()).toInt()
         }
         return xTile
     }
@@ -115,7 +118,7 @@ class HotSpotSystem : BaseObject() {
             // TODO: it is stupid to keep doing this space conversion all over the code.  Fix this
             // in the TiledWorld code!
             val flippedY = worldPixelHeight - worldY
-            yTile = Math.floor(flippedY / worldPixelHeight * mWorld!!.fetchHeight().toDouble()).toInt()
+            yTile = floor(flippedY / worldPixelHeight * mWorld!!.fetchHeight().toDouble()).toInt()
         }
         return yTile
     }

@@ -18,6 +18,7 @@ package com.replica.replicaisland
 import com.replica.replicaisland.GameObject.ActionType
 import com.replica.replicaisland.GameObjectFactory.GameObjectType
 import com.replica.replicaisland.SoundSystem.Sound
+import kotlin.math.cos
 import kotlin.math.sin
 
 class LauncherComponent : GameComponent() {
@@ -92,7 +93,7 @@ class LauncherComponent : GameComponent() {
         if (mDriveActions) {
             thing.currentAction = ActionType.MOVE
         }
-        mLaunchDirection[sin(mAngle.toDouble()).toFloat()] = Math.cos(mAngle.toDouble()).toFloat()
+        mLaunchDirection[sin(mAngle.toDouble()).toFloat()] = cos(mAngle.toDouble()).toFloat()
         mLaunchDirection.multiply(parentObject!!.facingDirection)
         mLaunchDirection.multiply(mLaunchMagnitude)
         thing.velocity = mLaunchDirection
