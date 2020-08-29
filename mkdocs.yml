@@ -23,15 +23,15 @@ theme:
     code: 'Roboto Mono'
 
 # Customization
-extra:
-  manifest: 'manifest.webmanifest'
-  social:
-    - type: 'github'
-      link: 'https://github.com/jimandreas'
-    - type: 'twitter'
-      link: 'https://twitter.com/jimandreasdev'
-    - type: 'linkedin'
-      link: 'https://linkedin.com/in/jimandreas'
+#extra:
+#  manifest: 'manifest.webmanifest'
+#  social:
+#    - type: 'github'
+#      link: 'https://github.com/jimandreas'
+#    - type: 'twitter'
+#      link: 'https://twitter.com/jimandreasdev'
+#    - type: 'linkedin'
+#      link: 'https://linkedin.com/in/jimandreas'
 
 # Google Analytics
 #google_analytics:
