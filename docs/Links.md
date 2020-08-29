@@ -2,14 +2,14 @@
 
 ### Youtube videos
 
-[Pruett - Google I/O 2009 - Writing Real-Time Games for Android][1]
+[Pruett - Google I/O 2009 - Writing Real-Time Games for Android][1]<br>
 [Pruett - Google I/O 2010 - Writing real-time games for Android redux][2]
 
 ### Blog/Web page Entries
 
-[Replica Island web home page][3]
-[Replica Island Player Metrics Analysis][4]
-[Gamasutra feature: Hot Failure: Tuning Gameplay With Simple Player Metrics][5]
+[Replica Island web home page][3]<br>
+[Replica Island Player Metrics Analysis][4]<br>
+[Gamasutra feature: Hot Failure: Tuning Gameplay With Simple Player Metrics][5]<br>
 [Game Development for Android: A Quick Primer 15 June 2010][6]
 
 ### Mailing Lists
