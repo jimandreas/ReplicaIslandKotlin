@@ -85,8 +85,8 @@ Jim Andreas converted the project to Kotlin, which is also another island.  "The
 On Android emulators at API23 (Marshmallow) the on screen controls appear to
 not include the left-right slider:<br>
 
-![On screen problem][docs/img/README-usage-01.PNG]
+![On screen problem](docs/img/README-usage-01.PNG)
 
 You can fix this by checking the box `On-Screen Controls` in the `Configure` menu:<br>
 
-![Config box][docs/img/README-usage-02.PNG]
+![Config box](docs/img/README-usage-02.PNG)
