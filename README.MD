@@ -79,3 +79,14 @@ and to the Android team for continued support.
 ### ADDENDUM
 
 Jim Andreas converted the project to Kotlin, which is also another island.  "The game is afoot!"
+
+## USAGE NOTES
+
+On Android emulators at API23 (Marshmallow) the on screen controls appear to
+not include the left-right slider:<br>
+
+![On screen problem][docs/img/README-usage-01.PNG]
+
+You can fix this by checking the box `On-Screen Controls` in the `Configure` menu:<br>
+
+![Config box][docs/img/README-usage-02.PNG]
