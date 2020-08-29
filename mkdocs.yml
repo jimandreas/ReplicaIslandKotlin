@@ -33,6 +33,11 @@ theme:
 #    - type: 'linkedin'
 #      link: 'https://linkedin.com/in/jimandreas'
 
+# Page tree
+nav:
+  - Home: index.md
+  - Links: Links.md
+
 # Google Analytics
 #google_analytics:
 #  - 'UA-XXXXXXXX-X'
