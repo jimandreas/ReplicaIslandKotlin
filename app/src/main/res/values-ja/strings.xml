@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     
-    <string name="app_name">ワンダのレプリカ島</string>
+    <string name="app_name" tools:ignore="Untranslatable">ワンダのレプリカ島</string>
 
 
 

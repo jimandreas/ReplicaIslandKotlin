@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import kotlin.math.abs
+
 
 /** A collection of miscellaneous utility functions.  */
 class Utils {
@@ -25,7 +27,7 @@ class Utils {
 
         @JvmOverloads
         fun close(a: Float, b: Float, epsilon: Float = EPSILON): Boolean {
-            return Math.abs(a - b) < epsilon
+            return abs(a - b) < epsilon
         }
 
         fun sign(a: Float): Int {

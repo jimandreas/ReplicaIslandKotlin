@@ -151,7 +151,7 @@ class ExtrasMenuActivity : Activity() {
         }
     }
 
-    private inner class StartActivityAfterAnimation internal constructor(private val mIntent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation(private val mIntent: Intent) : AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             mLinearModeButton!!.visibility = View.INVISIBLE
             mLinearModeButton!!.clearAnimation()
