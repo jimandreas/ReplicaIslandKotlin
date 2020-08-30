@@ -36,6 +36,7 @@ theme:
 # Page tree
 nav:
   - Home: index.md
+  - Technical Details: TechDetails.md
   - Links: Links.md
 
 # Google Analytics
