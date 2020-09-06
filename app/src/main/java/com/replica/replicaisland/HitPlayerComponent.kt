@@ -20,7 +20,7 @@ import com.replica.replicaisland.HitReactionComponent
 class HitPlayerComponent : GameComponent() {
     private var mDistance2 = 0f
     private var mPlayerPosition: Vector2 = Vector2()
-    private var mMyPosition: Vector2
+    private var mMyPosition: Vector2 = Vector2()
     private var mHitReact: HitReactionComponent? = null
     private var mHitType = 0
     private var mHitDirection = false
@@ -68,7 +68,6 @@ class HitPlayerComponent : GameComponent() {
     }
 
     init {
-        mMyPosition = Vector2()
         reset()
         setPhaseToThis(ComponentPhases.THINK.ordinal)
     }
