@@ -84,3 +84,14 @@ This code was derived from the original code posted to the following link - stil
 as of Sept 2020:
 
 https://code.google.com/archive/p/replicaisland/
+
+## USAGE NOTES
+
+On Android emulators at API23 (Marshmallow) the on screen controls appear to
+not include the left-right slider:<br>
+
+![On screen problem](docs/img/README-usage-01.PNG)
+
+You can fix this by checking the box `On-Screen Controls` in the `Configure` menu:<br>
+
+![Config box](docs/img/README-usage-02.PNG)
