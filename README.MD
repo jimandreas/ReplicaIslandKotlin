@@ -15,7 +15,8 @@ and other data are included along with the code.
 
 ### ABOUT THE SOURCE
 
-The code is structured into several Activities for the main menu, level select screen, dialog window, and main game.
+The code is structured into several Activities for the main menu,
+level select screen, dialog window, and main game.
 Most of the code in this project is related to src/com/replicaisland/AndouKun.java,
 which implements the core game Activity ("AndouKun" was the code name for this project
 and you can find references to it all over the code).
@@ -60,7 +61,8 @@ res/xml/leveltree.xml: This file describes the non-linear level progression thro
 It is a tree, each node of which may contain one or more levels.  Continuing to the next node requires
 that all levels are completed.
 
-src/com/replica/replicaisland/BaseObject.java and ObjectManager.java: These are the core nodes of the game graph.
+src/com/replica/replicaisland/BaseObject.java and ObjectManager.java:
+These are the core nodes of the game graph.
 
 ### ABOUT THE AUTHORS
 
@@ -79,3 +81,8 @@ and to the Android team for continued support.
 ### ADDENDUM
 
 Jim Andreas converted the project to Kotlin, which is also another island.  "The game is afoot!"
+
+This code was derived from the original code posted to the following link - still working
+as of Sept 2020:
+
+https://code.google.com/archive/p/replicaisland/
