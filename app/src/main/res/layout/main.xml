@@ -1,66 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-	tools:ignore="Deprecated,ContentDescription,RtlHardcoded"
-    >
-    
+    tools:ignore="Deprecated,ContentDescription,RtlHardcoded">
+
     <view
-		class = "com.replica.replicaisland.GLSurfaceView"
-		android:id="@+id/glsurfaceview"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="fill_parent"
-	/>
-   <ImageView 
-          android:id="@+id/pausedMessage"
-          android:src="@drawable/ui_paused"
-          android:layout_height="wrap_content" 
-          android:layout_width="wrap_content" 
-          android:layout_gravity="center"
-          android:visibility="gone"/>
-          
-   <LinearLayout
-   		android:id="@+id/levelNameBox"
-   		android:visibility="gone"
-   		android:background="@drawable/custom_toast_border" 
-   		android:layout_width="wrap_content" 
-   		android:layout_height="wrap_content" 
-   		android:orientation="vertical" 
-   		android:padding="10dp" 
-   		android:layout_gravity="bottom|center_horizontal" 
-   		android:layout_marginBottom="60dp">
-   		<TextView 
-   			android:id="@+id/levelName"
-   			android:layout_height="wrap_content" 
-   			android:layout_width="wrap_content" 
-   			android:textColor="#FFFFFF" 
-   			android:layout_gravity="center_horizontal" 
-   			android:text="Memory #001"
-			android:textSize="20sp"
-   			android:textStyle="bold" 
-   			android:typeface="sans"
-			tools:ignore="HardcodedText" />
-   </LinearLayout>
-          
-   <LinearLayout
-		android:id="@+id/pleaseWaitMessage"
-		android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:padding="5dp"
-		android:background="@drawable/custom_toast_border" 
-		android:layout_gravity="bottom|left"
-		android:visibility="gone">
-		<TextView android:id="@+id/text"
-			android:layout_width="wrap_content"
-			android:layout_height="fill_parent"
-			android:textColor="#65ff99"
-			android:textSize="20sp"
-			android:textStyle="bold"
-			android:gravity="center"
-			android:text="@string/please_wait"
-		/>
-		</LinearLayout>
-    
-</FrameLayout>
+        android:id="@+id/glsurfaceview"
+        class="com.replica.replicaisland.GLSurfaceView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <ImageView
+        android:id="@+id/pausedMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ui_paused"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/levelNameBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/custom_toast_border"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/levelName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Memory #001"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pleaseWaitMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:background="@drawable/custom_toast_border"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/please_wait"
+            android:textColor="#65ff99"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</merge>

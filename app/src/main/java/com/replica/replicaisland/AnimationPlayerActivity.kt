@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("HandlerLeak")
 package com.replica.replicaisland
 
 import android.app.Activity
@@ -40,7 +41,10 @@ class AnimationPlayerActivity : Activity() {
             finish()
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
-                    UIConstants.mOverridePendingTransition!!.invoke(this@AnimationPlayerActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
+                    UIConstants.mOverridePendingTransition!!.invoke(
+                            this@AnimationPlayerActivity,
+                            R.anim.activity_fade_in,
+                            R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
                     DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {

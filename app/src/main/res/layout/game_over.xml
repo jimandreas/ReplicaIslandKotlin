@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF"
     tools:ignore="ContentDescription, RtlHardcoded">
 
     <ImageView
@@ -14,8 +13,7 @@
         android:gravity="right"
         android:scaleType="fitXY"
         android:src="@drawable/title_background"
-        android:tint="#88FFFFFF"
-         />
+        android:tint="#88FFFFFF" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -59,7 +57,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:typeface="serif"
-				tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +86,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:typeface="serif"
-				tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -117,7 +115,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:typeface="serif"
-				tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -167,5 +165,5 @@
             android:layout_gravity="bottom|center_horizontal"
             android:text="@string/game_results_ok_button" />
     </LinearLayout>
-</FrameLayout>
+</merge>
 		
