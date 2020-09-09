@@ -1,133 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	tools:ignore="ContentDescription, RtlHardcoded">
-	<ScrollView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		tools:ignore="UselessParent">
-		
-		<LinearLayout
-		    android:orientation="horizontal"
-		    android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:paddingLeft="20dp"
-			android:paddingRight="20dp">
-		    
-			<LinearLayout
-			    android:orientation="vertical"
-			    android:layout_height="fill_parent"
-				android:paddingTop="20dp"
-				android:layout_width="wrap_content">
-			    
-			    <LinearLayout
-			    	android:orientation="horizontal"
-			    	android:layout_height="wrap_content" 
-			    	android:layout_gravity="center_horizontal" 
-			    	android:layout_width="wrap_content" 
-			    	android:paddingBottom="10dp">
-			    	<TextView android:layout_height="wrap_content"
-						android:layout_gravity="center_vertical"
-						android:text="@string/preference_key_config_left" android:layout_width="50dp"/>
-			    	<LinearLayout
-				    		android:layout_height="wrap_content"
-				    		android:layout_gravity="center_vertical" 
-				    		android:gravity="center" 
-				    		android:background="@drawable/key_config_border"
-				    		android:id="@+id/left_border" android:layout_width="120dp">
-			    		<TextView android:layout_height="wrap_content" 
-			    			android:layout_gravity="center" 
-			    			android:layout_width="wrap_content" 
-			    			android:text="A"
-			    			android:id="@+id/key_left"
-							tools:ignore="HardcodedText" />
-			   		</LinearLayout>
-			   	</LinearLayout>
-			   	
-			   	<LinearLayout
-			    	android:orientation="horizontal"
-			    	android:layout_height="wrap_content" 
-			    	android:layout_gravity="center_horizontal" 
-			    	android:layout_width="wrap_content" 
-			    	android:paddingBottom="10dp">
-			    	<TextView android:layout_height="wrap_content"
-						android:layout_gravity="center_vertical"
-						android:text="@string/preference_key_config_right"
-						android:layout_width="50dp"/>
-			    	<LinearLayout
-				    		android:layout_height="wrap_content"
-				    		android:background="@drawable/key_config_border" 
-				    		android:layout_gravity="center_vertical" 
-				    		android:gravity="center"
-				    		android:id="@+id/right_border" android:layout_width="120dp">
-			    		<TextView android:layout_height="wrap_content" 
-			    				android:layout_gravity="center" 
-			    				android:layout_width="wrap_content" 
-			    				android:text="A"
-			    				android:id="@+id/key_right"
-							tools:ignore="HardcodedText" />
-			   		</LinearLayout>
-				</LinearLayout>
-		   	</LinearLayout>
-		   	<LinearLayout
-		    android:orientation="vertical"
-		    android:layout_height="fill_parent" android:paddingTop="20dp" android:layout_width="wrap_content">
-			   	<LinearLayout
-			    	android:orientation="horizontal"
-			    	android:layout_height="wrap_content" 
-			    	android:layout_gravity="center_horizontal" 
-			    	android:layout_width="wrap_content" 
-			    	android:paddingBottom="10dp">
-			    	<TextView android:layout_height="wrap_content"
-						android:layout_gravity="center_vertical"
-						android:text="@string/preference_key_config_jump"
-						android:layout_marginLeft="50dp"
-						android:layout_width="50dp"/>
-			    	<LinearLayout
-				    		android:layout_height="wrap_content"
-				    		android:background="@drawable/key_config_border" 
-				    		android:layout_gravity="center_vertical" 
-				    		android:gravity="center"
-				    		android:id="@+id/jump_border" android:layout_width="120dp">
-			    		<TextView android:layout_height="wrap_content" 
-			    				android:layout_gravity="center" 
-			    				android:layout_width="wrap_content" 
-			    				android:text="A"
-			    				android:id="@+id/key_jump"
-							tools:ignore="HardcodedText" />
-			   		</LinearLayout>
-			   	</LinearLayout>
-			   	
-			   	<LinearLayout
-			    	android:orientation="horizontal"
-			    	android:layout_height="wrap_content" 
-			    	android:layout_gravity="center_horizontal" 
-			    	android:layout_width="wrap_content" 
-			    	android:paddingBottom="10dp">
-			    	<TextView android:layout_height="wrap_content"
-						android:layout_gravity="center_vertical"
-						android:text="@string/preference_key_config_attack"
-						android:layout_marginLeft="50dp"
-						android:layout_width="50dp"/>
-			    	<LinearLayout
-				    		android:layout_height="wrap_content"
-				    		android:background="@drawable/key_config_border" 
-				    		android:layout_gravity="center_vertical"
-				    		android:gravity="center"
-				    		android:id="@+id/attack_border" android:layout_width="120dp">
-			    		<TextView android:layout_height="wrap_content" 
-			    				android:layout_gravity="center" 
-			    				android:layout_width="wrap_content" 
-			    				android:text="A"
-			    				android:id="@+id/key_attack"
-							tools:ignore="HardcodedText" />
-			   		</LinearLayout>
-			   	</LinearLayout>
-			</LinearLayout>
-		</LinearLayout>
-	</ScrollView>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:ignore="ContentDescription, RtlHardcoded">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tools:ignore="UselessParent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:paddingTop="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/preference_key_config_left" />
+
+                    <LinearLayout
+                        android:id="@+id/left_border"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/key_config_border"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/key_left"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="A"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/preference_key_config_right" />
+
+                    <LinearLayout
+                        android:id="@+id/right_border"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/key_config_border"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/key_right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="A"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:paddingTop="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="50dp"
+                        android:text="@string/preference_key_config_jump" />
+
+                    <LinearLayout
+                        android:id="@+id/jump_border"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/key_config_border"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/key_jump"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="A"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="50dp"
+                        android:text="@string/preference_key_config_attack" />
+
+                    <LinearLayout
+                        android:id="@+id/attack_border"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/key_config_border"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/key_attack"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="A"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>
 	

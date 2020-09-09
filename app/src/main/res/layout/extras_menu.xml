@@ -1,83 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:tools="http://schemas.android.com/tools"
-		android:layout_width="fill_parent"
-  		android:layout_height="fill_parent" 
-  		xmlns:android="http://schemas.android.com/apk/res/android"
-		tools:ignore="ContentDescription">
-	<ImageView 
-          android:id="@+id/mainMenuBackground"
-          android:src="@drawable/title_background"
-          android:adjustViewBounds="true"
-          android:gravity="center_vertical"
-          android:scaleType="fitXY"
-          android:layout_width="fill_parent"
-          android:layout_height="fill_parent"
-		tools:ignore="ContentDescription" />
-          
-    <ImageView 
-	      android:id="@+id/mainMenuTitle"
-	      android:src="@drawable/title"
-	      android:adjustViewBounds="true"
-	      android:layout_width="336dp" 
-	      android:layout_height="153dp" 
-	      android:layout_gravity="center_horizontal" 
-	      android:layout_marginTop="20dp"/>
-	      
-   	<LinearLayout
-	     	android:gravity="bottom" android:layout_gravity="bottom|center_horizontal" android:layout_height="wrap_content" android:layout_width="wrap_content" android:orientation="vertical">
-	     	
-		<FrameLayout
-			android:layout_width="wrap_content" 
-	        android:layout_height="wrap_content" 
-	        android:paddingTop="10dp" 
-	        android:layout_gravity="center_horizontal">
-	     	<ImageView 
-		        android:id="@+id/linearModeButton"
-		        android:src="@drawable/ui_button_linear_mode"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content" 
-		        android:clickable="true"
-				android:focusable="true" />
-		    <ImageView
-		    	android:id="@+id/linearModeLocked"
-		        android:src="@drawable/ui_locked"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content"
-		       	android:layout_gravity="center"/>
-	    </FrameLayout>
-	    
-	    <FrameLayout
-			android:layout_width="wrap_content" 
-	        android:layout_height="wrap_content" 
-	        android:paddingTop="10dp" 
-	        android:layout_gravity="center_horizontal">
-	     	<ImageView 
-		        android:id="@+id/levelSelectButton"
-		        android:src="@drawable/ui_button_level_select"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content" 
-		        android:clickable="true"
-				android:focusable="true"/>
-		    <ImageView
-		    	android:id="@+id/levelSelectLocked"
-		        android:src="@drawable/ui_locked"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content"
-		       	android:layout_gravity="center"
-		       	/>
-	    </FrameLayout>
-	    
-         
-		<ImageView 
-		    android:id="@+id/controlsButton"
-		    android:src="@drawable/ui_button_controls"
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content" 
-		    android:paddingTop="10dp"
-		    android:paddingBottom="10dp"
-		    android:clickable="true"
-			android:focusable="true"
-		    android:layout_gravity="center_horizontal"/>
-	</LinearLayout>
-		
-</FrameLayout> 
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:ignore="ContentDescription">
+
+    <ImageView
+        android:id="@+id/mainMenuBackground"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:adjustViewBounds="true"
+        android:gravity="center_vertical"
+        android:scaleType="fitXY"
+        android:src="@drawable/title_background"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/mainMenuTitle"
+        android:layout_width="336dp"
+        android:layout_height="153dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/title" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="10dp">
+
+            <ImageView
+                android:id="@+id/linearModeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ui_button_linear_mode" />
+
+            <ImageView
+                android:id="@+id/linearModeLocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ui_locked" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="10dp">
+
+            <ImageView
+                android:id="@+id/levelSelectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ui_button_level_select" />
+
+            <ImageView
+                android:id="@+id/levelSelectLocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ui_locked" />
+        </FrameLayout>
+
+
+        <ImageView
+            android:id="@+id/controlsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/ui_button_controls" />
+    </LinearLayout>
+
+</merge>
