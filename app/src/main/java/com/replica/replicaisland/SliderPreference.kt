@@ -27,7 +27,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 
 class SliderPreference : Preference, OnSeekBarChangeListener {
-    private var mValue = INITIAL_VALUE
+    private var value = INITIAL_VALUE
     private var mMinText: String? = null
     private var mMaxText: String? = null
 
@@ -60,14 +60,14 @@ class SliderPreference : Preference, OnSeekBarChangeListener {
         }
         val bar = view.findViewById<View>(R.id.slider) as SeekBar
         bar.max = MAX_SLIDER_VALUE
-        bar.progress = mValue
+        bar.progress = value
         bar.setOnSeekBarChangeListener(this)
     }
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-            mValue = progress
-            persistInt(mValue)
+            value = progress
+            persistInt(value)
         }
     }
 
@@ -78,11 +78,11 @@ class SliderPreference : Preference, OnSeekBarChangeListener {
     }
 
     override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
-        mValue = if (defaultValue != null) defaultValue as Int else INITIAL_VALUE
+        value = if (defaultValue != null) defaultValue as Int else INITIAL_VALUE
         if (!restoreValue) {
-            persistInt(mValue)
+            persistInt(value)
         } else {
-            mValue = getPersistedInt(mValue)
+            value = getPersistedInt(value)
         }
     }
 

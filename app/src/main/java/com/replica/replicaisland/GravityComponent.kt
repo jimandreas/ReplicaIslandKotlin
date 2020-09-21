@@ -23,15 +23,15 @@ package com.replica.replicaisland
  */
 class GravityComponent : GameComponent() {
     val gravity: Vector2
-    private val mScaledGravity: Vector2
+    private val scaledGravity: Vector2
     override fun reset() {
         gravity.set(sDefaultGravity)
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        mScaledGravity.set(gravity)
-        mScaledGravity.multiply(timeDelta)
-        (parent as GameObject).velocity.add(mScaledGravity)
+        scaledGravity.set(gravity)
+        scaledGravity.multiply(timeDelta)
+        (parent as GameObject).velocity.add(scaledGravity)
     }
 
     fun setGravityMultiplier(multiplier: Float) {
@@ -45,7 +45,7 @@ class GravityComponent : GameComponent() {
 
     init {
         gravity = Vector2(sDefaultGravity)
-        mScaledGravity = Vector2()
+        scaledGravity = Vector2()
         setPhaseToThis(ComponentPhases.PHYSICS.ordinal)
     }
 }

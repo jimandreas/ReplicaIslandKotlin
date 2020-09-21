@@ -34,17 +34,17 @@ import java.util.*
  */
 class GameObjectCollisionSystem : BaseObject() {
     private var mObjects: FixedSizeArray<CollisionVolumeRecord>
-    private var mRecordPool: CollisionVolumeRecordPool
-    private var mDrawDebugBoundingVolume = false
-    private var mDrawDebugCollisionVolumes = false
+    private var recordPool: CollisionVolumeRecordPool
+    private var drawDebugBoundingVolume = false
+    private var drawDebugCollisionVolumes = false
     override fun reset() {
         val count = mObjects.count
         for (x in 0 until count) {
-            mRecordPool.release(mObjects[x]!!)
+            recordPool.release(mObjects[x]!!)
         }
         mObjects.clear()
-        mDrawDebugBoundingVolume = false
-        mDrawDebugCollisionVolumes = false
+        drawDebugBoundingVolume = false
+        drawDebugCollisionVolumes = false
     }
 
     /**
@@ -65,7 +65,7 @@ class GameObjectCollisionSystem : BaseObject() {
                               boundingVolume: CollisionVolume?,
                               attackVolumes: FixedSizeArray<CollisionVolume>?,
                               vulnerabilityVolumes: FixedSizeArray<CollisionVolume>?) {
-        val record = mRecordPool.allocate()
+        val record = recordPool.allocate()
         if (record != null && gameObject != null && boundingVolume != null && (attackVolumes != null || vulnerabilityVolumes != null)) {
             record.gameObject = gameObject
             record.boundingVolume = boundingVolume
@@ -152,7 +152,7 @@ class GameObjectCollisionSystem : BaseObject() {
             // This is a little tricky.  Since we always sweep forward in the list it's safe
             // to invalidate the current record after we've tested it.  This way we don't have to
             // iterate over the object list twice.
-            mRecordPool.release(record)
+            recordPool.release(record)
         }
         mObjects.clear()
     }
@@ -203,7 +203,7 @@ class GameObjectCollisionSystem : BaseObject() {
 
     private fun drawDebugVolumes(record: CollisionVolumeRecord?) {
         val position = record!!.gameObject!!.position
-        if (mDrawDebugBoundingVolume) {
+        if (drawDebugBoundingVolume) {
             val boundingVolume = record.boundingVolume
             sSystemRegistry.debugSystem!!.drawShape(
                     position.x + boundingVolume!!.minXPosition(sFlip), position.y + boundingVolume.minYPosition(sFlip),
@@ -212,7 +212,7 @@ class GameObjectCollisionSystem : BaseObject() {
                     DebugSystem.SHAPE_CIRCLE,
                     DebugSystem.COLOR_OUTLINE)
         }
-        if (mDrawDebugCollisionVolumes) {
+        if (drawDebugCollisionVolumes) {
             if (record.attackVolumes != null) {
                 val attackVolumeCount = record.attackVolumes!!.count
                 for (y in 0 until attackVolumeCount) {
@@ -241,8 +241,8 @@ class GameObjectCollisionSystem : BaseObject() {
     }
 
     fun setDebugPrefs(drawBoundingVolumes: Boolean, drawCollisionVolumes: Boolean) {
-        mDrawDebugBoundingVolume = drawBoundingVolumes
-        mDrawDebugCollisionVolumes = drawCollisionVolumes
+        drawDebugBoundingVolume = drawBoundingVolumes
+        drawDebugCollisionVolumes = drawCollisionVolumes
     }
 
     /** A record of a single game object and its associated collision info.   */
@@ -325,6 +325,6 @@ class GameObjectCollisionSystem : BaseObject() {
         mObjects = FixedSizeArray(MAX_COLLIDING_OBJECTS)
         mObjects.setComparator(sCollisionVolumeComparator)
         //mObjects.setSorter(new ShellSorter<CollisionVolumeRecord>());
-        mRecordPool = CollisionVolumeRecordPool(COLLISION_RECORD_POOL_SIZE)
+        recordPool = CollisionVolumeRecordPool(COLLISION_RECORD_POOL_SIZE)
     }
 }

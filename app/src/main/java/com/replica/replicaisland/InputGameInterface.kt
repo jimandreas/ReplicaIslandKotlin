@@ -26,20 +26,20 @@ class InputGameInterface : BaseObject() {
     val attackButton = InputButton()
     val directionalPad = InputXY()
     val tilt = InputXY()
-    private var mLeftKeyCode = KeyEvent.KEYCODE_DPAD_LEFT
-    private var mRightKeyCode = KeyEvent.KEYCODE_DPAD_RIGHT
-    private var mJumpKeyCode = KeyEvent.KEYCODE_SPACE
-    private var mAttackKeyCode = KeyEvent.KEYCODE_SHIFT_LEFT
-    private val mOrientationDeadZoneMin = ORIENTATION_DEAD_ZONE_MIN
-    private val mOrientationDeadZoneMax = ORIENTATION_DEAD_ZONE_MAX
-    private val mOrientationDeadZoneScale = ORIENTATION_DEAD_ZONE_SCALE
-    private var mOrientationSensitivity = 1.0f
-    private var mOrientationSensitivityFactor = 1.0f
-    private var mMovementSensitivity = 1.0f
-    private var mUseClickButtonForAttack = true
-    private var mUseOrientationForMovement = false
-    private var mUseOnScreenControls = false
-    private var mLastRollTime = 0f
+    private var leftKeyCode = KeyEvent.KEYCODE_DPAD_LEFT
+    private var rightKeyCode = KeyEvent.KEYCODE_DPAD_RIGHT
+    private var jumpKeyCode = KeyEvent.KEYCODE_SPACE
+    private var attackKeyCode = KeyEvent.KEYCODE_SHIFT_LEFT
+    private val orientationDeadZoneMin = ORIENTATION_DEAD_ZONE_MIN
+    private val orientationDeadZoneMax = ORIENTATION_DEAD_ZONE_MAX
+    private val orientationDeadZoneScale = ORIENTATION_DEAD_ZONE_SCALE
+    private var orientationSensitivity = 1.0f
+    private var orientationSensitivityFactor = 1.0f
+    private var movementSensitivity = 1.0f
+    private var useClickButtonForAttack = true
+    private var useOrientationForMovement = false
+    private var useOnScreenControls = false
+    private var lastRollTime = 0f
     override fun reset() {
         jumpButton.release()
         attackButton.release()
@@ -59,7 +59,7 @@ class InputGameInterface : BaseObject() {
         var sliderOffset = 0f
 
         // update movement inputs
-        if (mUseOnScreenControls) {
+        if (useOnScreenControls) {
             val sliderTouch = touch.findPointerInRegion(
                     ButtonConstants.MOVEMENT_SLIDER_REGION_X.toFloat(),
                     ButtonConstants.MOVEMENT_SLIDER_REGION_Y.toFloat(),
@@ -70,13 +70,13 @@ class InputGameInterface : BaseObject() {
                 val center = ButtonConstants.MOVEMENT_SLIDER_X + halfWidth
                 val offset = sliderTouch.retreiveXaxisMagnitude() - center
                 val magnitudeRamp = if (abs(offset) > halfWidth) 1.0f else abs(offset) / halfWidth
-                val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * mMovementSensitivity
+                val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * movementSensitivity
                 sliderOffset = magnitudeRamp * Utils.sign(offset)
                 directionalPad.press(gameTime, magnitude, 0.0f)
             } else {
                 directionalPad.release()
             }
-        } else if (mUseOrientationForMovement) {
+        } else if (useOrientationForMovement) {
             directionalPad.clone(orientation)
             directionalPad.setMagnitude(
                     filterOrientationForMovement(orientation.retreiveXaxisMagnitude()),
@@ -84,8 +84,8 @@ class InputGameInterface : BaseObject() {
         } else {
             // keys or trackball
             val trackball = input.fetchTrackball()
-            val left = keys[mLeftKeyCode]
-            val right = keys[mRightKeyCode]
+            val left = keys[leftKeyCode]
+            val right = keys[rightKeyCode]
             val leftPressedTime = left!!.lastPressedTime
             val rightPressedTime = right!!.lastPressedTime
             if (trackball.lastPressedTime > max(leftPressedTime, rightPressedTime)) {
@@ -99,17 +99,17 @@ class InputGameInterface : BaseObject() {
                     val newX: Float
                     val newY: Float
                     val delay = max(ROLL_RESET_DELAY, timeDelta)
-                    if (gameTime - mLastRollTime <= delay) {
-                        newX = directionalPad.retreiveXaxisMagnitude() + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * mMovementSensitivity
-                        newY = directionalPad.retreiveYaxisMagnitude() + trackball.retreiveYaxisMagnitude() * ROLL_FILTER * mMovementSensitivity
+                    if (gameTime - lastRollTime <= delay) {
+                        newX = directionalPad.retreiveXaxisMagnitude() + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * movementSensitivity
+                        newY = directionalPad.retreiveYaxisMagnitude() + trackball.retreiveYaxisMagnitude() * ROLL_FILTER * movementSensitivity
                     } else {
                         val oldX = if (directionalPad.retreiveXaxisMagnitude() != 0.0f) directionalPad.retreiveXaxisMagnitude() / 2.0f else 0.0f
                         val oldY = if (directionalPad.retreiveXaxisMagnitude() != 0.0f) directionalPad.retreiveXaxisMagnitude() / 2.0f else 0.0f
-                        newX = oldX + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * mMovementSensitivity
-                        newY = oldY + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * mMovementSensitivity
+                        newX = oldX + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * movementSensitivity
+                        newY = oldY + trackball.retreiveXaxisMagnitude() * ROLL_FILTER * movementSensitivity
                     }
                     directionalPad.press(gameTime, newX, newY)
-                    mLastRollTime = gameTime
+                    lastRollTime = gameTime
                     trackball.release()
                 } else {
                     var x = directionalPad.retreiveXaxisMagnitude()
@@ -140,10 +140,10 @@ class InputGameInterface : BaseObject() {
                 var pressTime = 0.0f
                 // left and right are mutually exclusive
                 if (leftPressedTime > rightPressedTime) {
-                    xMagnitude = -left.magnitude * KEY_FILTER * mMovementSensitivity
+                    xMagnitude = -left.magnitude * KEY_FILTER * movementSensitivity
                     pressTime = leftPressedTime
                 } else {
-                    xMagnitude = right.magnitude * KEY_FILTER * mMovementSensitivity
+                    xMagnitude = right.magnitude * KEY_FILTER * movementSensitivity
                     pressTime = rightPressedTime
                 }
                 if (xMagnitude != 0.0f) {
@@ -155,12 +155,12 @@ class InputGameInterface : BaseObject() {
         }
 
         // update other buttons
-        val jumpKey = keys[mJumpKeyCode]
+        val jumpKey = keys[jumpKeyCode]
 
         // when on-screen movement controls are on, the fly and attack buttons are flipped.
         var flyButtonRegionX = ButtonConstants.FLY_BUTTON_REGION_X.toFloat()
         var stompButtonRegionX = ButtonConstants.STOMP_BUTTON_REGION_X.toFloat()
-        if (mUseOnScreenControls) {
+        if (useOnScreenControls) {
             val params = sSystemRegistry.contextParameters
             flyButtonRegionX = params!!.gameWidth - ButtonConstants.FLY_BUTTON_REGION_WIDTH - ButtonConstants.FLY_BUTTON_REGION_X.toFloat()
             stompButtonRegionX = params.gameWidth - ButtonConstants.STOMP_BUTTON_REGION_WIDTH - ButtonConstants.STOMP_BUTTON_REGION_X.toFloat()
@@ -179,14 +179,14 @@ class InputGameInterface : BaseObject() {
         } else {
             jumpButton.release()
         }
-        val attackKey = keys[mAttackKeyCode]
+        val attackKey = keys[attackKeyCode]
         val clickButton = keys[KeyEvent.KEYCODE_DPAD_CENTER] // special case
         val stompTouch = touch.findPointerInRegion(
                 stompButtonRegionX,
                 ButtonConstants.STOMP_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_HEIGHT.toFloat())
-        if (mUseClickButtonForAttack && clickButton!!.pressed) {
+        if (useClickButtonForAttack && clickButton!!.pressed) {
             attackButton.press(clickButton.lastPressedTime, clickButton.magnitude)
         } else if (attackKey!!.pressed) {
             attackButton.press(attackKey.lastPressedTime, attackKey.magnitude)
@@ -211,8 +211,8 @@ class InputGameInterface : BaseObject() {
     }
 
     private fun filterOrientationForMovement(magnitude: Float): Float {
-        val scaledMagnitude = magnitude * mOrientationSensitivityFactor
-        return deadZoneFilter(scaledMagnitude, mOrientationDeadZoneMin, mOrientationDeadZoneMax, mOrientationDeadZoneScale)
+        val scaledMagnitude = magnitude * orientationSensitivityFactor
+        return deadZoneFilter(scaledMagnitude, orientationDeadZoneMin, orientationDeadZoneMax, orientationDeadZoneScale)
     }
 
     private fun deadZoneFilter(magnitude: Float, minVal: Float, maxVal: Float, scale: Float): Float {
@@ -226,31 +226,31 @@ class InputGameInterface : BaseObject() {
     }
 
     fun setKeys(left: Int, right: Int, jump: Int, attack: Int) {
-        mLeftKeyCode = left
-        mRightKeyCode = right
-        mJumpKeyCode = jump
-        mAttackKeyCode = attack
+        leftKeyCode = left
+        rightKeyCode = right
+        jumpKeyCode = jump
+        attackKeyCode = attack
     }
 
     fun setUseClickForAttack(click: Boolean) {
-        mUseClickButtonForAttack = click
+        useClickButtonForAttack = click
     }
 
     fun setUseOrientationForMovement(orientation: Boolean) {
-        mUseOrientationForMovement = orientation
+        useOrientationForMovement = orientation
     }
 
     fun setOrientationMovementSensitivity(sensitivity: Float) {
-        mOrientationSensitivity = sensitivity
-        mOrientationSensitivityFactor = 2.9f * sensitivity + 0.1f
+        orientationSensitivity = sensitivity
+        orientationSensitivityFactor = 2.9f * sensitivity + 0.1f
     }
 
     fun setMovementSensitivity(sensitivity: Float) {
-        mMovementSensitivity = sensitivity
+        movementSensitivity = sensitivity
     }
 
     fun setUseOnScreenControls(onscreen: Boolean) {
-        mUseOnScreenControls = onscreen
+        useOnScreenControls = onscreen
     }
 
     companion object {

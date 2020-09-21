@@ -29,52 +29,52 @@ class TimeSystem : BaseObject() {
         private set
     var realTime = 0f
         private set
-    private var mFreezeDelay = 0f
+    private var freezeDelay = 0f
     var frameDelta = 0f
         private set
     private var realTimeFrameDelta = 0f
-    private var mTargetScale = 0f
-    private var mScaleDuration = 0f
-    private var mScaleStartTime = 0f
-    private var mEaseScale = false
+    private var targetScale = 0f
+    private var scaleDuration = 0f
+    private var scaleStartTime = 0f
+    private var easeScale = false
     override fun reset() {
         gameTime = 0.0f
         realTime = 0.0f
-        mFreezeDelay = 0.0f
+        freezeDelay = 0.0f
         frameDelta = 0.0f
         realTimeFrameDelta = 0.0f
-        mTargetScale = 1.0f
-        mScaleDuration = 0.0f
-        mScaleStartTime = 0.0f
-        mEaseScale = false
+        targetScale = 1.0f
+        scaleDuration = 0.0f
+        scaleStartTime = 0.0f
+        easeScale = false
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         realTime += timeDelta
         realTimeFrameDelta = timeDelta
-        if (mFreezeDelay > 0.0f) {
-            mFreezeDelay -= timeDelta
+        if (freezeDelay > 0.0f) {
+            freezeDelay -= timeDelta
             frameDelta = 0.0f
         } else {
             var scale = 1.0f
-            if (mScaleStartTime > 0.0f) {
-                val scaleTime = realTime - mScaleStartTime
-                if (scaleTime > mScaleDuration) {
-                    mScaleStartTime = 0f
+            if (scaleStartTime > 0.0f) {
+                val scaleTime = realTime - scaleStartTime
+                if (scaleTime > scaleDuration) {
+                    scaleStartTime = 0f
                 } else {
-                    scale = if (mEaseScale) {
+                    scale = if (easeScale) {
                         if (scaleTime <= EASE_DURATION) {
                             // ease in
-                            ease(1.0f, mTargetScale, EASE_DURATION, scaleTime)
-                        } else if (mScaleDuration - scaleTime < EASE_DURATION) {
+                            ease(1.0f, targetScale, EASE_DURATION, scaleTime)
+                        } else if (scaleDuration - scaleTime < EASE_DURATION) {
                             // ease out
-                            val easeOutTime = EASE_DURATION - (mScaleDuration - scaleTime)
-                            ease(mTargetScale, 1.0f, EASE_DURATION, easeOutTime)
+                            val easeOutTime = EASE_DURATION - (scaleDuration - scaleTime)
+                            ease(targetScale, 1.0f, EASE_DURATION, easeOutTime)
                         } else {
-                            mTargetScale
+                            targetScale
                         }
                     } else {
-                        mTargetScale
+                        targetScale
                     }
                 }
             }
@@ -84,15 +84,15 @@ class TimeSystem : BaseObject() {
     }
 
     fun freeze(seconds: Float) {
-        mFreezeDelay = seconds
+        freezeDelay = seconds
     }
 
     fun appyScale(scaleFactor: Float, duration: Float, ease: Boolean) {
-        mTargetScale = scaleFactor
-        mScaleDuration = duration
-        mEaseScale = ease
-        if (mScaleStartTime <= 0.0f) {
-            mScaleStartTime = realTime
+        targetScale = scaleFactor
+        scaleDuration = duration
+        easeScale = ease
+        if (scaleStartTime <= 0.0f) {
+            scaleStartTime = realTime
         }
     }
 

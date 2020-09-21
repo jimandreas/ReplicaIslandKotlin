@@ -22,73 +22,73 @@ import com.replica.replicaisland.Lerp.lerp
 
 class FadeDrawableComponent : GameComponent() {
     private var mTexture: Texture? = null
-    private var mRenderComponent: RenderComponent? = null
-    private var mInitialOpacity = 0f
-    private var mTargetOpacity = 0f
-    private var mStartTime = 0f
+    private var renderComponent: RenderComponent? = null
+    private var initialOpacity = 0f
+    private var targetOpacity = 0f
+    private var startTime = 0f
     private var mDuration = 0f
     private var mLoopType = 0
     private var mFunction = 0
     private var mInitialDelay = 0f
-    private var mInitialDelayTimer = 0f
-    private var mActivateTime = 0f
-    private var mPhaseDuration = 0f
+    private var initialDelayTimer = 0f
+    private var activateTime = 0f
+    private var phaseDuration = 0f
     override fun reset() {
         mTexture = null
-        mRenderComponent = null
-        mInitialOpacity = 0.0f
-        mTargetOpacity = 0.0f
+        renderComponent = null
+        initialOpacity = 0.0f
+        targetOpacity = 0.0f
         mDuration = 0.0f
         mLoopType = LOOP_TYPE_NONE
         mFunction = FADE_LINEAR
-        mStartTime = 0.0f
+        startTime = 0.0f
         mInitialDelay = 0.0f
-        mActivateTime = 0.0f
-        mPhaseDuration = 0.0f
-        mInitialDelayTimer = 0.0f
+        activateTime = 0.0f
+        phaseDuration = 0.0f
+        initialDelayTimer = 0.0f
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mRenderComponent != null) {
+        if (renderComponent != null) {
             val time = sSystemRegistry.timeSystem
             val currentTime = time!!.gameTime
 
             // Support repeating "phases" on top of the looping fade itself.
             // Complexity++, but it lets this component handle several
             // different use cases.
-            if (mActivateTime == 0.0f) {
-                mActivateTime = currentTime
-                mInitialDelayTimer = mInitialDelay
-            } else if (mPhaseDuration > 0.0f && currentTime - mActivateTime > mPhaseDuration) {
-                mActivateTime = currentTime
-                mInitialDelayTimer = mInitialDelay
-                mStartTime = 0.0f
+            if (activateTime == 0.0f) {
+                activateTime = currentTime
+                initialDelayTimer = mInitialDelay
+            } else if (phaseDuration > 0.0f && currentTime - activateTime > phaseDuration) {
+                activateTime = currentTime
+                initialDelayTimer = mInitialDelay
+                startTime = 0.0f
             }
-            if (mInitialDelayTimer > 0.0f) {
-                mInitialDelayTimer -= timeDelta
+            if (initialDelayTimer > 0.0f) {
+                initialDelayTimer -= timeDelta
             } else {
-                if (mStartTime == 0f) {
-                    mStartTime = currentTime
+                if (startTime == 0f) {
+                    startTime = currentTime
                 }
-                var elapsed = currentTime - mStartTime
-                var opacity = mInitialOpacity
+                var elapsed = currentTime - startTime
+                var opacity = initialOpacity
                 if (mLoopType != LOOP_TYPE_NONE && elapsed > mDuration) {
-                    val endTime = mStartTime + mDuration
+                    val endTime = startTime + mDuration
                     elapsed = endTime - currentTime
-                    mStartTime = endTime
+                    startTime = endTime
                     if (mLoopType == LOOP_TYPE_PING_PONG) {
-                        val temp = mInitialOpacity
-                        mInitialOpacity = mTargetOpacity
-                        mTargetOpacity = temp
+                        val temp = initialOpacity
+                        initialOpacity = targetOpacity
+                        targetOpacity = temp
                     }
                 }
                 if (elapsed > mDuration) {
-                    opacity = mTargetOpacity
+                    opacity = targetOpacity
                 } else if (elapsed != 0.0f) {
                     if (mFunction == FADE_LINEAR) {
-                        opacity = lerp(mInitialOpacity, mTargetOpacity, mDuration, elapsed)
+                        opacity = lerp(initialOpacity, targetOpacity, mDuration, elapsed)
                     } else if (mFunction == FADE_EASE) {
-                        opacity = ease(mInitialOpacity, mTargetOpacity, mDuration, elapsed)
+                        opacity = ease(initialOpacity, targetOpacity, mDuration, elapsed)
                     }
                 }
                 if (mTexture != null) {
@@ -104,10 +104,10 @@ class FadeDrawableComponent : GameComponent() {
                         bitmap.height = parentObject.height.toInt()
                         bitmap.setOpacity(opacity)
                         bitmap.texture = mTexture
-                        mRenderComponent!!.drawable = bitmap
+                        renderComponent!!.drawable = bitmap
                     }
                 } else {
-                    val drawable = mRenderComponent!!.drawable
+                    val drawable = renderComponent!!.drawable
                     // TODO: ack, instanceof!  Fix this!
                     if (drawable != null && drawable is DrawableBitmap) {
                         drawable.setOpacity(opacity)
@@ -118,8 +118,8 @@ class FadeDrawableComponent : GameComponent() {
     }
 
     fun setupFade(startOpacity: Float, endOpacity: Float, duration: Float, loopType: Int, function: Int, initialDelay: Float) {
-        mInitialOpacity = startOpacity
-        mTargetOpacity = endOpacity
+        initialOpacity = startOpacity
+        targetOpacity = endOpacity
         mDuration = duration
         mLoopType = loopType
         mFunction = function
@@ -128,7 +128,7 @@ class FadeDrawableComponent : GameComponent() {
 
     /** Enables phases; the initial delay will be re-started when the phase ends.  */
     fun setPhaseDuration(duration: Float) {
-        mPhaseDuration = duration
+        phaseDuration = duration
     }
 
     /** If set to something non-null, this component will overwrite the drawable on the target render component.  */
@@ -137,11 +137,11 @@ class FadeDrawableComponent : GameComponent() {
     }
 
     fun setRenderComponent(component: RenderComponent?) {
-        mRenderComponent = component
+        renderComponent = component
     }
 
     fun resetPhase() {
-        mActivateTime = 0.0f
+        activateTime = 0.0f
     }
 
     companion object {

@@ -37,9 +37,9 @@ import javax.microedition.khronos.opengles.GL11Ext
 class TextureLibrary : BaseObject() {
     // Textures are stored in a simple hash.  This class implements its own array-based hash rather
     // than using HashMap for performance.
-    private var mTextureHash: Array<Texture?>
-    private var mTextureNameWorkspace: IntArray
-    private var mCropWorkspace: IntArray
+    private var textureHash: Array<Texture?>
+    private var textureNameWorkspace: IntArray
+    private var cropWorkspace: IntArray
     override fun reset() {
         removeAll()
     }
@@ -67,25 +67,25 @@ class TextureLibrary : BaseObject() {
 
     /** Loads all unloaded textures into OpenGL memory.  Already-loaded textures are ignored.  */
     fun loadAll(context: Context?, gl: GL10?) {
-        for (x in mTextureHash.indices) {
-            if (mTextureHash[x]!!.resource != -1 && mTextureHash[x]!!.loaded == false) {
-                loadBitmap(context, gl, mTextureHash[x])
+        for (x in textureHash.indices) {
+            if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded == false) {
+                loadBitmap(context, gl, textureHash[x])
             }
         }
     }
 
     /** Flushes all textures from OpenGL memory  */
     fun deleteAll(gl: GL10) {
-        for (x in mTextureHash.indices) {
-            if (mTextureHash[x]!!.resource != -1 && mTextureHash[x]!!.loaded) {
-                //TODO: assert(mTextureHash[x]!!.name != -1)
-                mTextureNameWorkspace[0] = mTextureHash[x]!!.name
-                mTextureHash[x]!!.name = -1
-                mTextureHash[x]!!.loaded = false
-                gl.glDeleteTextures(1, mTextureNameWorkspace, 0)
+        for (x in textureHash.indices) {
+            if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded) {
+                //TODO: assert(textureHash[x]!!.name != -1)
+                textureNameWorkspace[0] = textureHash[x]!!.name
+                textureHash[x]!!.name = -1
+                textureHash[x]!!.loaded = false
+                gl.glDeleteTextures(1, textureNameWorkspace, 0)
                 val error = gl.glGetError()
                 if (error != GL10.GL_NO_ERROR) {
-                    DebugLog.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + mTextureHash[x]!!.resource)
+                    DebugLog.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
                 }
                 //TODO: assert(error == GL10.GL_NO_ERROR)
             }
@@ -94,10 +94,10 @@ class TextureLibrary : BaseObject() {
 
     /** Marks all textures as unloaded  */
     fun invalidateAll() {
-        for (x in mTextureHash.indices) {
-            if (mTextureHash[x]!!.resource != -1 && mTextureHash[x]!!.loaded) {
-                mTextureHash[x]!!.name = -1
-                mTextureHash[x]!!.loaded = false
+        for (x in textureHash.indices) {
+            if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded) {
+                textureHash[x]!!.name = -1
+                textureHash[x]!!.loaded = false
             }
         }
     }
@@ -108,13 +108,13 @@ class TextureLibrary : BaseObject() {
         //TODO: assert(context != null)
         //TODO: assert(texture != null)
         if (texture!!.loaded == false && texture.resource != -1) {
-            gl!!.glGenTextures(1, mTextureNameWorkspace, 0)
+            gl!!.glGenTextures(1, textureNameWorkspace, 0)
             var error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
                 DebugLog.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
-            val textureName = mTextureNameWorkspace[0]
+            val textureName = textureNameWorkspace[0]
             gl.glBindTexture(GL10.GL_TEXTURE_2D, textureName)
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
@@ -144,12 +144,12 @@ class TextureLibrary : BaseObject() {
                 DebugLog.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
-            mCropWorkspace[0] = 0
-            mCropWorkspace[1] = bitmap.height
-            mCropWorkspace[2] = bitmap.width
-            mCropWorkspace[3] = -bitmap.height
+            cropWorkspace[0] = 0
+            cropWorkspace[1] = bitmap.height
+            cropWorkspace[2] = bitmap.width
+            cropWorkspace[3] = -bitmap.height
             (gl as GL11?)!!.glTexParameteriv(GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES,
-                    mCropWorkspace, 0)
+                    cropWorkspace, 0)
             texture.name = textureName
             texture.width = bitmap.width
             texture.height = bitmap.height
@@ -179,13 +179,13 @@ class TextureLibrary : BaseObject() {
         val realIndex = findFirstKey(index, resourceID)
         var texture: Texture? = null
         if (realIndex != -1) {
-            texture = mTextureHash[realIndex]
+            texture = textureHash[realIndex]
         }
         return texture
     }
 
     private fun getHashIndex(id: Int): Int {
-        return id % mTextureHash.size
+        return id % textureHash.size
     }
 
     /**
@@ -199,12 +199,12 @@ class TextureLibrary : BaseObject() {
      */
     private fun findFirstKey(startIndex: Int, key: Int): Int {
         var index = -1
-        for (x in mTextureHash.indices) {
-            val actualIndex = (startIndex + x) % mTextureHash.size
-            if (mTextureHash[actualIndex]!!.resource == key) {
+        for (x in textureHash.indices) {
+            val actualIndex = (startIndex + x) % textureHash.size
+            if (textureHash[actualIndex]!!.resource == key) {
                 index = actualIndex
                 break
-            } else if (mTextureHash[actualIndex]!!.resource == -1) {
+            } else if (textureHash[actualIndex]!!.resource == -1) {
                 break
             }
         }
@@ -217,18 +217,18 @@ class TextureLibrary : BaseObject() {
         var texture: Texture? = null
         //TODO: assert(index != -1)
         if (index != -1) {
-            mTextureHash[index]!!.resource = id
-            mTextureHash[index]!!.name = name
-            mTextureHash[index]!!.width = width
-            mTextureHash[index]!!.height = height
-            texture = mTextureHash[index]
+            textureHash[index]!!.resource = id
+            textureHash[index]!!.name = name
+            textureHash[index]!!.width = width
+            textureHash[index]!!.height = height
+            texture = textureHash[index]
         }
         return texture
     }
 
     fun removeAll() {
-        for (x in mTextureHash.indices) {
-            mTextureHash[x]!!.reset()
+        for (x in textureHash.indices) {
+            textureHash[x]!!.reset()
         }
     }
 
@@ -238,12 +238,12 @@ class TextureLibrary : BaseObject() {
     }
 
     init {
-        mTextureHash = arrayOfNulls(DEFAULT_SIZE)
-        for (x in mTextureHash.indices) {
-            mTextureHash[x] = Texture()
+        textureHash = arrayOfNulls(DEFAULT_SIZE)
+        for (x in textureHash.indices) {
+            textureHash[x] = Texture()
         }
-        mTextureNameWorkspace = IntArray(1)
-        mCropWorkspace = IntArray(4)
+        textureNameWorkspace = IntArray(1)
+        cropWorkspace = IntArray(4)
         sBitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565
     }
 }

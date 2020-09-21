@@ -23,20 +23,20 @@ package com.replica.replicaisland
  * pools of objects so no actual allocations occur after bootstrap.
  */
 class DrawableFactory : BaseObject() {
-    private val mBitmapPool: DrawableBitmapPool
-    private val mScrollableBitmapPool: ScrollableBitmapPool
-    private val mTiledBackgroundVertexGridPool: TiledBackgroundVertexGridPool
+    private val bitmapPool: DrawableBitmapPool
+    private val scrollableBitmapPool: ScrollableBitmapPool
+    private val tiledBackgroundVertexGridPool: TiledBackgroundVertexGridPool
     override fun reset() {}
     fun allocateDrawableBitmap(): DrawableBitmap {
-        return mBitmapPool.allocate()
+        return bitmapPool.allocate()
     }
 
     fun allocateTiledBackgroundVertexGrid(): TiledBackgroundVertexGrid? {
-        return mTiledBackgroundVertexGridPool.allocate()
+        return tiledBackgroundVertexGridPool.allocate()
     }
 
     fun allocateScrollableBitmap(): ScrollableBitmap? {
-        return mScrollableBitmapPool.allocate()
+        return scrollableBitmapPool.allocate()
     }
 
     fun release(`object`: DrawableObject) {
@@ -112,8 +112,8 @@ class DrawableFactory : BaseObject() {
 
     // This class wraps several object pools and provides a type-sensitive release function.
     init {
-        mBitmapPool = DrawableBitmapPool(BITMAP_POOL_SIZE)
-        mTiledBackgroundVertexGridPool = TiledBackgroundVertexGridPool()
-        mScrollableBitmapPool = ScrollableBitmapPool()
+        bitmapPool = DrawableBitmapPool(BITMAP_POOL_SIZE)
+        tiledBackgroundVertexGridPool = TiledBackgroundVertexGridPool()
+        scrollableBitmapPool = ScrollableBitmapPool()
     }
 }

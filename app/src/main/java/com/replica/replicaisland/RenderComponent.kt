@@ -25,37 +25,37 @@ package com.replica.replicaisland
 class RenderComponent : GameComponent() {
     var drawable: DrawableObject? = null
     var priority = 0
-    private var mCameraRelative = false
-    private val mPositionWorkspace: Vector2
-    private val mScreenLocation: Vector2
-    private val mDrawOffset: Vector2
+    private var cameraRelative = false
+    private val positionWorkspace: Vector2
+    private val screenLocation: Vector2
+    private val drawOffset: Vector2
     override fun reset() {
         priority = 0
-        mCameraRelative = true
+        cameraRelative = true
         drawable = null
-        mDrawOffset.zero()
+        drawOffset.zero()
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (drawable != null) {
             val system = sSystemRegistry.renderSystem
             if (system != null) {
-                mPositionWorkspace.set((parent as GameObject).position)
-                mPositionWorkspace.add(mDrawOffset)
-                if (mCameraRelative) {
+                positionWorkspace.set((parent as GameObject).position)
+                positionWorkspace.add(drawOffset)
+                if (cameraRelative) {
                     val camera = sSystemRegistry.cameraSystem
                     val params = sSystemRegistry.contextParameters
-                    mScreenLocation.x = (mPositionWorkspace.x - camera!!.fetchFocusPositionX()
+                    screenLocation.x = (positionWorkspace.x - camera!!.fetchFocusPositionX()
                             + params!!.gameWidth / 2)
-                    mScreenLocation.y = (mPositionWorkspace.y - camera.fetchFocusPositionY()
+                    screenLocation.y = (positionWorkspace.y - camera.fetchFocusPositionY()
                             + params.gameHeight / 2)
                 }
                 // It might be better not to do culling here, as doing it in the render thread
                 // would allow us to have multiple views into the same scene and things like that.
                 // But at the moment significant CPU is being spent on sorting the list of objects
                 // to draw per frame, so I'm going to go ahead and cull early.
-                if (drawable!!.visibleAtPosition(mScreenLocation)) {
-                    system.scheduleForDraw(drawable, mPositionWorkspace, priority, mCameraRelative)
+                if (drawable!!.visibleAtPosition(screenLocation)) {
+                    system.scheduleForDraw(drawable, positionWorkspace, priority, cameraRelative)
                 } else if (drawable!!.parentPool != null) {
                     // Normally the render system releases drawable objects back to the factory
                     // pool, but in this case we're short-circuiting the render system, so we
@@ -68,18 +68,18 @@ class RenderComponent : GameComponent() {
     }
 
     fun setCameraRelative(relative: Boolean) {
-        mCameraRelative = relative
+        cameraRelative = relative
     }
 
     fun setDrawOffset(x: Float, y: Float) {
-        mDrawOffset[x] = y
+        drawOffset[x] = y
     }
 
     init {
         setPhaseToThis(ComponentPhases.DRAW.ordinal)
-        mPositionWorkspace = Vector2()
-        mScreenLocation = Vector2()
-        mDrawOffset = Vector2()
+        positionWorkspace = Vector2()
+        screenLocation = Vector2()
+        drawOffset = Vector2()
         reset()
     }
 }

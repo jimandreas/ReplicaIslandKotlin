@@ -20,20 +20,20 @@ package com.replica.replicaisland
 import com.replica.replicaisland.CollisionParameters.HitType
 
 class SelectDialogComponent : GameComponent() {
-    private var mHitReact: HitReactionComponent? = null
-    private val mLastPosition: Vector2
+    private var hitReact: HitReactionComponent? = null
+    private val lastPosition: Vector2
     override fun reset() {
-        mHitReact = null
-        mLastPosition.zero()
+        hitReact = null
+        lastPosition.zero()
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val hotSpot = sSystemRegistry.hotSpotSystem
-        if (hotSpot != null && mHitReact != null) {
+        if (hotSpot != null && hitReact != null) {
             val parentObject = parent as GameObject
             val currentPosition = parentObject.position
-            if (mLastPosition.distance2(parentObject.position) > 0.0f) {
-                mLastPosition.set(currentPosition)
+            if (lastPosition.distance2(parentObject.position) > 0.0f) {
+                lastPosition.set(currentPosition)
                 val hitSpot = hotSpot.getHotSpot(parentObject.centeredPositionX, currentPosition.y + 10)
                 when (hitSpot) {
                     HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1,
@@ -53,7 +53,7 @@ class SelectDialogComponent : GameComponent() {
                             event = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
                             index = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
                         }
-                        mHitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, event, index)
+                        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, event, index)
                     }
                 }
             }
@@ -61,11 +61,11 @@ class SelectDialogComponent : GameComponent() {
     }
 
     fun setHitReact(hit: HitReactionComponent?) {
-        mHitReact = hit
+        hitReact = hit
     }
 
     init {
         setPhaseToThis(ComponentPhases.THINK.ordinal)
-        mLastPosition = Vector2()
+        lastPosition = Vector2()
     }
 }

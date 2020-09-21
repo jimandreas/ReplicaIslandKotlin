@@ -42,31 +42,31 @@ import kotlin.math.floor
  */
 class CollisionSystem : BaseObject() {
     private var mWorld: TiledWorld? = null
-    private var mCollisionTiles: Array<CollisionTile?>? = null
-    private val mSegmentPool: LineSegmentPool
+    private var collisionTiles: Array<CollisionTile?>? = null
+    private val segmentPool: LineSegmentPool
     private var mTileWidth = 0
     private var mTileHeight = 0
-    private val mTileSegmentTester: TileTestVisitor
-    private var mTemporarySegments: FixedSizeArray<LineSegment?>
-    private var mPendingTemporarySegments: FixedSizeArray<LineSegment?>
-    private val mWorkspaceBytes // Included here to avoid runtime allocation during file io.
+    private val tileSegmentTester: TileTestVisitor
+    private var temporarySegments: FixedSizeArray<LineSegment?>
+    private var pendingTemporarySegments: FixedSizeArray<LineSegment?>
+    private val workspaceBytes // Included here to avoid runtime allocation during file io.
             : ByteArray
 
     override fun reset() {
         mWorld = null
-        mCollisionTiles = null
-        val count = mTemporarySegments.count
+        collisionTiles = null
+        val count = temporarySegments.count
         for (x in 0 until count) {
-            mSegmentPool.release(mTemporarySegments[x]!!)
-            mTemporarySegments[x] = null
+            segmentPool.release(temporarySegments[x]!!)
+            temporarySegments[x] = null
         }
-        mTemporarySegments.clear()
-        val pendingCount = mPendingTemporarySegments.count
+        temporarySegments.clear()
+        val pendingCount = pendingTemporarySegments.count
         for (x in 0 until pendingCount) {
-            mSegmentPool.release(mPendingTemporarySegments[x]!!)
-            mPendingTemporarySegments[x] = null
+            segmentPool.release(pendingTemporarySegments[x]!!)
+            pendingTemporarySegments[x] = null
         }
-        mPendingTemporarySegments.clear()
+        pendingTemporarySegments.clear()
     }
 
     /* Sets the current collision world to the supplied tile world. */
@@ -95,16 +95,16 @@ class CollisionSystem : BaseObject() {
     fun castRay(startPoint: Vector2, endPoint: Vector2, movementDirection: Vector2,
                 hitPoint: Vector2, hitNormal: Vector2, excludeObject: GameObject): Boolean {
         var hit = false
-        mTileSegmentTester.setup(movementDirection, mTileWidth, mTileHeight)
-        if (mCollisionTiles != null &&
-                executeRay(startPoint, endPoint, hitPoint, hitNormal, mTileSegmentTester) != -1) {
+        tileSegmentTester.setup(movementDirection, mTileWidth, mTileHeight)
+        if (collisionTiles != null &&
+                executeRay(startPoint, endPoint, hitPoint, hitNormal, tileSegmentTester) != -1) {
             hit = true
         }
-        if (mTemporarySegments.count > 0) {
+        if (temporarySegments.count > 0) {
             val vectorPool = sSystemRegistry.vectorPool
             val tempHitPoint = vectorPool!!.allocate()
             val tempHitNormal = vectorPool.allocate()
-            if (testSegmentAgainstList(mTemporarySegments, startPoint, endPoint, tempHitPoint,
+            if (testSegmentAgainstList(temporarySegments, startPoint, endPoint, tempHitPoint,
                             tempHitNormal, movementDirection, excludeObject)) {
                 if (hit) {
                     // Check to see whether this collision is closer to the one we already found or
@@ -168,7 +168,7 @@ class CollisionSystem : BaseObject() {
                 var x = startTileX
                 while (x != endTileX + xIncrement) {
                     val tileIndex = tileArray[x][worldHeight - y]
-                    if (tileIndex >= 0 && tileIndex < mCollisionTiles!!.size && mCollisionTiles!![tileIndex] != null) {
+                    if (tileIndex >= 0 && tileIndex < collisionTiles!!.size && collisionTiles!![tileIndex] != null) {
                         val xOffset = x * mTileWidth.toFloat()
                         val yOffset = y * mTileHeight.toFloat()
                         val tileSpaceLeft = left - xOffset
@@ -176,7 +176,7 @@ class CollisionSystem : BaseObject() {
                         val tileSpaceTop = top - yOffset
                         val tileSpaceBottom = bottom - yOffset
                         worldTileOffset!![xOffset] = yOffset
-                        val hit = testBoxAgainstList(mCollisionTiles!![tileIndex]!!.segments,
+                        val hit = testBoxAgainstList(collisionTiles!![tileIndex]!!.segments,
                                 tileSpaceLeft, tileSpaceRight, tileSpaceTop, tileSpaceBottom,
                                 movementDirection, excludeObject, worldTileOffset, hitPoints)
                         if (hit) {
@@ -190,7 +190,7 @@ class CollisionSystem : BaseObject() {
             vectorPool.release(worldTileOffset!!)
         }
         // temporary segments
-        val tempHit = testBoxAgainstList(mTemporarySegments,
+        val tempHit = testBoxAgainstList(temporarySegments,
                 left, right, top, bottom,
                 movementDirection, excludeObject, Vector2.ZERO, hitPoints)
         if (tempHit) {
@@ -202,29 +202,29 @@ class CollisionSystem : BaseObject() {
     /* Inserts a temporary surface into the collision world.  It will persist for one frame. */
     fun addTemporarySurface(startPoint: Vector2?, endPoint: Vector2?, normal: Vector2?,
                             ownerObject: GameObject) {
-        val newSegment = mSegmentPool.allocate()
+        val newSegment = segmentPool.allocate()
         newSegment!![startPoint, endPoint] = normal
         newSegment.setTheOwner(ownerObject)
-        mPendingTemporarySegments.add(newSegment)
+        pendingTemporarySegments.add(newSegment)
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         // Clear temporary surfaces
-        val count = mTemporarySegments.count
-        if (mCollisionTiles != null && count > 0) {
+        val count = temporarySegments.count
+        if (collisionTiles != null && count > 0) {
             for (x in 0 until count) {
-                mSegmentPool.release(mTemporarySegments[x]!!)
-                mTemporarySegments[x] = null
+                segmentPool.release(temporarySegments[x]!!)
+                temporarySegments[x] = null
             }
-            mTemporarySegments.clear()
+            temporarySegments.clear()
         }
 
         // Temporary surfaces must persist for one frame in order to be reliable independent of
         // frame execution order.  So each frame we queue up inserted segments and then swap them
         // into activity when this system is updated.
-        val swap = mTemporarySegments
-        mTemporarySegments = mPendingTemporarySegments
-        mPendingTemporarySegments = swap
+        val swap = temporarySegments
+        temporarySegments = pendingTemporarySegments
+        pendingTemporarySegments = swap
     }
 
     /**
@@ -260,8 +260,8 @@ class CollisionSystem : BaseObject() {
         val tileArray = mWorld!!.fetchTiles()
         for (x in 0 until distance) {
             val tileIndex = tileArray[currentX][worldHeight - currentY]
-            if (tileIndex >= 0 && tileIndex < mCollisionTiles!!.size && mCollisionTiles!![tileIndex] != null) {
-                if (visitor.visit(mCollisionTiles!![tileIndex], startPoint, endPoint,
+            if (tileIndex >= 0 && tileIndex < collisionTiles!!.size && collisionTiles!![tileIndex] != null) {
+                if (visitor.visit(collisionTiles!![tileIndex], startPoint, endPoint,
                                 hitPoint, hitNormal, currentX, currentY)) {
                     hitTile = tileIndex
                     break
@@ -320,8 +320,8 @@ class CollisionSystem : BaseObject() {
                 var error = deltaY2 - lateralDelta
                 for (i in 0 until lateralDelta) {
                     val tileIndex = tileArray[currentX][worldHeightMinusOne - currentY]
-                    if (tileIndex >= 0 && tileIndex < mCollisionTiles!!.size && mCollisionTiles!![tileIndex] != null) {
-                        if (visitor.visit(mCollisionTiles!![tileIndex], startPoint, endPoint,
+                    if (tileIndex >= 0 && tileIndex < collisionTiles!!.size && collisionTiles!![tileIndex] != null) {
+                        if (visitor.visit(collisionTiles!![tileIndex], startPoint, endPoint,
                                         hitPoint, hitNormal, currentX, currentY)) {
                             hitTile = tileIndex
                             break
@@ -338,8 +338,8 @@ class CollisionSystem : BaseObject() {
                 var error = deltaX2 - verticalDelta
                 for (i in 0 until verticalDelta) {
                     val tileIndex = tileArray[currentX][worldHeightMinusOne - currentY]
-                    if (tileIndex >= 0 && tileIndex < mCollisionTiles!!.size && mCollisionTiles!![tileIndex] != null) {
-                        if (visitor.visit(mCollisionTiles!![tileIndex], startPoint, endPoint,
+                    if (tileIndex >= 0 && tileIndex < collisionTiles!!.size && collisionTiles!![tileIndex] != null) {
+                        if (visitor.visit(collisionTiles!![tileIndex], startPoint, endPoint,
                                         hitPoint, hitNormal, currentX, currentY)) {
                             hitTile = tileIndex
                             break
@@ -377,7 +377,7 @@ class CollisionSystem : BaseObject() {
         // TODO: this is a hack.  I really should only allocate an array that is the size of the
         // tileset, but at this point I don't actually know that size, so I allocate a buffer that's
         // probably large enough.
-        mCollisionTiles = arrayOfNulls(256)
+        collisionTiles = arrayOfNulls(256)
         try {
             signature = byteStream.read()
             if (signature == 52) {
@@ -394,22 +394,22 @@ class CollisionSystem : BaseObject() {
                     for (x in 0 until tileCount) {
                         val tileIndex = byteStream.read()
                         val segmentCount = byteStream.read()
-                        if (mCollisionTiles!![tileIndex] == null && segmentCount > 0) {
-                            mCollisionTiles!![tileIndex] = CollisionTile(segmentCount)
+                        if (collisionTiles!![tileIndex] == null && segmentCount > 0) {
+                            collisionTiles!![tileIndex] = CollisionTile(segmentCount)
                         }
                         for (y in 0 until segmentCount) {
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val startX = Utils.byteArrayToFloat(mWorkspaceBytes)
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val startY = Utils.byteArrayToFloat(mWorkspaceBytes)
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val endX = Utils.byteArrayToFloat(mWorkspaceBytes)
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val endY = Utils.byteArrayToFloat(mWorkspaceBytes)
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val normalX = Utils.byteArrayToFloat(mWorkspaceBytes)
-                            byteStream.read(mWorkspaceBytes, 0, 4)
-                            val normalY = Utils.byteArrayToFloat(mWorkspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val startX = Utils.byteArrayToFloat(workspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val startY = Utils.byteArrayToFloat(workspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val endX = Utils.byteArrayToFloat(workspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val endY = Utils.byteArrayToFloat(workspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val normalX = Utils.byteArrayToFloat(workspaceBytes)
+                            byteStream.read(workspaceBytes, 0, 4)
+                            val normalY = Utils.byteArrayToFloat(workspaceBytes)
 
                             // TODO: it might be wise to pool line segments.  I don't think that
                             // this data will be loaded very often though, so this is ok for now.
@@ -417,7 +417,7 @@ class CollisionSystem : BaseObject() {
                             newSegment.mStartPoint[startX] = startY
                             newSegment.mEndPoint[endX] = endY
                             newSegment.mNormal[normalX] = normalY
-                            mCollisionTiles!![tileIndex]!!.addSegment(newSegment)
+                            collisionTiles!![tileIndex]!!.addSegment(newSegment)
                         }
                     }
                 }
@@ -450,9 +450,9 @@ class CollisionSystem : BaseObject() {
         // These vectors are all temporary storage variables allocated as class members to avoid
         // runtime allocation.
         private val mDelta: Vector2 = Vector2()
-        private val mTileSpaceStart: Vector2 = Vector2()
-        private val mTileSpaceEnd: Vector2 = Vector2()
-        private val mTileSpaceOffset: Vector2 = Vector2()
+        private val tileSpaceStart: Vector2 = Vector2()
+        private val tileSpaceEnd: Vector2 = Vector2()
+        private val tileSpaceOffset: Vector2 = Vector2()
         private var mTileHeight = 0
         private var mTileWidth = 0
 
@@ -477,18 +477,18 @@ class CollisionSystem : BaseObject() {
          */
         override fun visit(tile: CollisionTile?, startPoint: Vector2?, endPoint: Vector2?,
                            hitPoint: Vector2, hitNormal: Vector2?, tileX: Int, tileY: Int): Boolean {
-            mTileSpaceOffset[tileX * mTileWidth.toFloat()] = tileY * mTileHeight.toFloat()
-            mTileSpaceStart.set(startPoint!!)
-            mTileSpaceStart.subtract(mTileSpaceOffset)
-            mTileSpaceEnd.set(endPoint!!)
-            mTileSpaceEnd.subtract(mTileSpaceOffset)
+            tileSpaceOffset[tileX * mTileWidth.toFloat()] = tileY * mTileHeight.toFloat()
+            tileSpaceStart.set(startPoint!!)
+            tileSpaceStart.subtract(tileSpaceOffset)
+            tileSpaceEnd.set(endPoint!!)
+            tileSpaceEnd.subtract(tileSpaceOffset)
             // find all the hits in the tile and pick the closest to the start point.
             val foundHit = testSegmentAgainstList(
-                    tile!!.segments, mTileSpaceStart, mTileSpaceEnd,
+                    tile!!.segments, tileSpaceStart, tileSpaceEnd,
                     hitPoint, hitNormal, mDelta, null)
             if (foundHit) {
                 // The hitPoint is in tile space, so convert it back to world space.
-                hitPoint.add(mTileSpaceOffset)
+                hitPoint.add(tileSpaceOffset)
             }
             return foundHit
         }
@@ -740,10 +740,10 @@ class CollisionSystem : BaseObject() {
     }
 
     init {
-        mTileSegmentTester = TileTestVisitor()
-        mSegmentPool = LineSegmentPool(MAX_TEMPORARY_SEGMENTS)
-        mTemporarySegments = FixedSizeArray(MAX_TEMPORARY_SEGMENTS)
-        mPendingTemporarySegments = FixedSizeArray(MAX_TEMPORARY_SEGMENTS)
-        mWorkspaceBytes = ByteArray(4)
+        tileSegmentTester = TileTestVisitor()
+        segmentPool = LineSegmentPool(MAX_TEMPORARY_SEGMENTS)
+        temporarySegments = FixedSizeArray(MAX_TEMPORARY_SEGMENTS)
+        pendingTemporarySegments = FixedSizeArray(MAX_TEMPORARY_SEGMENTS)
+        workspaceBytes = ByteArray(4)
     }
 }

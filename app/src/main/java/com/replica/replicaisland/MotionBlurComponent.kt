@@ -16,12 +16,12 @@
 package com.replica.replicaisland
 
 class MotionBlurComponent : GameComponent() {
-    private val mHistory: Array<BlurRecord?>
-    private var mBlurTarget: RenderComponent? = null
-    private var mStepDelay = 0f
-    private var mCurrentStep = 0
-    private var mTimeSinceLastStep = 0f
-    private var mTargetPriority = 0
+    private val history: Array<BlurRecord?>
+    private var blurTarget: RenderComponent? = null
+    private var stepDelay = 0f
+    private var currentStep = 0
+    private var timeSinceLastStep = 0f
+    private var targetPriority = 0
 
     private class BlurRecord {
         var position = Vector2()
@@ -33,46 +33,46 @@ class MotionBlurComponent : GameComponent() {
 
     override fun reset() {
         for (x in 0 until STEP_COUNT) {
-            mHistory[x]!!.texture = null
-            mHistory[x]!!.position.zero()
+            history[x]!!.texture = null
+            history[x]!!.position.zero()
         }
-        mStepDelay = STEP_DELAY
-        mBlurTarget = null
-        mCurrentStep = 0
-        mTimeSinceLastStep = 0.0f
+        stepDelay = STEP_DELAY
+        blurTarget = null
+        currentStep = 0
+        timeSinceLastStep = 0.0f
     }
 
     fun setTarget(target: RenderComponent?) {
-        mBlurTarget = target
+        blurTarget = target
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mBlurTarget != null) {
-            mTimeSinceLastStep += timeDelta
-            if (mTimeSinceLastStep > mStepDelay) {
-                val drawable = mBlurTarget!!.drawable as DrawableBitmap?
+        if (blurTarget != null) {
+            timeSinceLastStep += timeDelta
+            if (timeSinceLastStep > stepDelay) {
+                val drawable = blurTarget!!.drawable as DrawableBitmap?
                 if (drawable != null) {
                     val currentTexture = drawable.texture
-                    mTargetPriority = mBlurTarget!!.priority
-                    mHistory[mCurrentStep]!!.texture = currentTexture
-                    mHistory[mCurrentStep]!!.position.set((parent as GameObject?)!!.position)
-                    mHistory[mCurrentStep]!!.width = drawable.width
-                    mHistory[mCurrentStep]!!.height = drawable.height
+                    targetPriority = blurTarget!!.priority
+                    history[currentStep]!!.texture = currentTexture
+                    history[currentStep]!!.position.set((parent as GameObject?)!!.position)
+                    history[currentStep]!!.width = drawable.width
+                    history[currentStep]!!.height = drawable.height
                     val drawableCrop = drawable.crop
-                    mHistory[mCurrentStep]!!.crop[0] = drawableCrop[0]
-                    mHistory[mCurrentStep]!!.crop[1] = drawableCrop[1]
-                    mHistory[mCurrentStep]!!.crop[2] = drawableCrop[2]
-                    mHistory[mCurrentStep]!!.crop[3] = drawableCrop[3]
-                    mCurrentStep = (mCurrentStep + 1) % STEP_COUNT
-                    mTimeSinceLastStep = 0.0f
+                    history[currentStep]!!.crop[0] = drawableCrop[0]
+                    history[currentStep]!!.crop[1] = drawableCrop[1]
+                    history[currentStep]!!.crop[2] = drawableCrop[2]
+                    history[currentStep]!!.crop[3] = drawableCrop[3]
+                    currentStep = (currentStep + 1) % STEP_COUNT
+                    timeSinceLastStep = 0.0f
                 }
             }
             val renderer = sSystemRegistry.renderSystem
-            val startStep = if (mCurrentStep > 0) mCurrentStep - 1 else STEP_COUNT - 1
+            val startStep = if (currentStep > 0) currentStep - 1 else STEP_COUNT - 1
             // draw each step
             for (x in 0 until STEP_COUNT) {
                 val step = if (startStep - x < 0) STEP_COUNT + (startStep - x) else startStep - x
-                val record = mHistory[step]
+                val record = history[step]
                 if (record!!.texture != null) {
                     val stepImage = sSystemRegistry.drawableFactory!!.allocateDrawableBitmap()
                     stepImage.texture = record.texture
@@ -81,7 +81,7 @@ class MotionBlurComponent : GameComponent() {
                     stepImage.setCrop(record.crop[0], record.crop[1], record.crop[2], -record.crop[3])
                     val opacity = (STEP_COUNT - x) * OPACITY_STEP
                     stepImage.setOpacity(opacity)
-                    renderer!!.scheduleForDraw(stepImage, record.position, mTargetPriority - (x + 1), true)
+                    renderer!!.scheduleForDraw(stepImage, record.position, targetPriority - (x + 1), true)
                 }
             }
         }
@@ -94,9 +94,9 @@ class MotionBlurComponent : GameComponent() {
     }
 
     init {
-        mHistory = arrayOfNulls(STEP_COUNT)
+        history = arrayOfNulls(STEP_COUNT)
         for (x in 0 until STEP_COUNT) {
-            mHistory[x] = BlurRecord()
+            history[x] = BlurRecord()
         }
         reset()
         setPhaseToThis(ComponentPhases.PRE_DRAW.ordinal)

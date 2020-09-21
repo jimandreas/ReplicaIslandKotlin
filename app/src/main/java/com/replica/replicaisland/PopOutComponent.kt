@@ -23,21 +23,21 @@ package com.replica.replicaisland
 class PopOutComponent : GameComponent() {
     private var mAppearDistance = 0f
     private var mHideDistance = 0f
-    private var mAttackDistance = 0f
-    private var mAttackDelay = 0f
-    private var mAttackLength = 0f
-    private var mAttackStartTime = 0f
+    private var attackDistance = 0f
+    private var attackDelay = 0f
+    private var attackLength = 0f
+    private var attackStartTime = 0f
     private val mDistance: Vector2
-    private var mState = 0
-    private var mLastAttackCompletedTime = 0f
+    private var state = 0
+    private var lastAttackCompletedTime = 0f
     override fun reset() {
-        mAttackDelay = 0f
-        mAttackLength = 0f
-        mAttackDistance = DEFAULT_ATTACK_DISTANCE.toFloat()
+        attackDelay = 0f
+        attackLength = 0f
+        attackDistance = DEFAULT_ATTACK_DISTANCE.toFloat()
         mAppearDistance = DEFAULT_APPEAR_DISTANCE.toFloat()
         mHideDistance = DEFAULT_HIDE_DISTANCE.toFloat()
-        mState = STATE_HIDDEN
-        mLastAttackCompletedTime = 0.0f
+        state = STATE_HIDDEN
+        lastAttackCompletedTime = 0.0f
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -50,29 +50,29 @@ class PopOutComponent : GameComponent() {
                 mDistance.subtract(parentObject.position)
                 val time = sSystemRegistry.timeSystem
                 val currentTime = time!!.gameTime
-                when (mState) {
+                when (state) {
                     STATE_HIDDEN -> {
                         parentObject.currentAction = GameObject.ActionType.HIDE
                         if (mDistance.length2() < mAppearDistance * mAppearDistance) {
-                            mState = STATE_VISIBLE
-                            mLastAttackCompletedTime = currentTime
+                            state = STATE_VISIBLE
+                            lastAttackCompletedTime = currentTime
                         }
                     }
                     STATE_VISIBLE -> {
                         parentObject.currentAction = GameObject.ActionType.IDLE
                         if (mDistance.length2() > mHideDistance * mHideDistance) {
-                            mState = STATE_HIDDEN
-                        } else if (mDistance.length2() < mAttackDistance * mAttackDistance
-                                && currentTime > mLastAttackCompletedTime + mAttackDelay) {
-                            mAttackStartTime = currentTime
-                            mState = STATE_ATTACKING
+                            state = STATE_HIDDEN
+                        } else if (mDistance.length2() < attackDistance * attackDistance
+                                && currentTime > lastAttackCompletedTime + attackDelay) {
+                            attackStartTime = currentTime
+                            state = STATE_ATTACKING
                         }
                     }
                     STATE_ATTACKING -> {
                         parentObject.currentAction = GameObject.ActionType.ATTACK
-                        if (currentTime > mAttackStartTime + mAttackLength) {
-                            mState = STATE_VISIBLE
-                            mLastAttackCompletedTime = currentTime
+                        if (currentTime > attackStartTime + attackLength) {
+                            state = STATE_VISIBLE
+                            lastAttackCompletedTime = currentTime
                         }
                     }
                     // TODO: handle assert: else -> assert(false)
@@ -82,9 +82,9 @@ class PopOutComponent : GameComponent() {
     }
 
     fun setupAttack(distance: Float, delay: Float, duration: Float) {
-        mAttackDistance = distance
-        mAttackDelay = delay
-        mAttackLength = duration
+        attackDistance = distance
+        attackDelay = delay
+        attackLength = duration
     }
 
     fun setAppearDistance(appearDistance: Float) {

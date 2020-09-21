@@ -26,7 +26,7 @@ import android.widget.Toast
 import java.lang.reflect.InvocationTargetException
 
 class DiaryActivity : Activity() {
-    private val mKillDiaryListener = View.OnClickListener {
+    private val killDiaryListener = View.OnClickListener {
         finish()
         if (UIConstants.mOverridePendingTransition != null) {
             try {
@@ -55,7 +55,7 @@ class DiaryActivity : Activity() {
             text.setText(textResource)
         }
         val okArrow = findViewById<View>(R.id.ok) as ImageView
-        okArrow.setOnClickListener(mKillDiaryListener)
+        okArrow.setOnClickListener(killDiaryListener)
         okArrow.setBackgroundResource(R.drawable.ui_button)
         val anim = okArrow.background as AnimationDrawable
         anim.start()

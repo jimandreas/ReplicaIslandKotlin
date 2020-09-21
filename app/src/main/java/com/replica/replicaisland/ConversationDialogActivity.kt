@@ -38,8 +38,8 @@ class ConversationDialogActivity : Activity() {
     private var mConversation: ConversationUtils.Conversation? = null
     private var mPages: ArrayList<ConversationPage>? = null
     private var mCurrentPage = 0
-    private var mOkArrow: ImageView? = null
-    private var mOkAnimation: AnimationDrawable? = null
+    private var okArrow: ImageView? = null
+    private var okAnimation: AnimationDrawable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             super.onCreate(savedInstanceState)
@@ -47,10 +47,10 @@ class ConversationDialogActivity : Activity() {
             super.onCreate(null)
         }
         setContentView(R.layout.conversation_dialog)
-        mOkArrow = findViewById<View>(R.id.ok) as ImageView
-        mOkArrow!!.setBackgroundResource(R.drawable.ui_button)
-        mOkAnimation = mOkArrow!!.background as AnimationDrawable
-        mOkArrow!!.visibility = View.INVISIBLE
+        okArrow = findViewById<View>(R.id.ok) as ImageView
+        okArrow!!.setBackgroundResource(R.drawable.ui_button)
+        okAnimation = okArrow!!.background as AnimationDrawable
+        okArrow!!.visibility = View.INVISIBLE
         val callingIntent = intent
         val levelRow = callingIntent.getIntExtra("levelRow", -1)
         val levelIndex = callingIntent.getIntExtra("levelIndex", -1)
@@ -159,9 +159,9 @@ class ConversationDialogActivity : Activity() {
     private fun showPage(page: ConversationPage) {
         val tv = findViewById<View>(R.id.typewritertext) as TypewriterTextView
         tv.setTypewriterText(page.text)
-        mOkArrow!!.visibility = View.INVISIBLE
-        mOkAnimation!!.start()
-        tv.setOkArrow(mOkArrow)
+        okArrow!!.visibility = View.INVISIBLE
+        okAnimation!!.start()
+        tv.setOkArrow(okArrow)
         val image = findViewById<View>(R.id.speaker) as ImageView
         if (page.imageResource != 0) {
             image.setImageResource(page.imageResource)
@@ -192,11 +192,11 @@ class ConversationDialogActivity : Activity() {
     }
 
     class TypewriterTextView : TextView {
-        private var mCurrentCharacter = 0
-        private var mLastTime: Long = 0
+        private var currentCharacter = 0
+        private var lastTime: Long = 0
         private var mText: CharSequence? = null
-        private var mOkArrow: View? = null
-        private var mParentActivity // This really sucks.
+        private var okArrow: View? = null
+        private var parentActivity // This really sucks.
                 : ConversationDialogActivity? = null
 
         constructor(context: Context?) : super(context) {}
@@ -204,49 +204,49 @@ class ConversationDialogActivity : Activity() {
         constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {}
 
         fun setParentActivity(parent: ConversationDialogActivity?) {
-            mParentActivity = parent
+            parentActivity = parent
         }
 
         fun setTypewriterText(text: CharSequence?) {
             mText = text
-            mCurrentCharacter = 0
-            mLastTime = 0
+            currentCharacter = 0
+            lastTime = 0
             postInvalidate()
         }
 
         val remainingTime: Long
-            get() = ((mText!!.length - mCurrentCharacter) * TEXT_CHARACTER_DELAY_MS).toLong()
+            get() = ((mText!!.length - currentCharacter) * TEXT_CHARACTER_DELAY_MS).toLong()
 
         fun snapToEnd() {
-            mCurrentCharacter = mText!!.length - 1
+            currentCharacter = mText!!.length - 1
         }
 
         fun setOkArrow(arrow: View?) {
-            mOkArrow = arrow
+            okArrow = arrow
         }
 
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
             // We need to wait until layout has occurred before we can setup the
             // text page.  Ugh.  Bidirectional dependency!
-            if (mParentActivity != null) {
-                mParentActivity!!.processText()
+            if (parentActivity != null) {
+                parentActivity!!.processText()
             }
             super.onSizeChanged(w, h, oldw, oldh)
         }
 
         public override fun onDraw(canvas: Canvas) {
             val time = SystemClock.uptimeMillis()
-            val delta = time - mLastTime
+            val delta = time - lastTime
             if (delta > TEXT_CHARACTER_DELAY_MS) {
                 if (mText != null) {
-                    if (mCurrentCharacter <= mText!!.length) {
-                        val subtext = mText!!.subSequence(0, mCurrentCharacter)
+                    if (currentCharacter <= mText!!.length) {
+                        val subtext = mText!!.subSequence(0, currentCharacter)
                         setText(subtext, BufferType.SPANNABLE)
-                        mCurrentCharacter++
+                        currentCharacter++
                         postInvalidateDelayed(TEXT_CHARACTER_DELAY_MS.toLong())
                     } else {
-                        if (mOkArrow != null) {
-                            mOkArrow!!.visibility = VISIBLE
+                        if (okArrow != null) {
+                            okArrow!!.visibility = VISIBLE
                         }
                     }
                 }

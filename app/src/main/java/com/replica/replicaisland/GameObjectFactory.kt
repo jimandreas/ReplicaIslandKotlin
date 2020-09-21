@@ -40,13 +40,13 @@ import kotlin.math.sqrt
  */
 class GameObjectFactory : BaseObject() {
     private val mStaticData: FixedSizeArray<FixedSizeArray<BaseObject?>?>
-    private val mComponentPools: FixedSizeArray<GameComponentPool>
-    private val mPoolSearchDummy: GameComponentPool
-    private val mGameObjectPool: GameObjectPool
-    private val mTightActivationRadius: Float
-    private val mNormalActivationRadius: Float
-    private val mWideActivationRadius: Float
-    private val mAlwaysActive: Float
+    private val componentPools: FixedSizeArray<GameComponentPool>
+    private val poolSearchDummy: GameComponentPool
+    private val gameObjectPool: GameObjectPool
+    private val tightActivationRadius: Float
+    private val normalActivationRadius: Float
+    private val wideActivationRadius: Float
+    private val alwaysActive: Float
 
     // A list of game objects that can be spawned at runtime.  Note that the indicies of these
     // objects must match the order of the object tileset in the level editor in order for the
@@ -165,10 +165,10 @@ class GameObjectFactory : BaseObject() {
     override fun reset() {}
     private fun getComponentPool(componentType: Class<*>?): GameComponentPool? {
         var pool: GameComponentPool? = null
-        mPoolSearchDummy.objectClass = componentType
-        val index = mComponentPools.find(mPoolSearchDummy, false)
+        poolSearchDummy.objectClass = componentType
+        val index = componentPools.find(poolSearchDummy, false)
         if (index != -1) {
-            pool = mComponentPools[index]
+            pool = componentPools[index]
         }
         return pool
     }
@@ -261,7 +261,7 @@ class GameObjectFactory : BaseObject() {
         }
         thing.removeAll()
         thing.commitUpdates()
-        mGameObjectPool.release(thing)
+        gameObjectPool.release(thing)
     }
 
     fun spawn(type: GameObjectType, x: Float, y: Float, horzFlip: Boolean): GameObject? {
@@ -419,18 +419,18 @@ class GameObjectFactory : BaseObject() {
     }
 
     fun sanityCheckPools() {
-        val outstandingObjects = mGameObjectPool.fetchAllocatedCount()
+        val outstandingObjects = gameObjectPool.fetchAllocatedCount()
         if (outstandingObjects != 0) {
             DebugLog.d("Sanity Check", "Outstanding game thing allocations! ("
                     + outstandingObjects + ")")
             //TODO 2 fix: assert(false)
         }
-        val componentPoolCount = mComponentPools.count
+        val componentPoolCount = componentPools.count
         for (x in 0 until componentPoolCount) {
-            val outstandingComponents = mComponentPools[x]!!.fetchAllocatedCount()
+            val outstandingComponents = componentPools[x]!!.fetchAllocatedCount()
             if (outstandingComponents != 0) {
                 DebugLog.d("Sanity Check", "Outstanding "
-                        + mComponentPools[x]!!.objectClass!!.simpleName
+                        + componentPools[x]!!.objectClass!!.simpleName
                         + " allocations! (" + outstandingComponents + ")")
                 ////TODO 2 fix: assert false;
             }
@@ -439,9 +439,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnPlayer(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.PLAYER)
@@ -813,9 +813,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyBrobot(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.BROBOT)
@@ -944,9 +944,9 @@ class GameObjectFactory : BaseObject() {
 
         // Make sure related textures are loaded.
         textureLibrary!!.allocateTexture(R.drawable.snail_bomb)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.SNAILBOMB)
@@ -1063,9 +1063,9 @@ class GameObjectFactory : BaseObject() {
         textureLibrary.allocateTexture(R.drawable.energy_ball02)
         textureLibrary.allocateTexture(R.drawable.energy_ball03)
         textureLibrary.allocateTexture(R.drawable.energy_ball04)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.SHADOWSLIME)
@@ -1229,9 +1229,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyMudman(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 128f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.MUDMAN)
@@ -1376,9 +1376,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemySkeleton(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.SKELETON)
@@ -1493,9 +1493,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyKaraguin(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.KARAGUIN)
@@ -1565,9 +1565,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyPinkNamazu(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 128f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.PINK_NAMAZU)
@@ -1692,9 +1692,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyBat(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.BAT)
@@ -1768,9 +1768,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemySting(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.STING)
@@ -1841,9 +1841,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyOnion(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.ONION)
@@ -1933,9 +1933,9 @@ class GameObjectFactory : BaseObject() {
         textureLibrary.allocateTexture(R.drawable.energy_ball02)
         textureLibrary.allocateTexture(R.drawable.energy_ball03)
         textureLibrary.allocateTexture(R.drawable.energy_ball04)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.WANDA)
@@ -2116,9 +2116,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyKyle(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.KYLE)
@@ -2260,9 +2260,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyKyleDead(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 128f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.KYLE_DEAD)
@@ -2307,9 +2307,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyAndouDead(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.ANDOU_DEAD)
@@ -2357,9 +2357,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyKabocha(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.KABOCHA)
@@ -2444,9 +2444,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnRokudouTerminal(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.ROKUDOU_TERMINAL)
@@ -2509,9 +2509,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnKabochaTerminal(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.KABOCHA_TERMINAL)
@@ -2574,9 +2574,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnemyEvilKabocha(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 128f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.EVIL_KABOCHA)
@@ -2711,9 +2711,9 @@ class GameObjectFactory : BaseObject() {
         textureLibrary.allocateTexture(R.drawable.energy_ball04)
         textureLibrary.allocateTexture(R.drawable.effect_bullet01)
         textureLibrary.allocateTexture(R.drawable.effect_bullet02)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mNormalActivationRadius
+        thing.activationRadius = normalActivationRadius
         thing.width = 128f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.ROKUDOU)
@@ -2875,9 +2875,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnPlayerGhost(positionX: Float, positionY: Float, player: GameObject?, lifeTime: Float): GameObject? {
         val textureLibrary = sSystemRegistry.longTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.GHOST)
@@ -2956,9 +2956,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEnergyBall(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.ENERGY_BALL)
@@ -3016,9 +3016,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnWandaShot(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.WANDA_SHOT)
@@ -3076,9 +3076,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnCannonBall(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.CANNON_BALL)
@@ -3128,9 +3128,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnTurretBullet(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 16f
         thing.height = 16f
         var staticData = getStaticData(GameObjectType.TURRET_BULLET)
@@ -3180,9 +3180,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnBrobotBullet(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.BROBOT_BULLET)
@@ -3228,9 +3228,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnCoin(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 16f
         thing.height = 16f
         var staticData = getStaticData(GameObjectType.COIN)
@@ -3305,9 +3305,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnRuby(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.RUBY)
@@ -3382,9 +3382,9 @@ class GameObjectFactory : BaseObject() {
                 return null
             }
         }
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.DIARY)
@@ -3455,9 +3455,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectDoor(positionX: Float, positionY: Float, type: GameObjectType, solid: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 64f
         var staticData = getStaticData(type)
@@ -3585,9 +3585,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectButton(positionX: Float, positionY: Float, type: GameObjectType): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(type)
@@ -3661,9 +3661,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectCannon(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 128f
         var staticData = getStaticData(GameObjectType.CANNON)
@@ -3729,9 +3729,9 @@ class GameObjectFactory : BaseObject() {
         textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk01)
         textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk02)
         textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk03)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.BROBOT_SPAWNER)
@@ -3823,9 +3823,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectCrusherAndou(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.CRUSHER_ANDOU)
@@ -3918,9 +3918,9 @@ class GameObjectFactory : BaseObject() {
 
         // Preload block piece texture.
         textureLibrary!!.allocateTexture(R.drawable.object_debris_piece)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.BREAKABLE_BLOCK)
@@ -3991,8 +3991,8 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectTheSource(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
-        thing!!.activationRadius = mAlwaysActive
+        val thing = gameObjectPool.allocate()
+        thing!!.activationRadius = alwaysActive
         thing.width = 512f
         thing.height = 512f
         thing.position[positionX] = positionY
@@ -4064,9 +4064,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnObjectSign(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.HINT_SIGN)
@@ -4111,9 +4111,9 @@ class GameObjectFactory : BaseObject() {
         // Make sure related textures are loaded.
         textureLibrary!!.allocateTexture(R.drawable.effect_bullet01)
         textureLibrary.allocateTexture(R.drawable.effect_bullet02)
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.TURRET)
@@ -4216,9 +4216,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnDust(positionX: Float, positionY: Float, flipHorizontal: Boolean): GameObject? {
         val textureLibrary = sSystemRegistry.longTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.DUST)
@@ -4260,9 +4260,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEffectExplosionSmall(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.longTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.EXPLOSION_SMALL)
@@ -4319,9 +4319,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEffectExplosionLarge(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.longTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.EXPLOSION_LARGE)
@@ -4387,9 +4387,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnEffectExplosionGiant(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.longTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 64f
         thing.height = 64f
         var staticData = getStaticData(GameObjectType.EXPLOSION_GIANT)
@@ -4542,9 +4542,9 @@ class GameObjectFactory : BaseObject() {
     }
 
     fun spawnGhostNPC(positionX: Float, positionY: Float): GameObject? {
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.GHOST_NPC)
@@ -4568,9 +4568,9 @@ class GameObjectFactory : BaseObject() {
     }
 
     private fun spawnCameraBias(positionX: Float, positionY: Float): GameObject? {
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.CAMERA_BIAS)
@@ -4590,9 +4590,9 @@ class GameObjectFactory : BaseObject() {
         var thing: GameObject? = null
         // This is just an effect, so we can live without it if our pools are exhausted.
         if (componentAvailable(RenderComponent::class.java, 1)) {
-            thing = mGameObjectPool.allocate()
+            thing = gameObjectPool.allocate()
             thing!!.position[positionX] = positionY
-            thing.activationRadius = mTightActivationRadius
+            thing.activationRadius = tightActivationRadius
             thing.width = 32f
             thing.height = 32f
             var staticData = getStaticData(GameObjectType.SMOKE_BIG)
@@ -4687,9 +4687,9 @@ class GameObjectFactory : BaseObject() {
         var thing: GameObject? = null
         // This is just an effect, so we can live without it if our pools are exhausted.
         if (componentAvailable(RenderComponent::class.java, 1)) {
-            thing = mGameObjectPool.allocate()
+            thing = gameObjectPool.allocate()
             thing!!.position[positionX] = positionY
-            thing.activationRadius = mAlwaysActive
+            thing.activationRadius = alwaysActive
             thing.width = 16f
             thing.height = 16f
             var staticData = getStaticData(GameObjectType.SMOKE_SMALL)
@@ -4743,9 +4743,9 @@ class GameObjectFactory : BaseObject() {
         var thing: GameObject? = null
         // This is just an effect, so we can live without it if our pools are exhausted.
         if (componentAvailable(RenderComponent::class.java, 1)) {
-            thing = mGameObjectPool.allocate()
+            thing = gameObjectPool.allocate()
             thing!!.position[positionX] = positionY
-            thing.activationRadius = mAlwaysActive
+            thing.activationRadius = alwaysActive
             thing.width = 64f
             thing.height = 64f
             var staticData = getStaticData(GameObjectType.CRUSH_FLASH)
@@ -4821,9 +4821,9 @@ class GameObjectFactory : BaseObject() {
         var thing: GameObject? = null
         // This is just an effect, so we can live without it if our pools are exhausted.
         if (componentAvailable(RenderComponent::class.java, 1)) {
-            thing = mGameObjectPool.allocate()
+            thing = gameObjectPool.allocate()
             thing!!.position[positionX] = positionY
-            thing.activationRadius = mAlwaysActive
+            thing.activationRadius = alwaysActive
             thing.width = 64f
             thing.height = 64f
             var staticData = getStaticData(GameObjectType.FLASH)
@@ -4865,9 +4865,9 @@ class GameObjectFactory : BaseObject() {
     fun spawnFrameRateWatcher(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
         val params = sSystemRegistry.contextParameters
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[250f] = 0f // HACK!
-        thing.activationRadius = mAlwaysActive
+        thing.activationRadius = alwaysActive
         thing.width = params!!.gameWidth.toFloat()
         thing.height = params.gameHeight.toFloat()
         val indicator = DrawableBitmap(
@@ -4887,9 +4887,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnBreakableBlockPiece(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 16f
         thing.height = 16f
         var staticData = getStaticData(GameObjectType.BREAKABLE_BLOCK_PIECE)
@@ -4926,9 +4926,9 @@ class GameObjectFactory : BaseObject() {
     }
 
     fun spawnBreakableBlockPieceSpawner(positionX: Float, positionY: Float): GameObject? {
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 1f
         thing.height = 1f
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
@@ -4955,9 +4955,9 @@ class GameObjectFactory : BaseObject() {
         var thing: GameObject? = null
         // This is just an effect, so we can live without it if our pools are exhausted.
         if (componentAvailable(LaunchProjectileComponent::class.java, 2)) {
-            thing = mGameObjectPool.allocate()
+            thing = gameObjectPool.allocate()
             thing!!.position[positionX] = positionY
-            thing.activationRadius = mTightActivationRadius
+            thing.activationRadius = tightActivationRadius
             thing.width = 1f
             thing.height = 1f
             val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
@@ -4993,9 +4993,9 @@ class GameObjectFactory : BaseObject() {
 
     fun spawnGemEffect(positionX: Float, positionY: Float): GameObject? {
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 32f
         thing.height = 32f
         var staticData = getStaticData(GameObjectType.GEM_EFFECT)
@@ -5023,9 +5023,9 @@ class GameObjectFactory : BaseObject() {
     }
 
     fun spawnGemEffectSpawner(positionX: Float, positionY: Float): GameObject? {
-        val thing = mGameObjectPool.allocate()
+        val thing = gameObjectPool.allocate()
         thing!!.position[positionX] = positionY
-        thing.activationRadius = mTightActivationRadius
+        thing.activationRadius = tightActivationRadius
         thing.width = 1f
         thing.height = 1f
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
@@ -5091,7 +5091,7 @@ class GameObjectFactory : BaseObject() {
     }
 
     init {
-        mGameObjectPool = GameObjectPool(MAX_GAME_OBJECTS)
+        gameObjectPool = GameObjectPool(MAX_GAME_OBJECTS)
         val objectTypeCount = GameObjectType.OBJECT_COUNT.ordinal
         mStaticData = FixedSizeArray(objectTypeCount)
         for (x in 0 until objectTypeCount) {
@@ -5101,10 +5101,10 @@ class GameObjectFactory : BaseObject() {
         val halfHeight2 = context!!.gameHeight * 0.5f * (context.gameHeight * 0.5f)
         val halfWidth2 = context.gameWidth * 0.5f * (context.gameWidth * 0.5f)
         val screenSizeRadius = sqrt(halfHeight2 + halfWidth2.toDouble()).toFloat()
-        mTightActivationRadius = screenSizeRadius + 128.0f
-        mNormalActivationRadius = screenSizeRadius * 1.25f
-        mWideActivationRadius = screenSizeRadius * 2.0f
-        mAlwaysActive = -1.0f
+        tightActivationRadius = screenSizeRadius + 128.0f
+        normalActivationRadius = screenSizeRadius * 1.25f
+        wideActivationRadius = screenSizeRadius * 2.0f
+        alwaysActive = -1.0f
 
         // TODO: I wish there was a way to do this automatically, but the ClassLoader doesn't seem
         // to provide access to the currently loaded class list.  There's some discussion of walking
@@ -5162,12 +5162,12 @@ class GameObjectFactory : BaseObject() {
                 ComponentClass(SolidSurfaceComponent::class.java, 16),
                 ComponentClass(SpriteComponent::class.java, 384),
                 ComponentClass(TheSourceComponent::class.java, 1))
-        mComponentPools = FixedSizeArray(componentTypes.size, sComponentPoolComparator)
+        componentPools = FixedSizeArray(componentTypes.size, sComponentPoolComparator)
         for (x in componentTypes.indices) {
             val component = componentTypes[x]
-            mComponentPools.add(GameComponentPool(component.typeThing, component.poolSize))
+            componentPools.add(GameComponentPool(component.typeThing, component.poolSize))
         }
-        mComponentPools.sort(true)
-        mPoolSearchDummy = GameComponentPool(Any::class.java, 1)
+        componentPools.sort(true)
+        poolSearchDummy = GameComponentPool(Any::class.java, 1)
     }
 }

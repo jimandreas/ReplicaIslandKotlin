@@ -25,19 +25,19 @@ import java.util.*
 object LevelTree {
     val levels = ArrayList<LevelGroup>()
     private var mLoaded = false
-    private var mLoadedResource = 0
+    private var loadedResource = 0
     fun fetch(row: Int, index: Int): Level {
         return levels[row].levels[index]
     }
 
     @JvmStatic
 	fun isLoaded(resource: Int): Boolean {
-        return mLoaded && mLoadedResource == resource
+        return mLoaded && loadedResource == resource
     }
 
     @JvmStatic
 	fun loadLevelTree(resource: Int, context: Context) {
-        if (levels.size > 0 && mLoadedResource == resource) {
+        if (levels.size > 0 && loadedResource == resource) {
             // already loaded
             return
         }
@@ -137,7 +137,7 @@ object LevelTree {
             parser.close()
         }
         mLoaded = true
-        mLoadedResource = resource
+        loadedResource = resource
     }
 
     @JvmStatic

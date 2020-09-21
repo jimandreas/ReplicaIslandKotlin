@@ -26,58 +26,58 @@ import kotlin.math.abs
  * meet other configurable criteria.
  */
 class LifetimeComponent : GameComponent() {
-    private var mDieWhenInvisible = false
-    private var mTimeUntilDeath = 0f
-    private var mSpawnOnDeathType: GameObjectType? = null
-    private var mTrackingSpawner: LaunchProjectileComponent? = null
-    private val mHotSpotTestPoint: Vector2 = Vector2()
-    private var mReleaseGhostOnDeath = false
-    private var mVulnerableToDeathTiles = false
-    private var mDieOnHitBackground = false
+    private var dieWhenInvisible = false
+    private var timeUntilDeath = 0f
+    private var spawnOnDeathType: GameObjectType? = null
+    private var trackingSpawner: LaunchProjectileComponent? = null
+    private val hotSpotTestPoint: Vector2 = Vector2()
+    private var releaseGhostOnDeath = false
+    private var vulnerableToDeathTiles = false
+    private var dieOnHitBackground = false
     private var mDeathSound: Sound? = null
     private var mIncrementEventCounter = false
-    private var mEventCounter = 0
+    private var eventCounter = 0
     override fun reset() {
-        mDieWhenInvisible = false
-        mTimeUntilDeath = -1f
-        mSpawnOnDeathType = GameObjectType.INVALID
-        mTrackingSpawner = null
-        mHotSpotTestPoint.zero()
-        mReleaseGhostOnDeath = true
-        mVulnerableToDeathTiles = false
-        mDieOnHitBackground = false
+        dieWhenInvisible = false
+        timeUntilDeath = -1f
+        spawnOnDeathType = GameObjectType.INVALID
+        trackingSpawner = null
+        hotSpotTestPoint.zero()
+        releaseGhostOnDeath = true
+        vulnerableToDeathTiles = false
+        dieOnHitBackground = false
         mDeathSound = null
         mIncrementEventCounter = false
-        mEventCounter = -1
+        eventCounter = -1
     }
 
     fun setDieWhenInvisible(die: Boolean) {
-        mDieWhenInvisible = die
+        dieWhenInvisible = die
     }
 
     fun setTimeUntilDeath(time: Float) {
-        mTimeUntilDeath = time
+        timeUntilDeath = time
     }
 
     fun setObjectToSpawnOnDeath(type: GameObjectType?) {
-        mSpawnOnDeathType = type
+        spawnOnDeathType = type
     }
 
     fun setIncrementEventCounter(event: Int) {
         mIncrementEventCounter = true
-        mEventCounter = event
+        eventCounter = event
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (mTimeUntilDeath > 0) {
-            mTimeUntilDeath -= timeDelta
-            if (mTimeUntilDeath <= 0) {
+        if (timeUntilDeath > 0) {
+            timeUntilDeath -= timeDelta
+            if (timeUntilDeath <= 0) {
                 die(parentObject)
                 return
             }
         }
-        if (mDieWhenInvisible) {
+        if (dieWhenInvisible) {
             val camera = sSystemRegistry.cameraSystem
             val context = sSystemRegistry.contextParameters
             val dx = abs(parentObject.position.x - camera!!.fetchFocusPositionX())
@@ -89,7 +89,7 @@ class LifetimeComponent : GameComponent() {
                 return
             }
         }
-        if (parentObject.life > 0 && mVulnerableToDeathTiles) {
+        if (parentObject.life > 0 && vulnerableToDeathTiles) {
             val hotSpot = sSystemRegistry.hotSpotSystem
             if (hotSpot != null) {
                 // TODO: HACK!  Unify all this code.
@@ -99,7 +99,7 @@ class LifetimeComponent : GameComponent() {
                 }
             }
         }
-        if (parentObject.life > 0 && mDieOnHitBackground) {
+        if (parentObject.life > 0 && dieOnHitBackground) {
             if (parentObject.backgroundCollisionNormal.length2() > 0.0f) {
                 parentObject.life = 0
             }
@@ -113,7 +113,7 @@ class LifetimeComponent : GameComponent() {
     private fun die(parentObject: GameObject) {
         val factory = sSystemRegistry.gameObjectFactory
         val manager = sSystemRegistry.gameObjectManager
-        if (mReleaseGhostOnDeath) {
+        if (releaseGhostOnDeath) {
             // TODO: This is sort of a hack.  Find a better way to do this without introducing a
             // dependency between these two.  Generic on-death event or something.
             val ghost = parentObject.findByClass(GhostComponent::class.java)
@@ -123,17 +123,17 @@ class LifetimeComponent : GameComponent() {
         }
         if (mIncrementEventCounter) {
             val recorder = sSystemRegistry.eventRecorder
-            recorder!!.incrementEventCounter(mEventCounter)
+            recorder!!.incrementEventCounter(eventCounter)
         }
-        if (mSpawnOnDeathType != GameObjectType.INVALID) {
-            val `object` = factory!!.spawn(mSpawnOnDeathType!!, parentObject.position.x,
+        if (spawnOnDeathType != GameObjectType.INVALID) {
+            val `object` = factory!!.spawn(spawnOnDeathType!!, parentObject.position.x,
                     parentObject.position.y, parentObject.facingDirection.x < 0.0f)
             if (`object` != null && manager != null) {
                 manager.add(`object`)
             }
         }
-        if (mTrackingSpawner != null) {
-            mTrackingSpawner!!.trackedProjectileDestroyed()
+        if (trackingSpawner != null) {
+            trackingSpawner!!.trackedProjectileDestroyed()
         }
         manager?.destroy(parentObject)
         if (mDeathSound != null) {
@@ -143,19 +143,19 @@ class LifetimeComponent : GameComponent() {
     }
 
     fun setTrackingSpawner(spawner: LaunchProjectileComponent?) {
-        mTrackingSpawner = spawner
+        trackingSpawner = spawner
     }
 
     fun setReleaseGhostOnDeath(release: Boolean) {
-        mReleaseGhostOnDeath = release
+        releaseGhostOnDeath = release
     }
 
     fun setVulnerableToDeathTiles(vulnerable: Boolean) {
-        mVulnerableToDeathTiles = vulnerable
+        vulnerableToDeathTiles = vulnerable
     }
 
     fun setDieOnHitBackground(die: Boolean) {
-        mDieOnHitBackground = die
+        dieOnHitBackground = die
     }
 
     fun setDeathSound(deathSound: Sound?) {

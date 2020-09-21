@@ -27,13 +27,13 @@ class ButtonAnimationComponent : GameComponent() {
 
     private var mChannel: ChannelSystem.Channel? = null
     private var mSprite: SpriteComponent? = null
-    private val mLastPressedTime: ChannelFloatValue
-    private var mDepressSound: Sound? = null
+    private val lastPressedTime: ChannelFloatValue
+    private var depressSound: Sound? = null
     override fun reset() {
         mSprite = null
         mChannel = null
-        mLastPressedTime.value = 0.0f
-        mDepressSound = null
+        lastPressedTime.value = 0.0f
+        depressSound = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -43,14 +43,14 @@ class ButtonAnimationComponent : GameComponent() {
                     parentObject.lastReceivedHitType == CollisionParameters.HitType.DEPRESS) {
                 if (mSprite!!.currentAnimation == Animation.UP) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mDepressSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(depressSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
                 mSprite!!.playAnimation(Animation.DOWN)
                 parentObject.currentAction = GameObject.ActionType.IDLE
                 if (mChannel != null) {
                     val time = sSystemRegistry.timeSystem
-                    mLastPressedTime.value = time!!.gameTime
-                    mChannel!!.value = mLastPressedTime
+                    lastPressedTime.value = time!!.gameTime
+                    mChannel!!.value = lastPressedTime
                 }
             } else {
                 mSprite!!.playAnimation(Animation.UP)
@@ -67,12 +67,12 @@ class ButtonAnimationComponent : GameComponent() {
     }
 
     fun setDepressSound(sound: Sound?) {
-        mDepressSound = sound
+        depressSound = sound
     }
 
     init {
         setPhaseToThis(ComponentPhases.ANIMATION.ordinal)
-        mLastPressedTime = ChannelFloatValue()
+        lastPressedTime = ChannelFloatValue()
         reset()
     }
 }

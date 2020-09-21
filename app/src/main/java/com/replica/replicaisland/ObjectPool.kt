@@ -23,7 +23,7 @@ package com.replica.replicaisland
  * may wish to override release() to clear state on objects as they are returned to the pool.
  */
 abstract class ObjectPool : BaseObject {
-    private var mAvailable: FixedSizeArray<Any>? = null
+    private var available: FixedSizeArray<Any>? = null
     private var mSize = 0
 
     constructor() : super() {
@@ -38,29 +38,29 @@ abstract class ObjectPool : BaseObject {
 
     /** Allocates an object from the pool  */
     protected open fun allocate(): Any? {
-        return mAvailable!!.removeLast() ?: error("Object pool of type " + javaClass.simpleName
+        return available!!.removeLast() ?: error("Object pool of type " + javaClass.simpleName
                 + " exhausted!!")
     }
 
     /** Returns an object to the pool.  */
     open fun release(entry: Any) {
-        mAvailable!!.add(entry)
+        available!!.add(entry)
     }
 
     /** Returns the number of pooled elements that have been allocated but not released.  */
     fun fetchAllocatedCount(): Int {
-        return mAvailable!!.getCapacity() - mAvailable!!.count
+        return available!!.getCapacity() - available!!.count
     }
 
     private fun setTheSize(size: Int) {
         mSize = size
-        mAvailable = FixedSizeArray(mSize)
+        available = FixedSizeArray(mSize)
         fill()
     }
 
     protected abstract fun fill()
     protected fun fetchAvailable(): FixedSizeArray<Any>? {
-        return mAvailable
+        return available
     }
 
     fun fetchSize(): Int {

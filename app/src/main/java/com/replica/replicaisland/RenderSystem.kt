@@ -27,14 +27,14 @@ package com.replica.replicaisland
  */
 class RenderSystem : BaseObject() {
     private val mElementPool: RenderElementPool
-    private val mRenderQueues: Array<ObjectManager?>
-    private var mQueueIndex: Int
+    private val renderQueues: Array<ObjectManager?>
+    private var queueIndex: Int
     override fun reset() {}
     fun scheduleForDraw(`object`: DrawableObject?, position: Vector2, priority: Int, cameraRelative: Boolean) {
         val element = mElementPool.allocate()
         if (element != null) {
             element[`object`, position, priority] = cameraRelative
-            mRenderQueues[mQueueIndex]!!.add(element)
+            renderQueues[queueIndex]!!.add(element)
         }
     }
 
@@ -50,24 +50,24 @@ class RenderSystem : BaseObject() {
     }
 
     fun swap(renderer: GameRenderer, cameraX: Float, cameraY: Float) {
-        mRenderQueues[mQueueIndex]!!.commitUpdates()
+        renderQueues[queueIndex]!!.commitUpdates()
 
         // This code will block if the previous queue is still being executed.
-        renderer.setDrawQueue(mRenderQueues[mQueueIndex], cameraX, cameraY)
-        val lastQueue = if (mQueueIndex == 0) DRAW_QUEUE_COUNT - 1 else mQueueIndex - 1
+        renderer.setDrawQueue(renderQueues[queueIndex], cameraX, cameraY)
+        val lastQueue = if (queueIndex == 0) DRAW_QUEUE_COUNT - 1 else queueIndex - 1
 
         // Clear the old queue.
-        val objects = mRenderQueues[lastQueue]!!.fetchObjects()
+        val objects = renderQueues[lastQueue]!!.fetchObjects()
         clearQueue(objects)
-        mQueueIndex = (mQueueIndex + 1) % DRAW_QUEUE_COUNT
+        queueIndex = (queueIndex + 1) % DRAW_QUEUE_COUNT
     }
 
     /* Empties all draw queues and disconnects the game thread from the renderer. */
     fun emptyQueues(renderer: GameRenderer) {
         renderer.setDrawQueue(null, 0.0f, 0.0f)
         for (x in 0 until DRAW_QUEUE_COUNT) {
-            mRenderQueues[x]!!.commitUpdates()
-            val objects = mRenderQueues[x]!!.fetchObjects()
+            renderQueues[x]!!.commitUpdates()
+            val objects = renderQueues[x]!!.fetchObjects()
             clearQueue(objects)
         }
     }
@@ -134,10 +134,10 @@ class RenderSystem : BaseObject() {
 
     init {
         mElementPool = RenderElementPool(MAX_RENDER_OBJECTS)
-        mRenderQueues = arrayOfNulls(DRAW_QUEUE_COUNT)
+        renderQueues = arrayOfNulls(DRAW_QUEUE_COUNT)
         for (x in 0 until DRAW_QUEUE_COUNT) {
-            mRenderQueues[x] = PhasedObjectManager(MAX_RENDER_OBJECTS_PER_FRAME)
+            renderQueues[x] = PhasedObjectManager(MAX_RENDER_OBJECTS_PER_FRAME)
         }
-        mQueueIndex = 0
+        queueIndex = 0
     }
 }

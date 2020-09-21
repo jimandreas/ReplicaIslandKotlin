@@ -22,27 +22,27 @@ import com.replica.replicaisland.GameObject.ActionType
 import kotlin.math.abs
 
 class NPCAnimationComponent : GameComponent() {
-    private var mCurrentAnimation = 0
+    private var currentAnimation = 0
     private var mSprite: SpriteComponent? = null
     private var mChannel: ChannelSystem.Channel? = null
-    private var mChannelTrigger = 0
+    private var channelTrigger = 0
     private var mFlying = false
-    private var mStopAtWalls // Controls whether or not the character will go back
+    private var stopAtWalls // Controls whether or not the character will go back
             = false
 
     override fun reset() {
-        mCurrentAnimation = IDLE
+        currentAnimation = IDLE
         mChannel = null
         mSprite = null
         mFlying = false
-        mStopAtWalls = true
+        stopAtWalls = true
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mSprite != null) {
             val parentObject = parent as GameObject?
-            val oldAnimation = mCurrentAnimation
-            when (mCurrentAnimation) {
+            val oldAnimation = currentAnimation
+            when (currentAnimation) {
                 IDLE -> idle(parentObject)
                 WALK -> walk(parentObject)
                 RUN_START -> runStart(parentObject)
@@ -58,11 +58,11 @@ class NPCAnimationComponent : GameComponent() {
             if (mChannel != null) {
                 if (mChannel!!.value != null
                         && (mChannel!!.value as ChannelBooleanValue?)!!.value) {
-                    mCurrentAnimation = mChannelTrigger
+                    currentAnimation = channelTrigger
                 }
             }
-            if (oldAnimation != mCurrentAnimation) {
-                mSprite!!.playAnimation(mCurrentAnimation)
+            if (oldAnimation != currentAnimation) {
+                mSprite!!.playAnimation(currentAnimation)
             }
         }
     }
@@ -105,7 +105,7 @@ class NPCAnimationComponent : GameComponent() {
     private fun shouldMove(parentObject: GameObject?): Boolean {
         var result = true
         val velocity = parentObject!!.velocity
-        if (mStopAtWalls) {
+        if (stopAtWalls) {
             if (velocity.x < 0.0f && parentObject.touchingLeftWall()
                     || velocity.x > 0.0f && parentObject.touchingRightWall()) {
                 result = false
@@ -124,7 +124,7 @@ class NPCAnimationComponent : GameComponent() {
     }
 
     private fun gotoRunStart() {
-        mCurrentAnimation = if (mSprite!!.findAnimation(RUN_START) != null) {
+        currentAnimation = if (mSprite!!.findAnimation(RUN_START) != null) {
             RUN_START
         } else {
             RUN
@@ -132,7 +132,7 @@ class NPCAnimationComponent : GameComponent() {
     }
 
     private fun gotoRun() {
-        mCurrentAnimation = RUN
+        currentAnimation = RUN
     }
 
     private fun idle(parentObject: GameObject?) {
@@ -140,24 +140,24 @@ class NPCAnimationComponent : GameComponent() {
         if (currentAction === ActionType.MOVE) {
             val velocity = parentObject.velocity
             if (shouldFall(parentObject)) {
-                mCurrentAnimation = JUMP_AIR
+                currentAnimation = JUMP_AIR
             } else if (shouldJump(parentObject)) {
-                mCurrentAnimation = JUMP_START
+                currentAnimation = JUMP_START
                 parentObject.positionLocked = true
             } else if (abs(velocity.x) > 0.0f && shouldMove(parentObject)) {
                 if (shouldRun(parentObject)) {
                     gotoRunStart()
                     parentObject.positionLocked = true
                 } else {
-                    mCurrentAnimation = WALK
+                    currentAnimation = WALK
                 }
             }
         } else if (currentAction === ActionType.ATTACK) {
-            mCurrentAnimation = SHOOT
+            currentAnimation = SHOOT
         } else if (shouldTakeHit(parentObject)) {
-            mCurrentAnimation = TAKE_HIT
+            currentAnimation = TAKE_HIT
         } else if (parentObject.currentAction === ActionType.DEATH) {
-            mCurrentAnimation = DEATH
+            currentAnimation = DEATH
         }
     }
 
@@ -166,9 +166,9 @@ class NPCAnimationComponent : GameComponent() {
         if (currentAction === ActionType.MOVE) {
             val velocity = parentObject.velocity
             if (shouldFall(parentObject)) {
-                mCurrentAnimation = JUMP_AIR
+                currentAnimation = JUMP_AIR
             } else if (shouldJump(parentObject)) {
-                mCurrentAnimation = JUMP_START
+                currentAnimation = JUMP_START
                 parentObject.positionLocked = true
             } else if (abs(velocity.x) > 0.0f) {
                 if (shouldRun(parentObject)) {
@@ -180,21 +180,21 @@ class NPCAnimationComponent : GameComponent() {
                     parentObject.facingDirection.x = (-1).toFloat()
                 }
             } else {
-                mCurrentAnimation = IDLE
+                currentAnimation = IDLE
             }
         } else if (currentAction === ActionType.ATTACK) {
-            mCurrentAnimation = SHOOT
+            currentAnimation = SHOOT
         } else if (shouldTakeHit(parentObject)) {
-            mCurrentAnimation = TAKE_HIT
+            currentAnimation = TAKE_HIT
         } else if (parentObject.currentAction === ActionType.DEATH) {
-            mCurrentAnimation = DEATH
+            currentAnimation = DEATH
         }
     }
 
     private fun runStart(parentObject: GameObject?) {
         parentObject!!.positionLocked = true
         if (mSprite!!.animationFinished()) {
-            mCurrentAnimation = RUN
+            currentAnimation = RUN
             parentObject.positionLocked = false
         }
     }
@@ -204,13 +204,13 @@ class NPCAnimationComponent : GameComponent() {
         if (currentAction === ActionType.MOVE) {
             val velocity = parentObject.velocity
             if (shouldFall(parentObject)) {
-                mCurrentAnimation = JUMP_AIR
+                currentAnimation = JUMP_AIR
             } else if (shouldJump(parentObject)) {
                 parentObject.positionLocked = true
-                mCurrentAnimation = JUMP_START
+                currentAnimation = JUMP_START
             } else if (abs(velocity.x) > 0.0f) {
                 if (!shouldRun(parentObject)) {
-                    mCurrentAnimation = WALK
+                    currentAnimation = WALK
                 }
                 if (velocity.x > 0.0f) {
                     parentObject.facingDirection.x = 1f
@@ -218,24 +218,24 @@ class NPCAnimationComponent : GameComponent() {
                     parentObject.facingDirection.x = (-1).toFloat()
                 }
             } else {
-                mCurrentAnimation = IDLE
+                currentAnimation = IDLE
             }
         } else if (currentAction === ActionType.ATTACK) {
-            mCurrentAnimation = SHOOT
+            currentAnimation = SHOOT
         } else if (shouldTakeHit(parentObject)) {
-            mCurrentAnimation = TAKE_HIT
+            currentAnimation = TAKE_HIT
         } else if (parentObject.currentAction === ActionType.DEATH) {
-            mCurrentAnimation = DEATH
+            currentAnimation = DEATH
         }
     }
 
     private fun shoot(parentObject: GameObject?) {
         if (mSprite!!.animationFinished() || parentObject!!.currentAction !== ActionType.ATTACK) {
-            mCurrentAnimation = IDLE
+            currentAnimation = IDLE
         } else if (shouldTakeHit(parentObject)) {
-            mCurrentAnimation = TAKE_HIT
+            currentAnimation = TAKE_HIT
         } else if (parentObject!!.currentAction === ActionType.DEATH) {
-            mCurrentAnimation = DEATH
+            currentAnimation = DEATH
         } else {
             val velocity = parentObject!!.velocity
             if (velocity.x > 0.0f) {
@@ -255,7 +255,7 @@ class NPCAnimationComponent : GameComponent() {
         }
         parentObject.positionLocked = true
         if (mSprite!!.animationFinished()) {
-            mCurrentAnimation = JUMP_AIR
+            currentAnimation = JUMP_AIR
             parentObject.positionLocked = false
         }
     }
@@ -265,7 +265,7 @@ class NPCAnimationComponent : GameComponent() {
         if (currentAction === ActionType.MOVE) {
             val velocity = parentObject.velocity
             if (parentObject.touchingGround()) {
-                mCurrentAnimation = if (abs(velocity.x) > 0.0f) {
+                currentAnimation = if (abs(velocity.x) > 0.0f) {
                     if (shouldRun(parentObject)) {
                         RUN
                     } else {
@@ -282,7 +282,7 @@ class NPCAnimationComponent : GameComponent() {
                 }
             }
         } else {
-            mCurrentAnimation = IDLE
+            currentAnimation = IDLE
         }
     }
 
@@ -290,17 +290,17 @@ class NPCAnimationComponent : GameComponent() {
         if (mSprite!!.animationFinished()) {
             if (parentObject!!.life > 0 && parentObject.currentAction !== ActionType.DEATH) {
                 if (parentObject.currentAction !== ActionType.HIT_REACT) {
-                    mCurrentAnimation = IDLE
+                    currentAnimation = IDLE
                 }
             } else {
-                mCurrentAnimation = DEATH
+                currentAnimation = DEATH
             }
         }
     }
 
     private fun surprised(parentObject: GameObject?) {
         if (mSprite!!.animationFinished()) {
-            mCurrentAnimation = IDLE
+            currentAnimation = IDLE
         }
     }
 
@@ -314,7 +314,7 @@ class NPCAnimationComponent : GameComponent() {
     }
 
     fun setChannelTrigger(animation: Int) {
-        mChannelTrigger = animation
+        channelTrigger = animation
     }
 
     fun setFlying(flying: Boolean) {
@@ -322,7 +322,7 @@ class NPCAnimationComponent : GameComponent() {
     }
 
     fun setStopAtWalls(stop: Boolean) {
-        mStopAtWalls = stop
+        stopAtWalls = stop
     }
 
     companion object {

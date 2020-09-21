@@ -23,29 +23,29 @@ import kotlin.math.sin
 
 class LauncherComponent : GameComponent() {
     private var mShot: GameObject? = null
-    private var mLaunchTime = 0f
+    private var launchTime = 0f
     private var mAngle = 0f
     private var mLaunchDelay = 0f
-    private val mLaunchDirection: Vector2 = Vector2()
-    private var mLaunchMagnitude = 0f
+    private val launchDirection: Vector2 = Vector2()
+    private var launchMagnitude = 0f
     private var mPostLaunchDelay = 0f
     private var mDriveActions = false
-    private var mLaunchEffect: GameObjectType? = null
-    private var mLaunchEffectOffsetX = 0f
-    private var mLaunchEffectOffsetY = 0f
-    private var mLaunchSound: Sound? = null
+    private var launchEffect: GameObjectType? = null
+    private var launchEffectOffsetX = 0f
+    private var launchEffectOffsetY = 0f
+    private var launchSound: Sound? = null
     override fun reset() {
         mShot = null
-        mLaunchTime = 0.0f
+        launchTime = 0.0f
         mAngle = 0.0f
         mLaunchDelay = DEFAULT_LAUNCH_DELAY
-        mLaunchMagnitude = DEFAULT_LAUNCH_MAGNITUDE
+        launchMagnitude = DEFAULT_LAUNCH_MAGNITUDE
         mPostLaunchDelay = DEFAULT_POST_LAUNCH_DELAY
         mDriveActions = true
-        mLaunchEffect = GameObjectType.INVALID
-        mLaunchEffectOffsetX = 0.0f
-        mLaunchEffectOffsetY = 0.0f
-        mLaunchSound = null
+        launchEffect = GameObjectType.INVALID
+        launchEffectOffsetX = 0.0f
+        launchEffectOffsetY = 0.0f
+        launchSound = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -58,7 +58,7 @@ class LauncherComponent : GameComponent() {
                 // TODO: this is unreliable.  We should have a "notify on death" event or something.
                 mShot = null
             } else {
-                if (gameTime > mLaunchTime) {
+                if (gameTime > launchTime) {
                     fire(mShot!!, parentObject, mAngle)
                     mShot = null
                     if (mDriveActions) {
@@ -68,7 +68,7 @@ class LauncherComponent : GameComponent() {
                     mShot!!.position = parentObject!!.position
                 }
             }
-        } else if (gameTime > mLaunchTime + mPostLaunchDelay) {
+        } else if (gameTime > launchTime + mPostLaunchDelay) {
             if (mDriveActions) {
                 parentObject!!.currentAction = ActionType.IDLE
             }
@@ -85,7 +85,7 @@ class LauncherComponent : GameComponent() {
             val time = sSystemRegistry.timeSystem
             val gameTime = time!!.gameTime
             mShot = thing
-            mLaunchTime = gameTime + mLaunchDelay
+            launchTime = gameTime + mLaunchDelay
         }
     }
 
@@ -93,22 +93,22 @@ class LauncherComponent : GameComponent() {
         if (mDriveActions) {
             thing.currentAction = ActionType.MOVE
         }
-        mLaunchDirection[sin(mAngle.toDouble()).toFloat()] = cos(mAngle.toDouble()).toFloat()
-        mLaunchDirection.multiply(parentObject!!.facingDirection)
-        mLaunchDirection.multiply(mLaunchMagnitude)
-        thing.velocity = mLaunchDirection
-        if (mLaunchSound != null) {
+        launchDirection[sin(mAngle.toDouble()).toFloat()] = cos(mAngle.toDouble()).toFloat()
+        launchDirection.multiply(parentObject!!.facingDirection)
+        launchDirection.multiply(launchMagnitude)
+        thing.velocity = launchDirection
+        if (launchSound != null) {
             val sound = sSystemRegistry.soundSystem
-            sound?.play(mLaunchSound!!, false, SoundSystem.PRIORITY_NORMAL)
+            sound?.play(launchSound!!, false, SoundSystem.PRIORITY_NORMAL)
         }
-        if (mLaunchEffect !== GameObjectType.INVALID) {
+        if (launchEffect !== GameObjectType.INVALID) {
             val factory = sSystemRegistry.gameObjectFactory
             val manager = sSystemRegistry.gameObjectManager
             if (factory != null && manager != null) {
                 val position = parentObject.position
-                val effect = factory.spawn(mLaunchEffect!!,
-                        position.x + mLaunchEffectOffsetX * parentObject.facingDirection.x,
-                        position.y + mLaunchEffectOffsetY * parentObject.facingDirection.y,
+                val effect = factory.spawn(launchEffect!!,
+                        position.x + launchEffectOffsetX * parentObject.facingDirection.x,
+                        position.y + launchEffectOffsetY * parentObject.facingDirection.y,
                         false)
                 if (effect != null) {
                     manager.add(effect)
@@ -119,20 +119,20 @@ class LauncherComponent : GameComponent() {
 
     fun setup(angle: Float, magnitude: Float, launchDelay: Float, postLaunchDelay: Float, driveActions: Boolean) {
         mAngle = angle
-        mLaunchMagnitude = magnitude
+        launchMagnitude = magnitude
         mLaunchDelay = launchDelay
         mPostLaunchDelay = postLaunchDelay
         mDriveActions = driveActions
     }
 
     fun setLaunchEffect(effectType: GameObjectType?, offsetX: Float, offsetY: Float) {
-        mLaunchEffect = effectType
-        mLaunchEffectOffsetX = offsetX
-        mLaunchEffectOffsetY = offsetY
+        launchEffect = effectType
+        launchEffectOffsetX = offsetX
+        launchEffectOffsetY = offsetY
     }
 
     fun setLaunchSound(sound: Sound?) {
-        mLaunchSound = sound
+        launchSound = sound
     }
 
     companion object {

@@ -23,69 +23,69 @@ import com.replica.replicaisland.GameObject.ActionType
  * attack.
  */
 class SleeperComponent : GameComponent() {
-    private var mWakeUpDuration = 0f
-    private var mStateTime = 0f
-    private var mState = 0
-    private var mSlamDuration = 0f
-    private var mSlamMagnitude = 0f
-    private var mAttackImpulseX = 0f
-    private var mAttackImpulseY = 0f
+    private var wakeUpDuration = 0f
+    private var stateTime = 0f
+    private var state = 0
+    private var slamDuration = 0f
+    private var slamMagnitude = 0f
+    private var attackImpulseX = 0f
+    private var attackImpulseY = 0f
     override fun reset() {
-        mWakeUpDuration = DEFAULT_WAKE_UP_DURATION
-        mState = STATE_SLEEPING
-        mStateTime = 0.0f
-        mSlamDuration = 0.0f
-        mSlamMagnitude = 0.0f
-        mAttackImpulseX = 0.0f
-        mAttackImpulseY = 0.0f
+        wakeUpDuration = DEFAULT_WAKE_UP_DURATION
+        state = STATE_SLEEPING
+        stateTime = 0.0f
+        slamDuration = 0.0f
+        slamMagnitude = 0.0f
+        attackImpulseX = 0.0f
+        attackImpulseY = 0.0f
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
         if (parentObject.currentAction == ActionType.INVALID) {
             parentObject.currentAction = ActionType.IDLE
-            mState = STATE_SLEEPING
+            state = STATE_SLEEPING
         }
         val camera = sSystemRegistry.cameraSystem
-        when (mState) {
+        when (state) {
             STATE_SLEEPING -> if (camera!!.shaking() && camera.pointVisible(parentObject.position, parentObject.width / 2.0f)) {
-                mState = STATE_WAKING
-                mStateTime = mWakeUpDuration
+                state = STATE_WAKING
+                stateTime = wakeUpDuration
                 parentObject.currentAction = ActionType.MOVE
             }
             STATE_WAKING -> {
-                mStateTime -= timeDelta
-                if (mStateTime <= 0.0f) {
-                    mState = STATE_ATTACKING
+                stateTime -= timeDelta
+                if (stateTime <= 0.0f) {
+                    state = STATE_ATTACKING
                     parentObject.currentAction = ActionType.ATTACK
-                    parentObject.impulse.x += mAttackImpulseX * parentObject.facingDirection.x
-                    parentObject.impulse.y += mAttackImpulseY
+                    parentObject.impulse.x += attackImpulseX * parentObject.facingDirection.x
+                    parentObject.impulse.y += attackImpulseY
                 }
             }
             STATE_ATTACKING -> if (parentObject.touchingGround() && parentObject.velocity.y < 0.0f) {
-                mState = STATE_SLAM
-                camera!!.shake(mSlamDuration, mSlamMagnitude)
+                state = STATE_SLAM
+                camera!!.shake(slamDuration, slamMagnitude)
                 parentObject.velocity.zero()
             }
             STATE_SLAM -> if (!camera!!.shaking()) {
-                mState = STATE_SLEEPING
+                state = STATE_SLEEPING
                 parentObject.currentAction = ActionType.IDLE
             }
         }
     }
 
     fun setWakeUpDuration(duration: Float) {
-        mWakeUpDuration = duration
+        wakeUpDuration = duration
     }
 
     fun setSlam(duration: Float, magnitude: Float) {
-        mSlamDuration = duration
-        mSlamMagnitude = magnitude
+        slamDuration = duration
+        slamMagnitude = magnitude
     }
 
     fun setAttackImpulse(x: Float, y: Float) {
-        mAttackImpulseX = x
-        mAttackImpulseY = y
+        attackImpulseX = x
+        attackImpulseY = y
     }
 
     companion object {

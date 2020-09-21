@@ -19,9 +19,9 @@ import com.replica.replicaisland.SoundSystem.Sound
 
 class PlaySingleSoundComponent : GameComponent() {
     private var mSound: Sound? = null
-    private var mSoundHandle = 0
+    private var soundHandle = 0
     override fun reset() {
-        mSoundHandle = -1
+        soundHandle = -1
         mSound = null
     }
 
@@ -30,9 +30,9 @@ class PlaySingleSoundComponent : GameComponent() {
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mSoundHandle == -1 && mSound != null) {
+        if (soundHandle == -1 && mSound != null) {
             val sound = sSystemRegistry.soundSystem
-            mSoundHandle = sound!!.play(mSound!!, false, SoundSystem.PRIORITY_NORMAL)
+            soundHandle = sound!!.play(mSound!!, false, SoundSystem.PRIORITY_NORMAL)
         }
     }
 

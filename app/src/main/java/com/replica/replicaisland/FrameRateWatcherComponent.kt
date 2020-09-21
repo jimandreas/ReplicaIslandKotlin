@@ -16,26 +16,26 @@
 package com.replica.replicaisland
 
 class FrameRateWatcherComponent : GameComponent() {
-    private var mRenderComponent: RenderComponent? = null
+    private var renderComponent: RenderComponent? = null
     private var mDrawable: DrawableObject? = null
-    private val mMaxFrameTime = 1.0f / 30.0f
+    private val maxFrameTime = 1.0f / 30.0f
     override fun reset() {
-        mRenderComponent = null
+        renderComponent = null
         mDrawable = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mRenderComponent != null && mDrawable != null) {
-            if (timeDelta > mMaxFrameTime) {
-                mRenderComponent!!.drawable = mDrawable
+        if (renderComponent != null && mDrawable != null) {
+            if (timeDelta > maxFrameTime) {
+                renderComponent!!.drawable = mDrawable
             } else {
-                mRenderComponent!!.drawable = null
+                renderComponent!!.drawable = null
             }
         }
     }
 
     fun setup(render: RenderComponent?, drawable: DrawableObject?) {
-        mRenderComponent = render
+        renderComponent = render
         mDrawable = drawable
     }
 

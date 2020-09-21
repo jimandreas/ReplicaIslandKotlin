@@ -31,89 +31,89 @@ import com.replica.replicaisland.SoundSystem.Sound
  * that object to respond to dynamic collisions.
  */
 class HitReactionComponent : GameComponent() {
-    private var mPauseOnAttack = false
-    private var mPauseOnAttackTime = 0f
-    private var mBounceOnHit = false
-    private var mBounceMagnitude = 0f
-    private var mInvincibleAfterHitTime = 0f
-    private var mLastHitTime = 0f
+    private var pauseOnAttack = false
+    private var pauseOnAttackTime = 0f
+    private var bounceOnHit = false
+    private var bounceMagnitude = 0f
+    private var invincibleAfterHitTime = 0f
+    private var lastHitTime = 0f
     private var mInvincible = false
-    private var mDieOnCollect = false
-    private var mDieOnAttack = false
-    private var mPossessionComponent: ChangeComponentsComponent? = null
-    private var mInventoryUpdate: UpdateRecord? = null
-    private var mLauncherComponent: LauncherComponent? = null
-    private var mLauncherHitType = 0
-    private var mInvincibleTime = 0f
-    private var mGameEventHitType = 0
-    private var mGameEventOnHit = 0
-    private var mGameEventIndexData = 0
-    private var mLastGameEventTime = 0f
-    private var mForceInvincibility = false
-    private var mTakeHitSound: Sound? = null
-    private var mDealHitSound: Sound? = null
-    private var mDealHitSoundHitType = 0
-    private var mTakeHitSoundHitType = 0
-    private var mSpawnOnDealHitObjectType: GameObjectType? = null
-    private var mSpawnOnDealHitHitType = 0
-    private var mAlignDealHitObjectToVictimX = false
-    private var mAlignDealHitObjectToVictimY = false
+    private var dieOnCollect = false
+    private var dieOnAttack = false
+    private var possessionComponent: ChangeComponentsComponent? = null
+    private var inventoryUpdate: UpdateRecord? = null
+    private var launcherComponent: LauncherComponent? = null
+    private var launcherHitType = 0
+    private var invincibleTime = 0f
+    private var gameEventHitType = 0
+    private var gameEventOnHit = 0
+    private var gameEventIndexData = 0
+    private var lastGameEventTime = 0f
+    private var forceInvincibility = false
+    private var takeHitSound: Sound? = null
+    private var dealHitSound: Sound? = null
+    private var dealHitSoundHitType = 0
+    private var takeHitSoundHitType = 0
+    private var spawnOnDealHitObjectType: GameObjectType? = null
+    private var spawnOnDealHitHitType = 0
+    private var alignDealHitObjectToVictimX = false
+    private var alignDealHitObjectToVictimY = false
     override fun reset() {
-        mPauseOnAttack = false
-        mPauseOnAttackTime = ATTACK_PAUSE_DELAY
-        mBounceOnHit = false
-        mBounceMagnitude = DEFAULT_BOUNCE_MAGNITUDE
-        mInvincibleAfterHitTime = 0.0f
+        pauseOnAttack = false
+        pauseOnAttackTime = ATTACK_PAUSE_DELAY
+        bounceOnHit = false
+        bounceMagnitude = DEFAULT_BOUNCE_MAGNITUDE
+        invincibleAfterHitTime = 0.0f
         mInvincible = false
-        mDieOnCollect = false
-        mDieOnAttack = false
-        mPossessionComponent = null
-        mInventoryUpdate = null
-        mLauncherComponent = null
-        mLauncherHitType = HitType.LAUNCH
-        mInvincibleTime = 0.0f
-        mGameEventOnHit = -1
-        mGameEventIndexData = 0
-        mLastGameEventTime = -1.0f
-        mGameEventHitType = HitType.INVALID
-        mForceInvincibility = false
-        mTakeHitSound = null
-        mDealHitSound = null
-        mSpawnOnDealHitObjectType = GameObjectType.INVALID
-        mSpawnOnDealHitHitType = HitType.INVALID
-        mDealHitSoundHitType = HitType.INVALID
-        mAlignDealHitObjectToVictimX = false
-        mAlignDealHitObjectToVictimY = false
+        dieOnCollect = false
+        dieOnAttack = false
+        possessionComponent = null
+        inventoryUpdate = null
+        launcherComponent = null
+        launcherHitType = HitType.LAUNCH
+        invincibleTime = 0.0f
+        gameEventOnHit = -1
+        gameEventIndexData = 0
+        lastGameEventTime = -1.0f
+        gameEventHitType = HitType.INVALID
+        forceInvincibility = false
+        takeHitSound = null
+        dealHitSound = null
+        spawnOnDealHitObjectType = GameObjectType.INVALID
+        spawnOnDealHitHitType = HitType.INVALID
+        dealHitSoundHitType = HitType.INVALID
+        alignDealHitObjectToVictimX = false
+        alignDealHitObjectToVictimY = false
     }
 
     /** Called when this object attacks another object.  */
     fun hitVictim(parent: GameObject, victim: GameObject, hitType: Int,
                   hitAccepted: Boolean) {
         if (hitAccepted) {
-            if (mPauseOnAttack && hitType == HitType.HIT) {
+            if (pauseOnAttack && hitType == HitType.HIT) {
                 val time = sSystemRegistry.timeSystem
-                time!!.freeze(mPauseOnAttackTime)
+                time!!.freeze(pauseOnAttackTime)
             }
-            if (mDieOnAttack) {
+            if (dieOnAttack) {
                 parent.life = 0
             }
-            if (hitType == mLauncherHitType && mLauncherComponent != null) {
-                mLauncherComponent!!.prepareToLaunch(victim, parent)
+            if (hitType == launcherHitType && launcherComponent != null) {
+                launcherComponent!!.prepareToLaunch(victim, parent)
             }
-            if (mDealHitSound != null &&
-                    (hitType == mDealHitSoundHitType ||
-                            mDealHitSoundHitType == HitType.INVALID)) {
+            if (dealHitSound != null &&
+                    (hitType == dealHitSoundHitType ||
+                            dealHitSoundHitType == HitType.INVALID)) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(mDealHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                sound?.play(dealHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
             }
-            if (mSpawnOnDealHitObjectType != GameObjectType.INVALID &&
-                    hitType == mSpawnOnDealHitHitType) {
-                val x = if (mAlignDealHitObjectToVictimX) victim.position.x else parent.position.x
-                val y = if (mAlignDealHitObjectToVictimY) victim.position.y else parent.position.y
+            if (spawnOnDealHitObjectType != GameObjectType.INVALID &&
+                    hitType == spawnOnDealHitHitType) {
+                val x = if (alignDealHitObjectToVictimX) victim.position.x else parent.position.x
+                val y = if (alignDealHitObjectToVictimY) victim.position.y else parent.position.y
                 val factory = sSystemRegistry.gameObjectFactory
                 val manager = sSystemRegistry.gameObjectManager
                 if (factory != null) {
-                    val thing = factory.spawn(mSpawnOnDealHitObjectType!!, x,
+                    val thing = factory.spawn(spawnOnDealHitObjectType!!, x,
                             y, parent.facingDirection.x < 0.0f)
                     if (thing != null && manager != null) {
                         manager.add(thing)
@@ -128,18 +128,18 @@ class HitReactionComponent : GameComponent() {
         var hitType = hitTypeIn
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
-        if (mGameEventHitType == hitType &&
-                mGameEventHitType != HitType.INVALID) {
-            if (mLastGameEventTime < 0.0f || gameTime > mLastGameEventTime + EVENT_SEND_DELAY) {
+        if (gameEventHitType == hitType &&
+                gameEventHitType != HitType.INVALID) {
+            if (lastGameEventTime < 0.0f || gameTime > lastGameEventTime + EVENT_SEND_DELAY) {
                 val level = sSystemRegistry.levelSystem
-                level!!.sendGameEvent(mGameEventOnHit, mGameEventIndexData, true)
+                level!!.sendGameEvent(gameEventOnHit, gameEventIndexData, true)
             } else {
                 // special case.  If we're waiting for a hit type to spawn an event and
                 // another event has just happened, eat this hit so we don't miss
                 // the chance to send the event.
                 hitType = HitType.INVALID
             }
-            mLastGameEventTime = gameTime
+            lastGameEventTime = gameTime
         }
         when (hitType) {
             HitType.INVALID -> {
@@ -147,21 +147,21 @@ class HitReactionComponent : GameComponent() {
             HitType.HIT -> {
                 // don't hit our friends, if we have friends.
                 val sameTeam = parent.team == attacker.team && parent.team != Team.NONE
-                if (!mForceInvincibility && !mInvincible && parent.life > 0 && !sameTeam) {
+                if (!forceInvincibility && !mInvincible && parent.life > 0 && !sameTeam) {
                     parent.life -= 1
-                    if (mBounceOnHit && parent.life > 0) {
+                    if (bounceOnHit && parent.life > 0) {
                         val pool = sSystemRegistry.vectorPool
                         val newVelocity = pool!!.allocate(parent.position)
                         newVelocity.subtract(attacker.position)
                         newVelocity[0.5f * Utils.sign(newVelocity.x)] = 0.5f * Utils.sign(newVelocity.y)
-                        newVelocity.multiply(mBounceMagnitude)
+                        newVelocity.multiply(bounceMagnitude)
                         parent.velocity = newVelocity
                         parent.targetVelocity.zero()
                         pool.release(newVelocity)
                     }
-                    if (mInvincibleAfterHitTime > 0.0f) {
+                    if (invincibleAfterHitTime > 0.0f) {
                         mInvincible = true
-                        mInvincibleTime = mInvincibleAfterHitTime
+                        invincibleTime = invincibleAfterHitTime
                     }
                 } else {
                     // Ignore this hit.
@@ -171,19 +171,19 @@ class HitReactionComponent : GameComponent() {
             HitType.DEATH ->                 // respect teams?
                 parent.life = 0
             HitType.COLLECT -> {
-                if (mInventoryUpdate != null && parent.life > 0) {
+                if (inventoryUpdate != null && parent.life > 0) {
                     val attackerInventory = attacker.findByClass(InventoryComponent::class.java)
                     if (attackerInventory != null) {
-                        (attackerInventory).applyUpdate(mInventoryUpdate!!)
+                        (attackerInventory).applyUpdate(inventoryUpdate!!)
                     }
 
                 }
-                if (mDieOnCollect && parent.life > 0) {
+                if (dieOnCollect && parent.life > 0) {
                     parent.life = 0
                 }
             }
-            HitType.POSSESS -> if (mPossessionComponent != null && parent.life > 0 && attacker.life > 0) {
-                mPossessionComponent!!.activate(parent)
+            HitType.POSSESS -> if (possessionComponent != null && parent.life > 0 && attacker.life > 0) {
+                possessionComponent!!.activate(parent)
             } else {
                 hitType = HitType.INVALID
             }
@@ -193,11 +193,11 @@ class HitReactionComponent : GameComponent() {
             }
         }
         if (hitType != HitType.INVALID) {
-            if (mTakeHitSound != null && hitType == mTakeHitSoundHitType) {
+            if (takeHitSound != null && hitType == takeHitSoundHitType) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(mTakeHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                sound?.play(takeHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
             }
-            mLastHitTime = gameTime
+            lastHitTime = gameTime
             parent.currentAction = ActionType.HIT_REACT
             parent.lastReceivedHitType = hitType
         }
@@ -208,45 +208,45 @@ class HitReactionComponent : GameComponent() {
         val parentObject = parent as GameObject
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
-        if (mInvincible && mInvincibleTime > 0) {
-            if (time.gameTime > mLastHitTime + mInvincibleTime) {
+        if (mInvincible && invincibleTime > 0) {
+            if (time.gameTime > lastHitTime + invincibleTime) {
                 mInvincible = false
             }
         }
 
         // This means that the lastReceivedHitType will persist for two frames, giving all systems
         // a chance to react.
-        if (gameTime - mLastHitTime > timeDelta) {
+        if (gameTime - lastHitTime > timeDelta) {
             parentObject.lastReceivedHitType = HitType.INVALID
         }
     }
 
     fun setPauseOnAttack(pause: Boolean) {
-        mPauseOnAttack = pause
+        pauseOnAttack = pause
     }
 
     fun setPauseOnAttackTime(seconds: Float) {
-        mPauseOnAttackTime = seconds
+        pauseOnAttackTime = seconds
     }
 
     fun setBounceOnHit(bounce: Boolean) {
-        mBounceOnHit = bounce
+        bounceOnHit = bounce
     }
 
     fun setBounceMagnitude(magnitude: Float) {
-        mBounceMagnitude = magnitude
+        bounceMagnitude = magnitude
     }
 
     fun setInvincibleTime(time: Float) {
-        mInvincibleAfterHitTime = time
+        invincibleAfterHitTime = time
     }
 
     fun setDieWhenCollected(die: Boolean) {
-        mDieOnCollect = true
+        dieOnCollect = true
     }
 
     fun setDieOnAttack(die: Boolean) {
-        mDieOnAttack = die
+        dieOnAttack = die
     }
 
     fun setInvincible(invincible: Boolean) {
@@ -254,49 +254,49 @@ class HitReactionComponent : GameComponent() {
     }
 
     fun setPossessionComponent(component: ChangeComponentsComponent?) {
-        mPossessionComponent = component
+        possessionComponent = component
     }
 
     fun setInventoryUpdate(update: UpdateRecord?) {
-        mInventoryUpdate = update
+        inventoryUpdate = update
     }
 
     fun setLauncherComponent(component: LauncherComponent?, launchHitType: Int) {
-        mLauncherComponent = component
-        mLauncherHitType = launchHitType
+        launcherComponent = component
+        launcherHitType = launchHitType
     }
 
     fun setSpawnGameEventOnHit(hitType: Int, gameFlowEventType: Int, indexData: Int) {
-        mGameEventHitType = hitType
-        mGameEventOnHit = gameFlowEventType
-        mGameEventIndexData = indexData
+        gameEventHitType = hitType
+        gameEventOnHit = gameFlowEventType
+        gameEventIndexData = indexData
         if (hitType == HitType.INVALID) {
             // The game event has been cleared, so reset the timer blocking a
             // subsequent event.
-            mLastGameEventTime = -1.0f
+            lastGameEventTime = -1.0f
         }
     }
 
     fun setForceInvincible(force: Boolean) {
-        mForceInvincibility = force
+        forceInvincibility = force
     }
 
     fun setTakeHitSound(hitType: Int, sound: Sound?) {
-        mTakeHitSoundHitType = hitType
-        mTakeHitSound = sound
+        takeHitSoundHitType = hitType
+        takeHitSound = sound
     }
 
     fun setDealHitSound(hitType: Int, sound: Sound?) {
-        mDealHitSound = sound
-        mDealHitSoundHitType = hitType
+        dealHitSound = sound
+        dealHitSoundHitType = hitType
     }
 
     fun setSpawnOnDealHit(hitType: Int, objectType: GameObjectType?, alignToVictimX: Boolean,
                           alignToVicitmY: Boolean) {
-        mSpawnOnDealHitObjectType = objectType
-        mSpawnOnDealHitHitType = hitType
-        mAlignDealHitObjectToVictimX = alignToVictimX
-        mAlignDealHitObjectToVictimY = alignToVicitmY
+        spawnOnDealHitObjectType = objectType
+        spawnOnDealHitHitType = hitType
+        alignDealHitObjectToVictimX = alignToVictimX
+        alignDealHitObjectToVictimY = alignToVicitmY
     }
 
     companion object {

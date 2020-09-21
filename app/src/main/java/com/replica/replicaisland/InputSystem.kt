@@ -22,23 +22,23 @@ package com.replica.replicaisland
  * an average direction over a short period of time.
  */
 class InputSystem : BaseObject() {
-    private val mTouchScreen = InputTouchScreen()
-    private val mOrientationSensor = InputXY()
-    private val mTrackball = InputXY()
-    private val mKeyboard = InputKeyboard()
-    private var mScreenRotation = 0
-    private val mOrientationInput = FloatArray(3)
-    private val mOrientationOutput = FloatArray(3)
+    private val touchScreen = InputTouchScreen()
+    private val orientationSensor = InputXY()
+    private val trackball = InputXY()
+    private val keyboard = InputKeyboard()
+    private var screenRotation = 0
+    private val orientationInput = FloatArray(3)
+    private val orientationOutput = FloatArray(3)
     override fun reset() {
-        mTrackball.reset()
-        mTouchScreen.reset()
-        mKeyboard.resetAll()
-        mOrientationSensor.reset()
+        trackball.reset()
+        touchScreen.reset()
+        keyboard.resetAll()
+        orientationSensor.reset()
     }
 
     fun roll(x: Float, y: Float) {
         val time = sSystemRegistry.timeSystem
-        mTrackball.press(time!!.gameTime, mTrackball.retreiveXaxisMagnitude() + x, mTrackball.retreiveYaxisMagnitude() + y)
+        trackball.press(time!!.gameTime, trackball.retreiveXaxisMagnitude() + x, trackball.retreiveYaxisMagnitude() + y)
     }
 
     fun touchDown(index: Int, x: Float, y: Float) {
@@ -47,12 +47,12 @@ class InputSystem : BaseObject() {
         // Change the origin of the touch location from the top-left to the bottom-left to match
         // OpenGL space.
         // TODO: UNIFY THIS SHIT
-        mTouchScreen.press(index, time!!.gameTime, x, params!!.gameHeight - y)
+        touchScreen.press(index, time!!.gameTime, x, params!!.gameHeight - y)
     }
 
     fun touchUp(index: Int, x: Float, y: Float) {
         // TODO: record up location?
-        mTouchScreen.release(index)
+        touchScreen.release(index)
     }
 
     fun setOrientation(x: Float, y: Float, z: Float) {
@@ -61,54 +61,54 @@ class InputSystem : BaseObject() {
         // "ROTATION_0" (e.g. tablets).  So we need to adjust the axes from canonical
         // space into screen space depending on the rotation of the screen from
         // whatever this device calls "default."
-        mOrientationInput[0] = x
-        mOrientationInput[1] = y
-        mOrientationInput[2] = z
-        canonicalOrientationToScreenOrientation(mScreenRotation, mOrientationInput, mOrientationOutput)
+        orientationInput[0] = x
+        orientationInput[1] = y
+        orientationInput[2] = z
+        canonicalOrientationToScreenOrientation(screenRotation, orientationInput, orientationOutput)
 
         // Now we have screen space rotations around xyz.
-        val horizontalMotion = mOrientationOutput[1] / 90.0f
-        val verticalMotion = mOrientationOutput[0] / 90.0f
+        val horizontalMotion = orientationOutput[1] / 90.0f
+        val verticalMotion = orientationOutput[0] / 90.0f
         val time = sSystemRegistry.timeSystem
-        mOrientationSensor.press(time!!.gameTime, horizontalMotion, verticalMotion)
+        orientationSensor.press(time!!.gameTime, horizontalMotion, verticalMotion)
     }
 
     fun keyDown(keycode: Int) {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
-        mKeyboard.press(gameTime, keycode)
+        keyboard.press(gameTime, keycode)
     }
 
     fun keyUp(keycode: Int) {
-        mKeyboard.release(keycode)
+        keyboard.release(keycode)
     }
 
     fun releaseAllKeys() {
-        mTrackball.releaseX()
-        mTrackball.releaseY()
-        mTouchScreen.resetAll()
-        mKeyboard.releaseAll()
-        mOrientationSensor.release()
+        trackball.releaseX()
+        trackball.releaseY()
+        touchScreen.resetAll()
+        keyboard.releaseAll()
+        orientationSensor.release()
     }
 
     fun fetchTouchScreen(): InputTouchScreen {
-        return mTouchScreen
+        return touchScreen
     }
 
     fun fetchOrientationSensor(): InputXY {
-        return mOrientationSensor
+        return orientationSensor
     }
 
     fun fetchTrackball(): InputXY {
-        return mTrackball
+        return trackball
     }
 
     fun fetchKeyboard(): InputKeyboard {
-        return mKeyboard
+        return keyboard
     }
 
     fun setTheScreenRotation(rotation: Int) {
-        mScreenRotation = rotation
+        screenRotation = rotation
     }
 
     companion object {

@@ -28,29 +28,29 @@ class EventReporter : Runnable {
         var session: Long = 0
     }
 
-    private val mLock = Any()
-    private val mEvents = ArrayList<Event>()
-    private val mProcessedEvents = ArrayList<Event>()
-    private var mDone = false
+    private val lock = Any()
+    private val events = ArrayList<Event>()
+    private val processedEvents = ArrayList<Event>()
+    private var done = false
     override fun run() {
-        while (!mDone) {
-            synchronized(mLock) {
-                if (mEvents.isEmpty()) {
-                    while (mEvents.isEmpty() && !mDone) {
+        while (!done) {
+            synchronized(lock) {
+                if (events.isEmpty()) {
+                    while (events.isEmpty() && !done) {
                         try {
-                            mLock.wait()
+                            lock.wait()
                         } catch (e: InterruptedException) {
                         }
                     }
                 }
-                mProcessedEvents.addAll(mEvents)
-                mEvents.clear()
+                processedEvents.addAll(events)
+                events.clear()
             }
-            val count = mProcessedEvents.size
+            val count = processedEvents.size
             for (x in 0 until count) {
-                recordEvent(mProcessedEvents[x])
+                recordEvent(processedEvents[x])
             }
-            mProcessedEvents.clear()
+            processedEvents.clear()
         }
     }
 
@@ -67,9 +67,9 @@ class EventReporter : Runnable {
             EVENT_BEAT_LEVEL -> event.eventType = "beatLevel"
             EVENT_BEAT_GAME -> event.eventType = "beatGame"
         }
-        synchronized(mLock) {
-            mEvents.add(event)
-            mLock.notifyAll()
+        synchronized(lock) {
+            events.add(event)
+            lock.notifyAll()
         }
     }
 
@@ -107,9 +107,9 @@ class EventReporter : Runnable {
     }
 
     fun stop() {
-        synchronized(mLock) {
-            mDone = true
-            mLock.notifyAll()
+        synchronized(lock) {
+            done = true
+            lock.notifyAll()
         }
     }
 

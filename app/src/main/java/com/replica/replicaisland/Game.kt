@@ -30,20 +30,20 @@ import android.widget.Toast
  * game thread from the main UI thread.
  */
 class Game : AllocationGuard() {
-    private var mGameThread: GameThread? = null
+    private var gameThread: GameThread? = null
     private var mGame: Thread? = null
     private var mGameRoot: ObjectManager? = null
     var renderer: GameRenderer? = null
         private set
-    private var mSurfaceView: GLSurfaceView? = null
+    private var surfaceView: GLSurfaceView? = null
     private var mRunning = false
-    private var mBootstrapComplete = false
-    private var mPendingLevel: LevelTree.Level? = null
-    private var mCurrentLevel: LevelTree.Level? = null
-    private var mLastLevel: LevelTree.Level? = null
-    private var mGLDataLoaded = false
+    private var bootstrapComplete = false
+    private var pendingLevel: LevelTree.Level? = null
+    private var currentLevel: LevelTree.Level? = null
+    private var lastLevel: LevelTree.Level? = null
+    private var gLDataLoaded = false
     private val mContextParameters: ContextParameters = ContextParameters()
-    private var mTouchFilter: TouchFilter? = null
+    private var touchFilter: TouchFilter? = null
 
     /**
      * Creates core game objects and constructs the game engine object graph.  Note that the
@@ -52,7 +52,7 @@ class Game : AllocationGuard() {
      * isn't yet available.
      */
     fun bootstrap(context: Context, viewWidth: Int, viewHeight: Int, gameWidth: Int, gameHeight: Int, difficulty: Int) {
-        if (!mBootstrapComplete) {
+        if (!bootstrapComplete) {
             renderer = GameRenderer(context, this, gameWidth, gameHeight)
 
             // Create core systems
@@ -69,7 +69,7 @@ class Game : AllocationGuard() {
             params.difficulty = difficulty
             BaseObject.sSystemRegistry.contextParameters = params
             val sdkVersion = Build.VERSION.SDK_INT
-            mTouchFilter = if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
+            touchFilter = if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
                 SingleTouchFilter()
             } else {
                 MultiTouchFilter()
@@ -202,10 +202,10 @@ class Game : AllocationGuard() {
             //dynamicCollision.setDebugPrefs(false, true);
             objectFactory.preloadEffects()
             mGameRoot = gameRoot
-            mGameThread = GameThread(this.renderer!!)
-            mGameThread!!.setGameRoot(mGameRoot)
-            mCurrentLevel = null
-            mBootstrapComplete = true
+            gameThread = GameThread(this.renderer!!)
+            gameThread!!.setGameRoot(mGameRoot)
+            currentLevel = null
+            bootstrapComplete = true
         }
     }
 
@@ -236,9 +236,9 @@ class Game : AllocationGuard() {
         BaseObject.sSystemRegistry.reset()
 
         // Dump the short-term texture objects only.
-        mSurfaceView!!.flushTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+        surfaceView!!.flushTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
         BaseObject.sSystemRegistry.shortTermTextureLibrary!!.removeAll()
-        mSurfaceView!!.flushBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+        surfaceView!!.flushBuffers(BaseObject.sSystemRegistry.bufferLibrary)
         BaseObject.sSystemRegistry.bufferLibrary!!.removeAll()
     }
 
@@ -252,7 +252,7 @@ class Game : AllocationGuard() {
     @Synchronized
     fun restartLevel() {
         DebugLog.d("AndouKun", "Restarting...")
-        val level = mCurrentLevel
+        val level = currentLevel
         stop()
 
         // Destroy all game objects and respawn them.  No need to destroy other systems.
@@ -269,8 +269,8 @@ class Game : AllocationGuard() {
         levelSystem!!.incrementAttemptsCount()
         levelSystem.spawnObjects()
         BaseObject.sSystemRegistry.hudSystem!!.startFade(true, 0.2f)
-        mCurrentLevel = level
-        mPendingLevel = null
+        currentLevel = level
+        pendingLevel = null
         start()
     }
 
@@ -281,12 +281,12 @@ class Game : AllocationGuard() {
                 params!!.context!!.resources.openRawResource(level.resource), mGameRoot!!)
         val context = params.context
         renderer!!.setContext(context!!)
-        mSurfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
-        mSurfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
-        mSurfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
-        mGLDataLoaded = true
-        mCurrentLevel = level
-        mPendingLevel = null
+        surfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
+        surfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+        surfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+        gLDataLoaded = true
+        currentLevel = level
+        pendingLevel = null
         val time = BaseObject.sSystemRegistry.timeSystem
         time!!.reset()
         val hud = BaseObject.sSystemRegistry.hudSystem
@@ -296,12 +296,12 @@ class Game : AllocationGuard() {
             if (level.inThePast) {
                 toast.toast(context.getString(R.string.memory_playback_start), Toast.LENGTH_LONG)
             } else {
-                if (mLastLevel != null && mLastLevel!!.inThePast) {
+                if (lastLevel != null && lastLevel!!.inThePast) {
                     toast.toast(context.getString(R.string.memory_playback_complete), Toast.LENGTH_LONG)
                 }
             }
         }
-        mLastLevel = level
+        lastLevel = level
         start()
     }
 
@@ -313,23 +313,23 @@ class Game : AllocationGuard() {
             val r = Runtime.getRuntime()
             r.gc()
             DebugLog.d("AndouKun", "Start!")
-            mGame = Thread(mGameThread)
+            mGame = Thread(gameThread)
             mGame!!.name = "Game"
             mGame!!.start()
             mRunning = true
             sGuardActive = false
         } else {
-            mGameThread!!.resumeGame()
+            gameThread!!.resumeGame()
         }
     }
 
     fun stop() {
         if (mRunning) {
             DebugLog.d("AndouKun", "Stop!")
-            if (mGameThread!!.paused) {
-                mGameThread!!.resumeGame()
+            if (gameThread!!.paused) {
+                gameThread!!.resumeGame()
             }
-            mGameThread!!.stopGame()
+            gameThread!!.stopGame()
             try {
                 mGame!!.join()
             } catch (e: InterruptedException) {
@@ -337,7 +337,7 @@ class Game : AllocationGuard() {
             }
             mGame = null
             mRunning = false
-            mCurrentLevel = null
+            currentLevel = null
             sGuardActive = false
         }
     }
@@ -364,7 +364,7 @@ class Game : AllocationGuard() {
 
     fun onTouchEvent(event: MotionEvent?): Boolean {
         if (mRunning) {
-            mTouchFilter!!.updateTouch(event)
+            touchFilter!!.updateTouch(event)
         }
         return true
     }
@@ -387,13 +387,13 @@ class Game : AllocationGuard() {
 
     fun onPause() {
         if (mRunning) {
-            mGameThread!!.pauseGame()
+            gameThread!!.pauseGame()
         }
     }
 
     fun onResume(context: Context?, force: Boolean) {
         if (force && mRunning) {
-            mGameThread!!.resumeGame()
+            gameThread!!.resumeGame()
         } else {
             renderer!!.setContext(context!!)
             // Don't explicitly resume the game here.  We'll do that in
@@ -405,18 +405,18 @@ class Game : AllocationGuard() {
 
     fun onSurfaceReady() {
         DebugLog.d("AndouKun", "Surface Ready")
-        if (mPendingLevel != null && mPendingLevel !== mCurrentLevel) {
+        if (pendingLevel != null && pendingLevel !== currentLevel) {
             if (mRunning) {
                 stopLevel()
             }
-            goToLevel(mPendingLevel!!)
-        } else if (mGameThread!!.paused && mRunning) {
-            mGameThread!!.resumeGame()
+            goToLevel(pendingLevel!!)
+        } else if (gameThread!!.paused && mRunning) {
+            gameThread!!.resumeGame()
         }
     }
 
     fun setSurfaceView(view: GLSurfaceView?) {
-        mSurfaceView = view
+        surfaceView = view
     }
 
     fun onSurfaceLost() {
@@ -424,7 +424,7 @@ class Game : AllocationGuard() {
         BaseObject.sSystemRegistry.shortTermTextureLibrary!!.invalidateAll()
         BaseObject.sSystemRegistry.longTermTextureLibrary!!.invalidateAll()
         BaseObject.sSystemRegistry.bufferLibrary!!.invalidateHardwareBuffers()
-        mGLDataLoaded = false
+        gLDataLoaded = false
     }
 
     fun onSurfaceCreated() {
@@ -432,16 +432,16 @@ class Game : AllocationGuard() {
 
         // TODO: this is dumb.  SurfaceView doesn't need to control everything here.
         // GL should just be passed to this function and then set up directly.
-        if (!mGLDataLoaded && mGameThread!!.paused && mRunning && mPendingLevel == null) {
-            mSurfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
-            mSurfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
-            mSurfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
-            mGLDataLoaded = true
+        if (!gLDataLoaded && gameThread!!.paused && mRunning && pendingLevel == null) {
+            surfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
+            surfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+            surfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+            gLDataLoaded = true
         }
     }
 
     fun setPendingLevel(level: LevelTree.Level?) {
-        mPendingLevel = level
+        pendingLevel = level
     }
 
     fun setSoundEnabled(soundEnabled: Boolean) {
@@ -459,7 +459,7 @@ class Game : AllocationGuard() {
     }
 
     fun setSafeMode(safe: Boolean) {
-        mSurfaceView!!.setSafeMode(safe)
+        surfaceView!!.setSafeMode(safe)
     }
 
     val gameTime: Float
@@ -472,7 +472,7 @@ class Game : AllocationGuard() {
             BaseObject.sSystemRegistry.eventRecorder!!.lastEnding = ending
         }
     val isPaused: Boolean
-        get() = mRunning && mGameThread != null && mGameThread!!.paused
+        get() = mRunning && gameThread != null && gameThread!!.paused
 
     fun setKeyConfig(leftKey: Int, rightKey: Int, jumpKey: Int,
                      attackKey: Int) {

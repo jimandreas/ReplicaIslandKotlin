@@ -22,22 +22,22 @@ import com.replica.replicaisland.GameObject.ActionType
 import kotlin.math.sin
 
 class TheSourceComponent : GameComponent() {
-    private var mTimer = 0f
-    private var mExplosionTimer = 0f
-    private var mShakeStartPosition = 0f
+    private var timer = 0f
+    private var explosionTimer = 0f
+    private var shakeStartPosition = 0f
     private var mChannel: ChannelSystem.Channel? = null
-    private var mGameEvent = 0
-    private var mGameEventIndex = 0
-    private var mDead = false
+    private var gameEvent = 0
+    private var gameEventIndex = 0
+    private var dead = false
     override fun reset() {
-        mTimer = 0.0f
-        mExplosionTimer = 0.0f
-        mShakeStartPosition = 0.0f
+        timer = 0.0f
+        explosionTimer = 0.0f
+        shakeStartPosition = 0.0f
         mChannel = null
         sChannelValue.value = false
-        mGameEvent = -1
-        mGameEventIndex = -1
-        mDead = false
+        gameEvent = -1
+        gameEventIndex = -1
+        dead = false
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -46,25 +46,25 @@ class TheSourceComponent : GameComponent() {
         val camera = sSystemRegistry.cameraSystem
         if (currentAction == ActionType.HIT_REACT) {
             if (parentObject.life > 0) {
-                mTimer = SHAKE_TIME
+                timer = SHAKE_TIME
                 camera!!.shake(SHAKE_TIME, CAMERA_HIT_SHAKE_MAGNITUDE)
-                mShakeStartPosition = parentObject.position.x
+                shakeStartPosition = parentObject.position.x
                 parentObject.currentAction = ActionType.IDLE
                 currentAction = ActionType.IDLE
             } else {
                 parentObject.currentAction = ActionType.DEATH
                 currentAction = ActionType.DEATH
-                mTimer = DIE_TIME
-                mExplosionTimer = EXPLOSION_TIME
+                timer = DIE_TIME
+                explosionTimer = EXPLOSION_TIME
                 if (mChannel != null) {
                     mChannel!!.value = sChannelValue
                     sChannelValue.value = true
                 }
-                mDead = true
+                dead = true
             }
         }
-        mTimer -= timeDelta
-        if (mDead) {
+        timer -= timeDelta
+        if (dead) {
             // Wait for the player to take the camera back, then steal it!
             val manager = sSystemRegistry.gameObjectManager
             if (camera != null && manager != null && camera.target === manager.player) {
@@ -72,8 +72,8 @@ class TheSourceComponent : GameComponent() {
             }
             val offset = SINK_SPEED * timeDelta
             parentObject.position.y += offset
-            mExplosionTimer -= timeDelta
-            if (mExplosionTimer < 0.0f) {
+            explosionTimer -= timeDelta
+            if (explosionTimer < 0.0f) {
                 val factory = sSystemRegistry.gameObjectFactory
                 if (factory != null) {
                     val x = (Math.random().toFloat() - 0.5f) * (parentObject.width * 0.75f)
@@ -85,29 +85,29 @@ class TheSourceComponent : GameComponent() {
                     if (`object` != null) {
                         manager!!.add(`object`)
                     }
-                    mExplosionTimer = EXPLOSION_TIME
+                    explosionTimer = EXPLOSION_TIME
                 }
             }
-            if (mTimer - timeDelta <= 0.0f) {
-                mTimer = 0.0f
-                if (mGameEvent != -1) {
+            if (timer - timeDelta <= 0.0f) {
+                timer = 0.0f
+                if (gameEvent != -1) {
                     val hud = sSystemRegistry.hudSystem
                     if (hud != null) {
                         hud.startFade(false, 1.5f)
-                        hud.sendGameEventOnFadeComplete(mGameEvent, mGameEventIndex)
-                        mGameEvent = -1
+                        hud.sendGameEventOnFadeComplete(gameEvent, gameEventIndex)
+                        gameEvent = -1
                     }
                 }
             }
-        } else if (mTimer > 0) {
+        } else if (timer > 0) {
             // shake
-            var delta = sin(mTimer * SHAKE_SCALE.toDouble()).toFloat()
+            var delta = sin(timer * SHAKE_SCALE.toDouble()).toFloat()
             delta *= SHAKE_MAGNITUDE
-            parentObject.position.x = mShakeStartPosition + delta
-            if (mTimer - timeDelta <= 0.0f) {
+            parentObject.position.x = shakeStartPosition + delta
+            if (timer - timeDelta <= 0.0f) {
                 // end one step early and fix the position.
-                mTimer = 0f
-                parentObject.position.x = mShakeStartPosition
+                timer = 0f
+                parentObject.position.x = shakeStartPosition
             }
         }
     }
@@ -117,8 +117,8 @@ class TheSourceComponent : GameComponent() {
     }
 
     fun setGameEvent(event: Int, index: Int) {
-        mGameEvent = event
-        mGameEventIndex = index
+        gameEvent = event
+        gameEventIndex = index
     }
 
     companion object {

@@ -22,12 +22,12 @@ class InputButton {
         private set
     var lastPressedTime = 0f
         private set
-    private var mDownTime = 0f
+    private var downTime = 0f
     var magnitude = 0f
     fun press(currentTime: Float, magnitude: Float) {
         if (!pressed) {
             pressed = true
-            mDownTime = currentTime
+            downTime = currentTime
         }
         this.magnitude = magnitude
         lastPressedTime = currentTime
@@ -38,11 +38,11 @@ class InputButton {
     }
 
     fun getTriggered(currentTime: Float): Boolean {
-        return pressed && currentTime - mDownTime <= BaseObject.sSystemRegistry.timeSystem!!.frameDelta * 2.0f
+        return pressed && currentTime - downTime <= BaseObject.sSystemRegistry.timeSystem!!.frameDelta * 2.0f
     }
 
     fun getPressedDuration(currentTime: Float): Float {
-        return currentTime - mDownTime
+        return currentTime - downTime
     }
 
     var y: Float
@@ -61,6 +61,6 @@ class InputButton {
         pressed = false
         magnitude = 0.0f
         lastPressedTime = 0.0f
-        mDownTime = 0.0f
+        downTime = 0.0f
     }
 }

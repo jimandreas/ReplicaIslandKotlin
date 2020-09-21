@@ -48,18 +48,18 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     private val mHalfHeight: Int = mHeight / 2
     private var mScaleX: Float
     private var mScaleY: Float
-    private var mLastTime: Long = 0
-    private var mProfileFrames = 0
-    private var mProfileWaitTime: Long = 0
-    private var mProfileFrameTime: Long = 0
-    private var mProfileSubmitTime: Long = 0
-    private var mProfileObjectCount = 0
-    private var mDrawQueue: ObjectManager? = null
-    private var mDrawQueueChanged: Boolean
-    private val mDrawLock: Any
+    private var lastTime: Long = 0
+    private var profileFrames = 0
+    private var profileWaitTime: Long = 0
+    private var profileFrameTime: Long = 0
+    private var profileSubmitTime: Long = 0
+    private var profileObjectCount = 0
+    private var drawQueue: ObjectManager? = null
+    private var drawQueueChanged: Boolean
+    private val drawLock: Any
     private var mCameraX: Float
     private var mCameraY: Float
-    private var mCallbackRequested: Boolean
+    private var callbackRequested: Boolean
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         /*
          * Some one-time OpenGL initialization can be made here probably based
@@ -144,42 +144,42 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     }
 
     fun requestCallback() {
-        mCallbackRequested = true
+        callbackRequested = true
     }
 
     /** Draws the scene.  Note that the draw queue is locked for the duration of this function.  */
     override fun onDrawFrame(gl: GL10?) {
         val time = SystemClock.uptimeMillis()
-        val time_delta = time - mLastTime
-        synchronized(mDrawLock) {
-            if (!mDrawQueueChanged) {
-                while (!mDrawQueueChanged) {
+        val time_delta = time - lastTime
+        synchronized(drawLock) {
+            if (!drawQueueChanged) {
+                while (!drawQueueChanged) {
                     try {
-                        mDrawLock.wait()
+                        drawLock.wait()
                     } catch (e: InterruptedException) {
                         // No big deal if this wait is interrupted.
                     }
                 }
             }
-            mDrawQueueChanged = false
+            drawQueueChanged = false
         }
         val wait = SystemClock.uptimeMillis()
-        if (mCallbackRequested) {
+        if (callbackRequested) {
             mGame.onSurfaceReady()
-            mCallbackRequested = false
+            callbackRequested = false
         }
         beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
         synchronized(this) {
-            if (mDrawQueue != null && mDrawQueue!!.fetchObjects().count > 0) {
+            if (drawQueue != null && drawQueue!!.fetchObjects().count > 0) {
                 gL = gl
-                val objects = mDrawQueue!!.fetchObjects()
+                val objects = drawQueue!!.fetchObjects()
                 val objectArray: Array<Any?> = objects.array as Array<Any?>
                 val count = objects.count
                 val scaleX = mScaleX
                 val scaleY = mScaleY
                 val halfWidth = mHalfWidth.toFloat()
                 val halfHeight = mHalfHeight.toFloat()
-                mProfileObjectCount += count
+                profileObjectCount += count
                 for (i in 0 until count) {
                     val element = objectArray[i] as RenderElement?
                     var x = element!!.x
@@ -191,7 +191,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     element.mDrawable!!.draw(x, y, scaleX, scaleY)
                 }
                 gL = null
-            } else if (mDrawQueue == null) {
+            } else if (drawQueue == null) {
                 // If we have no draw queue, clear the screen.  If we have a draw queue that
                 // is empty, we'll leave the frame buffer alone.
                 gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
@@ -199,26 +199,26 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
         }
         endDrawing(gl)
         val time2 = SystemClock.uptimeMillis()
-        mLastTime = time2
-        mProfileFrameTime += time_delta
-        mProfileSubmitTime += time2 - time
-        mProfileWaitTime += wait - time
-        mProfileFrames++
-        if (mProfileFrameTime > PROFILE_REPORT_DELAY) {
-            val validFrames = mProfileFrames
-            val averageFrameTime = mProfileFrameTime / validFrames
-            val averageSubmitTime = mProfileSubmitTime / validFrames
-            val averageObjectsPerFrame = mProfileObjectCount.toFloat() / validFrames
-            val averageWaitTime = mProfileWaitTime / validFrames
+        lastTime = time2
+        profileFrameTime += time_delta
+        profileSubmitTime += time2 - time
+        profileWaitTime += wait - time
+        profileFrames++
+        if (profileFrameTime > PROFILE_REPORT_DELAY) {
+            val validFrames = profileFrames
+            val averageFrameTime = profileFrameTime / validFrames
+            val averageSubmitTime = profileSubmitTime / validFrames
+            val averageObjectsPerFrame = profileObjectCount.toFloat() / validFrames
+            val averageWaitTime = profileWaitTime / validFrames
             DebugLog.d("Render Profile",
                     "Average Submit: " + averageSubmitTime
                             + "  Average Draw: " + averageFrameTime
                             + " Objects/Frame: " + averageObjectsPerFrame
                             + " Wait Time: " + averageWaitTime)
-            mProfileFrameTime = 0
-            mProfileSubmitTime = 0
-            mProfileFrames = 0
-            mProfileObjectCount = 0
+            profileFrameTime = 0
+            profileSubmitTime = 0
+            profileFrames = 0
+            profileObjectCount = 0
         }
     }
 
@@ -251,12 +251,12 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
 
     @Synchronized
     fun setDrawQueue(queue: ObjectManager?, cameraX: Float, cameraY: Float) {
-        mDrawQueue = queue
+        drawQueue = queue
         mCameraX = cameraX
         mCameraY = cameraY
-        synchronized(mDrawLock) {
-            mDrawQueueChanged = true
-            mDrawLock.notify()
+        synchronized(drawLock) {
+            drawQueueChanged = true
+            drawLock.notify()
         }
     }
 
@@ -266,9 +266,9 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
         // TODO: this is a hack.  Probably this renderer
         // should just use GLSurfaceView's non-continuious render
         // mode.
-        synchronized(mDrawLock) {
-            mDrawQueueChanged = true
-            mDrawLock.notify()
+        synchronized(drawLock) {
+            drawQueueChanged = true
+            drawLock.notify()
         }
     }
 
@@ -291,10 +291,10 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     init {
         mScaleX = 1.0f
         mScaleY = 1.0f
-        mDrawQueueChanged = false
-        mDrawLock = Any()
+        drawQueueChanged = false
+        drawLock = Any()
         mCameraX = 0.0f
         mCameraY = 0.0f
-        mCallbackRequested = false
+        callbackRequested = false
     }
 }

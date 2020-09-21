@@ -27,7 +27,7 @@ object UIConstants {
     init {
         try {
             mOverridePendingTransition = Activity::class.java.getMethod(
-                    "overridePendingTransition", Integer.TYPE, Integer.TYPE)
+                    "mOverridePendingTransition", Integer.TYPE, Integer.TYPE)
             /* success, this is a newer device */
         } catch (nsme: NoSuchMethodException) {
             /* failure, must be older device */

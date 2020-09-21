@@ -18,25 +18,25 @@
 package com.replica.replicaisland
 
 class DebugSystem(library: TextureLibrary?) : BaseObject() {
-    private var mRedBoxTexture: Texture? = null
-    private var mBlueBoxTexture: Texture? = null
-    private var mOutlineBoxTexture: Texture? = null
-    private var mRedCircleTexture: Texture? = null
-    private var mBlueCircleTexture: Texture? = null
-    private var mOutlineCircleTexture: Texture? = null
-    private val mWorkVector: Vector2
+    private var redBoxTexture: Texture? = null
+    private var blueBoxTexture: Texture? = null
+    private var outlineBoxTexture: Texture? = null
+    private var redCircleTexture: Texture? = null
+    private var blueCircleTexture: Texture? = null
+    private var outlineCircleTexture: Texture? = null
+    private val workVector: Vector2
     override fun reset() {}
     fun drawShape(x: Float, y: Float, width: Float, height: Float, shapeType: Int, colorType: Int) {
         val render = sSystemRegistry.renderSystem
         val factory = sSystemRegistry.drawableFactory
         val camera = sSystemRegistry.cameraSystem
         val params = sSystemRegistry.contextParameters
-        mWorkVector[x] = y
-        mWorkVector.x = (mWorkVector.x - camera!!.fetchFocusPositionX()
+        workVector[x] = y
+        workVector.x = (workVector.x - camera!!.fetchFocusPositionX()
                 + params!!.gameWidth / 2)
-        mWorkVector.y = (mWorkVector.y - camera.fetchFocusPositionY()
+        workVector.y = (workVector.y - camera.fetchFocusPositionY()
                 + params.gameHeight / 2)
-        if (mWorkVector.x + width >= 0.0f && mWorkVector.x < params.gameWidth && mWorkVector.y + height >= 0.0f && mWorkVector.y < params.gameHeight) {
+        if (workVector.x + width >= 0.0f && workVector.x < params.gameWidth && workVector.y + height >= 0.0f && workVector.y < params.gameHeight) {
             val bitmap = factory!!.allocateDrawableBitmap()
             if (bitmap != null) {
                 val texture = getTexture(shapeType, colorType)
@@ -45,8 +45,8 @@ class DebugSystem(library: TextureLibrary?) : BaseObject() {
                 bitmap.width = width.toInt()
                 bitmap.height = height.toInt()
                 bitmap.texture = texture
-                mWorkVector[x] = y
-                render!!.scheduleForDraw(bitmap, mWorkVector, SortConstants.HUD, true)
+                workVector[x] = y
+                render!!.scheduleForDraw(bitmap, workVector, SortConstants.HUD, true)
             }
         }
     }
@@ -55,15 +55,15 @@ class DebugSystem(library: TextureLibrary?) : BaseObject() {
         var result: Texture? = null
         if (shapeType == SHAPE_BOX) {
             when (colorType) {
-                COLOR_RED -> result = mRedBoxTexture
-                COLOR_BLUE -> result = mBlueBoxTexture
-                COLOR_OUTLINE -> result = mOutlineBoxTexture
+                COLOR_RED -> result = redBoxTexture
+                COLOR_BLUE -> result = blueBoxTexture
+                COLOR_OUTLINE -> result = outlineBoxTexture
             }
         } else if (shapeType == SHAPE_CIRCLE) {
             when (colorType) {
-                COLOR_RED -> result = mRedCircleTexture
-                COLOR_BLUE -> result = mBlueCircleTexture
-                COLOR_OUTLINE -> result = mOutlineCircleTexture
+                COLOR_RED -> result = redCircleTexture
+                COLOR_BLUE -> result = blueCircleTexture
+                COLOR_OUTLINE -> result = outlineCircleTexture
             }
         }
         return result
@@ -79,13 +79,13 @@ class DebugSystem(library: TextureLibrary?) : BaseObject() {
 
     init {
         if (library != null) {
-            mRedBoxTexture = library.allocateTexture(R.drawable.debug_box_red)
-            mBlueBoxTexture = library.allocateTexture(R.drawable.debug_box_blue)
-            mOutlineBoxTexture = library.allocateTexture(R.drawable.debug_box_outline)
-            mRedCircleTexture = library.allocateTexture(R.drawable.debug_circle_red)
-            mBlueCircleTexture = library.allocateTexture(R.drawable.debug_circle_blue)
-            mOutlineCircleTexture = library.allocateTexture(R.drawable.debug_circle_outline)
+            redBoxTexture = library.allocateTexture(R.drawable.debug_box_red)
+            blueBoxTexture = library.allocateTexture(R.drawable.debug_box_blue)
+            outlineBoxTexture = library.allocateTexture(R.drawable.debug_box_outline)
+            redCircleTexture = library.allocateTexture(R.drawable.debug_circle_red)
+            blueCircleTexture = library.allocateTexture(R.drawable.debug_circle_blue)
+            outlineCircleTexture = library.allocateTexture(R.drawable.debug_circle_outline)
         }
-        mWorkVector = Vector2()
+        workVector = Vector2()
     }
 }

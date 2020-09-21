@@ -22,7 +22,7 @@ import java.util.*
  */
 class SpriteAnimation(animationId: Int, frameCount: Int) : PhasedObject() {
     private val mFrames: FixedSizeArray<AnimationFrame> = FixedSizeArray(frameCount)
-    private val mFrameStartTimes: FloatArray = FloatArray(frameCount)
+    private val frameStartTimes: FloatArray = FloatArray(frameCount)
     var loop: Boolean = false
     var length: Float
         private set
@@ -45,8 +45,8 @@ class SpriteAnimation(animationId: Int, frameCount: Int) : PhasedObject() {
                     // When there are very few frames it's actually slower to do a binary search
                     // of the frame list.  So we'll use a linear search for small animations
                     // and only pull the binary search out when the frame count is large.
-                    if (mFrameStartTimes.size > LINEAR_SEARCH_CUTOFF) {
-                        var index = Arrays.binarySearch(mFrameStartTimes, cycleTime)
+                    if (frameStartTimes.size > LINEAR_SEARCH_CUTOFF) {
+                        var index = Arrays.binarySearch(frameStartTimes, cycleTime)
                         if (index < 0) {
                             index = -(index + 1) - 1
                         }
@@ -68,7 +68,7 @@ class SpriteAnimation(animationId: Int, frameCount: Int) : PhasedObject() {
     }
 
     fun addFrame(frame: AnimationFrame) {
-        mFrameStartTimes[mFrames.count] = length
+        frameStartTimes[mFrames.count] = length
         mFrames.add(frame)
         length += frame.holdTime
     }

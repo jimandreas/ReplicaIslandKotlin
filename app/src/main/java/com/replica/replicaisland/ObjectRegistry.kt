@@ -83,19 +83,19 @@ class ObjectRegistry : BaseObject() {
     var vectorPool: VectorPool? = null
     @JvmField
     var vibrationSystem: VibrationSystem? = null
-    private val mItemsNeedingReset = ArrayList<BaseObject>()
+    private val itemsNeedingReset = ArrayList<BaseObject>()
     fun registerForReset(`object`: BaseObject) {
-        val contained = mItemsNeedingReset.contains(`object`)
+        val contained = itemsNeedingReset.contains(`object`)
         // TODO: assert(!contained)
         if (!contained) {
-            mItemsNeedingReset.add(`object`)
+            itemsNeedingReset.add(`object`)
         }
     }
 
     override fun reset() {
-        val count = mItemsNeedingReset.size
+        val count = itemsNeedingReset.size
         for (x in 0 until count) {
-            mItemsNeedingReset[x].reset()
+            itemsNeedingReset[x].reset()
         }
     }
 }

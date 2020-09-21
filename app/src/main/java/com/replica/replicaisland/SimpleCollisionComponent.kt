@@ -17,68 +17,68 @@ package com.replica.replicaisland
 
 // Simple collision detection component for objects not requiring complex collision (projectiles, etc)
 class SimpleCollisionComponent : GameComponent() {
-    private val mPreviousPosition: Vector2
-    private val mCurrentPosition: Vector2
-    private val mMovementDirection: Vector2
-    private val mHitPoint: Vector2
-    private val mHitNormal: Vector2
+    private val previousPosition: Vector2
+    private val currentPosition: Vector2
+    private val movementDirection: Vector2
+    private val hitPoint: Vector2
+    private val hitNormal: Vector2
     override fun reset() {
-        mPreviousPosition.zero()
-        mCurrentPosition.zero()
-        mMovementDirection.zero()
-        mHitPoint.zero()
-        mHitNormal.zero()
+        previousPosition.zero()
+        currentPosition.zero()
+        movementDirection.zero()
+        hitPoint.zero()
+        hitNormal.zero()
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (mPreviousPosition.length2() > 0.0f) {
-            mCurrentPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
-            mMovementDirection.set(mCurrentPosition)
-            mMovementDirection.subtract(mPreviousPosition)
-            if (mMovementDirection.length2() > 0.0f) {
+        if (previousPosition.length2() > 0.0f) {
+            currentPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
+            movementDirection.set(currentPosition)
+            movementDirection.subtract(previousPosition)
+            if (movementDirection.length2() > 0.0f) {
                 val collision = sSystemRegistry.collisionSystem
                 if (collision != null) {
-                    val hit = collision.castRay(mPreviousPosition, mCurrentPosition,
-                            mMovementDirection, mHitPoint, mHitNormal, parentObject)
+                    val hit = collision.castRay(previousPosition, currentPosition,
+                            movementDirection, hitPoint, hitNormal, parentObject)
                     if (hit) {
                         // snap
                         val halfWidth = parentObject.width / 2.0f
                         val halfHeight = parentObject.height / 2.0f
-                        if (!Utils.close(mHitNormal.x, 0.0f)) {
-                            parentObject.position.x = mHitPoint.x - halfWidth
+                        if (!Utils.close(hitNormal.x, 0.0f)) {
+                            parentObject.position.x = hitPoint.x - halfWidth
                         }
-                        if (!Utils.close(mHitNormal.y, 0.0f)) {
-                            parentObject.position.y = mHitPoint.y - halfHeight
+                        if (!Utils.close(hitNormal.y, 0.0f)) {
+                            parentObject.position.y = hitPoint.y - halfHeight
                         }
                         val timeSystem = sSystemRegistry.timeSystem
                         if (timeSystem != null) {
                             val time = timeSystem.gameTime
-                            if (mHitNormal.x > 0.0f) {
+                            if (hitNormal.x > 0.0f) {
                                 parentObject.lastTouchedLeftWallTime = time
-                            } else if (mHitNormal.x < 0.0) {
+                            } else if (hitNormal.x < 0.0) {
                                 parentObject.lastTouchedRightWallTime = time
                             }
-                            if (mHitNormal.y > 0.0f) {
+                            if (hitNormal.y > 0.0f) {
                                 parentObject.lastTouchedFloorTime = time
-                            } else if (mHitNormal.y < 0.0f) {
+                            } else if (hitNormal.y < 0.0f) {
                                 parentObject.lastTouchedCeilingTime = time
                             }
                         }
-                        parentObject.backgroundCollisionNormal = mHitNormal
+                        parentObject.backgroundCollisionNormal = hitNormal
                     }
                 }
             }
         }
-        mPreviousPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
+        previousPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
     }
 
     init {
         setPhaseToThis(ComponentPhases.COLLISION_DETECTION.ordinal)
-        mPreviousPosition = Vector2()
-        mCurrentPosition = Vector2()
-        mMovementDirection = Vector2()
-        mHitPoint = Vector2()
-        mHitNormal = Vector2()
+        previousPosition = Vector2()
+        currentPosition = Vector2()
+        movementDirection = Vector2()
+        hitPoint = Vector2()
+        hitNormal = Vector2()
     }
 }

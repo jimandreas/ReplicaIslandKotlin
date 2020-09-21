@@ -34,22 +34,22 @@ class LaunchProjectileComponent : GameComponent() {
     private var mOffsetY = 0f
     private var mVelocityX = 0f
     private var mVelocityY = 0f
-    private var mThetaError = 0f
+    private var thetaError = 0f
     private var mRequiredAction: ActionType? = null
-    private var mDelayBetweenShots = 0f
-    private var mProjectilesInSet = 0
+    private var delayBetweenShots = 0f
+    private var projectilesInSet = 0
     private var mDelayBetweenSets = 0f
-    private var mSetsPerActivation = 0
+    private var setsPerActivation = 0
     private var mDelayBeforeFirstSet = 0f
-    private var mLastProjectileTime = 0f
-    private var mSetStartedTime = 0f
-    private var mLaunchedCount = 0
+    private var lastProjectileTime = 0f
+    private var setStartedTime = 0f
+    private var launchedCount = 0
     private var mSetCount = 0
-    private var mTrackProjectiles = false
-    private var mMaxTrackedProjectiles = 0
-    private var mTrackedProjectileCount = 0
-    private val mWorkingVector: Vector2
-    private var mShootSound: Sound? = null
+    private var trackProjectiles = false
+    private var maxTrackedProjectiles = 0
+    private var trackedProjectileCount = 0
+    private val workingVector: Vector2
+    private var shootSound: Sound? = null
     override fun reset() {
         mRequiredAction = ActionType.INVALID
         mObjectTypeToSpawn = GameObjectType.INVALID
@@ -57,59 +57,59 @@ class LaunchProjectileComponent : GameComponent() {
         mOffsetY = 0.0f
         mVelocityX = 0.0f
         mVelocityY = 0.0f
-        mDelayBetweenShots = 0.0f
-        mProjectilesInSet = 0
+        delayBetweenShots = 0.0f
+        projectilesInSet = 0
         mDelayBetweenSets = 0.0f
-        mLastProjectileTime = 0.0f
-        mSetStartedTime = -1.0f
-        mLaunchedCount = 0
+        lastProjectileTime = 0.0f
+        setStartedTime = -1.0f
+        launchedCount = 0
         mSetCount = 0
-        mSetsPerActivation = -1
-        mProjectilesInSet = 0
+        setsPerActivation = -1
+        projectilesInSet = 0
         mDelayBeforeFirstSet = 0.0f
-        mTrackProjectiles = false
-        mMaxTrackedProjectiles = 0
-        mTrackedProjectileCount = 0
-        mThetaError = 0.0f
-        mShootSound = null
+        trackProjectiles = false
+        maxTrackedProjectiles = 0
+        trackedProjectileCount = 0
+        thetaError = 0.0f
+        shootSound = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
-        if (mTrackedProjectileCount < mMaxTrackedProjectiles || !mTrackProjectiles) {
+        if (trackedProjectileCount < maxTrackedProjectiles || !trackProjectiles) {
             if (parentObject.currentAction == mRequiredAction
                     || mRequiredAction == ActionType.INVALID) {
-                if (mSetStartedTime == -1.0f) {
-                    mLaunchedCount = 0
-                    mLastProjectileTime = 0.0f
-                    mSetStartedTime = gameTime
+                if (setStartedTime == -1.0f) {
+                    launchedCount = 0
+                    lastProjectileTime = 0.0f
+                    setStartedTime = gameTime
                 }
                 val setDelay = if (mSetCount > 0) mDelayBetweenSets else mDelayBeforeFirstSet
-                if (gameTime - mSetStartedTime >= setDelay &&
-                        (mSetCount < mSetsPerActivation || mSetsPerActivation == -1)) {
+                if (gameTime - setStartedTime >= setDelay &&
+                        (mSetCount < setsPerActivation || setsPerActivation == -1)) {
                     // We can start shooting.
-                    val timeSinceLastShot = gameTime - mLastProjectileTime
-                    if (timeSinceLastShot >= mDelayBetweenShots) {
+                    val timeSinceLastShot = gameTime - lastProjectileTime
+                    if (timeSinceLastShot >= delayBetweenShots) {
                         launch(parentObject)
-                        mLastProjectileTime = gameTime
-                        if (mLaunchedCount >= mProjectilesInSet && mProjectilesInSet > 0) {
-                            mSetStartedTime = -1.0f
+                        lastProjectileTime = gameTime
+                        if (launchedCount >= projectilesInSet && projectilesInSet > 0) {
+                            setStartedTime = -1.0f
                             mSetCount++
                         }
                     }
                 }
             } else {
                 // Force the timer to start counting when the right action is activated.
-                mSetStartedTime = -1.0f
+                setStartedTime = -1.0f
                 mSetCount = 0
             }
         }
     }
 
     private fun launch(parentObject: GameObject) {
-        mLaunchedCount++
+        launchedCount++
         val factory = sSystemRegistry.gameObjectFactory
         val manager = sSystemRegistry.gameObjectManager
         if (factory != null && manager != null) {
@@ -127,34 +127,34 @@ class LaunchProjectileComponent : GameComponent() {
             val y = parentObject.position.y + offsetY
             val thing = factory.spawn(mObjectTypeToSpawn!!, x, y, flip)
             if (thing != null) {
-                mWorkingVector[1.0f] = 1.0f
-                if (mThetaError > 0.0f) {
-                    val angle = (Math.random() * mThetaError * Math.PI * 2.0f).toFloat()
-                    mWorkingVector.x = sin(angle.toDouble()).toFloat()
-                    mWorkingVector.y = cos(angle.toDouble()).toFloat()
-                    if (Utils.close(mWorkingVector.length2(), 0.0f)) {
-                        mWorkingVector[1.0f] = 1.0f
+                workingVector[1.0f] = 1.0f
+                if (thetaError > 0.0f) {
+                    val angle = (Math.random() * thetaError * Math.PI * 2.0f).toFloat()
+                    workingVector.x = sin(angle.toDouble()).toFloat()
+                    workingVector.y = cos(angle.toDouble()).toFloat()
+                    if (Utils.close(workingVector.length2(), 0.0f)) {
+                        workingVector[1.0f] = 1.0f
                     }
                 }
-                mWorkingVector.x *= if (flip) -mVelocityX else mVelocityX
-                mWorkingVector.y *= mVelocityY
-                thing.velocity.set(mWorkingVector)
-                thing.targetVelocity.set(mWorkingVector)
+                workingVector.x *= if (flip) -mVelocityX else mVelocityX
+                workingVector.y *= mVelocityY
+                thing.velocity.set(workingVector)
+                thing.targetVelocity.set(workingVector)
                 // Center the projectile on the spawn point.
                 thing.position.x -= thing.width / 2.0f
                 thing.position.y -= thing.height / 2.0f
-                if (mTrackProjectiles) {
+                if (trackProjectiles) {
                     thing.commitUpdates()
                     val projectileLife = thing.findByClass(LifetimeComponent::class.java)
                     if (projectileLife != null) {
                         projectileLife.setTrackingSpawner(this)
-                        mTrackedProjectileCount++
+                        trackedProjectileCount++
                     }
                 }
                 manager.add(thing)
-                if (mShootSound != null) {
+                if (shootSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mShootSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(shootSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }
@@ -185,7 +185,7 @@ class LaunchProjectileComponent : GameComponent() {
     }
 
     fun setDelayBetweenShots(launchDelay: Float) {
-        mDelayBetweenShots = launchDelay
+        delayBetweenShots = launchDelay
     }
 
     fun setDelayBetweenSets(delayBetweenSets: Float) {
@@ -197,44 +197,44 @@ class LaunchProjectileComponent : GameComponent() {
     }
 
     fun setShotsPerSet(shotCount: Int) {
-        mProjectilesInSet = shotCount
+        projectilesInSet = shotCount
     }
 
     fun setSetsPerActivation(setCount: Int) {
-        mSetsPerActivation = setCount
+        setsPerActivation = setCount
     }
 
     fun enableProjectileTracking(max: Int) {
-        mMaxTrackedProjectiles = max
-        mTrackProjectiles = true
+        maxTrackedProjectiles = max
+        trackProjectiles = true
     }
 
     fun disableProjectileTracking() {
-        mMaxTrackedProjectiles = 0
-        mTrackProjectiles = false
+        maxTrackedProjectiles = 0
+        trackProjectiles = false
     }
 
     fun trackedProjectileDestroyed() {
-        // TODO 2: fix assert(mTrackProjectiles)
-        if (mTrackedProjectileCount == mMaxTrackedProjectiles) {
+        // TODO 2: fix assert(trackProjectiles)
+        if (trackedProjectileCount == maxTrackedProjectiles) {
             // Let's restart the set.
-            mSetStartedTime = -1.0f
+            setStartedTime = -1.0f
             mSetCount = 0
         }
-        mTrackedProjectileCount--
+        trackedProjectileCount--
     }
 
     fun setThetaError(error: Float) {
-        mThetaError = error
+        thetaError = error
     }
 
     fun setShootSound(shoot: Sound?) {
-        mShootSound = shoot
+        shootSound = shoot
     }
 
     init {
         setPhaseToThis(ComponentPhases.POST_COLLISION.ordinal)
-        mWorkingVector = Vector2()
+        workingVector = Vector2()
         reset()
     }
 }

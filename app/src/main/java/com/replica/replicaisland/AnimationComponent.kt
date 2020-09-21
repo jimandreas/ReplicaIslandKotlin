@@ -33,46 +33,46 @@ class AnimationComponent : GameComponent() {
     }
 
     private var mSprite: SpriteComponent? = null
-    private var mJetSprite: SpriteComponent? = null
-    private var mSparksSprite: SpriteComponent? = null
+    private var jetSprite: SpriteComponent? = null
+    private var sparksSprite: SpriteComponent? = null
     private var mPlayer: PlayerComponent? = null
-    private var mLastFlickerTime = 0f
-    private var mFlickerOn = false
-    private var mFlickerTimeRemaining = 0f
-    private var mPreviousAction: ActionType? = null
-    private var mLastRocketsOnTime = 0f
+    private var lastFlickerTime = 0f
+    private var flickerOn = false
+    private var flickerTimeRemaining = 0f
+    private var previousAction: ActionType? = null
+    private var lastRocketsOnTime = 0f
     private var mExplodingDeath = false
     private var mDamageSwap: ChangeComponentsComponent? = null
-    private var mLandThump: Sound? = null
-    private var mRocketSound: Sound? = null
-    private var mExplosionSound: Sound? = null
-    private var mLandThumpDelay = 0f
-    private var mRocketSoundStream = 0
-    private var mRocketSoundPaused = false
-    private var mLastRubyCount = 0
-    private var mRubySound1: Sound? = null
-    private var mRubySound2: Sound? = null
-    private var mRubySound3: Sound? = null
+    private var landThump: Sound? = null
+    private var rocketSound: Sound? = null
+    private var explosionSound: Sound? = null
+    private var landThumpDelay = 0f
+    private var rocketSoundStream = 0
+    private var rocketSoundPaused = false
+    private var lastRubyCount = 0
+    private var rubySound1: Sound? = null
+    private var rubySound2: Sound? = null
+    private var rubySound3: Sound? = null
     private var mInventory: InventoryComponent? = null
     override fun reset() {
-        mPreviousAction = ActionType.INVALID
+        previousAction = ActionType.INVALID
         mSprite = null
-        mJetSprite = null
-        mSparksSprite = null
+        jetSprite = null
+        sparksSprite = null
         mPlayer = null
-        mLastFlickerTime = 0.0f
-        mFlickerOn = false
-        mFlickerTimeRemaining = 0.0f
-        mLastRocketsOnTime = 0.0f
+        lastFlickerTime = 0.0f
+        flickerOn = false
+        flickerTimeRemaining = 0.0f
+        lastRocketsOnTime = 0.0f
         mExplodingDeath = false
         mDamageSwap = null
-        mLandThump = null
-        mLandThumpDelay = 0.0f
-        mRocketSound = null
-        mRocketSoundStream = -1
-        mLastRubyCount = 0
+        landThump = null
+        landThumpDelay = 0.0f
+        rocketSound = null
+        rocketSoundStream = -1
+        lastRubyCount = 0
         mInventory = null
-        mExplosionSound = null
+        explosionSound = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -81,16 +81,16 @@ class AnimationComponent : GameComponent() {
             val velocityX = parentObject.velocity.x
             val velocityY = parentObject.velocity.y
             val currentAction = parentObject.currentAction
-            if (mJetSprite != null) {
-                mJetSprite!!.visible = false
+            if (jetSprite != null) {
+                jetSprite!!.visible = false
             }
-            if (mSparksSprite != null) {
-                mSparksSprite!!.visible = false
+            if (sparksSprite != null) {
+                sparksSprite!!.visible = false
             }
             val time = sSystemRegistry.timeSystem
             val gameTime = time!!.gameTime
-            if (currentAction != ActionType.HIT_REACT && mPreviousAction == ActionType.HIT_REACT) {
-                mFlickerTimeRemaining = FLICKER_DURATION
+            if (currentAction != ActionType.HIT_REACT && previousAction == ActionType.HIT_REACT) {
+                flickerTimeRemaining = FLICKER_DURATION
             }
             val touchingGround = parentObject.touchingGround()
             var boosting = if (mPlayer != null) mPlayer!!.rocketsOn else false
@@ -102,25 +102,25 @@ class AnimationComponent : GameComponent() {
             // sounds.  So it's simpler to just avoid that code if sound is off.
             if (sound!!.soundEnabled) {
                 if (boosting) {
-                    mLastRocketsOnTime = gameTime
+                    lastRocketsOnTime = gameTime
                 } else {
-                    if (gameTime - mLastRocketsOnTime < MIN_ROCKET_TIME
+                    if (gameTime - lastRocketsOnTime < MIN_ROCKET_TIME
                             && velocityY >= 0.0f) {
                         boosting = true
                     }
                 }
-                if (mRocketSound != null) {
+                if (rocketSound != null) {
                     if (boosting) {
-                        if (mRocketSoundStream == -1) {
-                            mRocketSoundStream = sound.play(mRocketSound!!, true, SoundSystem.PRIORITY_HIGH)
-                            mRocketSoundPaused = false
-                        } else if (mRocketSoundPaused) {
-                            sound.resume(mRocketSoundStream)
-                            mRocketSoundPaused = false
+                        if (rocketSoundStream == -1) {
+                            rocketSoundStream = sound.play(rocketSound!!, true, SoundSystem.PRIORITY_HIGH)
+                            rocketSoundPaused = false
+                        } else if (rocketSoundPaused) {
+                            sound.resume(rocketSoundStream)
+                            rocketSoundPaused = false
                         }
                     } else {
-                        sound.pause(mRocketSoundStream)
-                        mRocketSoundPaused = true
+                        sound.pause(rocketSoundStream)
+                        rocketSoundPaused = true
                     }
                 }
             }
@@ -128,15 +128,15 @@ class AnimationComponent : GameComponent() {
             // Normally, for collectables like the coin, we could just tell the object to play
             // a sound when it is collected.  The gems are a special case, though, as we
             // want to pick a different sound depending on how many have been collected.
-            if (mInventory != null && mRubySound1 != null && mRubySound2 != null && mRubySound3 != null) {
+            if (mInventory != null && rubySound1 != null && rubySound2 != null && rubySound3 != null) {
                 val inventory = mInventory!!.fetchRecord()
                 val rubyCount = inventory.rubyCount
-                if (rubyCount != mLastRubyCount) {
-                    mLastRubyCount = rubyCount
+                if (rubyCount != lastRubyCount) {
+                    lastRubyCount = rubyCount
                     when (rubyCount) {
-                        1 -> sound.play(mRubySound1!!, false, SoundSystem.PRIORITY_NORMAL)
-                        2 -> sound.play(mRubySound2!!, false, SoundSystem.PRIORITY_NORMAL)
-                        3 -> sound.play(mRubySound3!!, false, SoundSystem.PRIORITY_NORMAL)
+                        1 -> sound.play(rubySound1!!, false, SoundSystem.PRIORITY_NORMAL)
+                        2 -> sound.play(rubySound2!!, false, SoundSystem.PRIORITY_NORMAL)
+                        3 -> sound.play(rubySound3!!, false, SoundSystem.PRIORITY_NORMAL)
                     }
                 }
             }
@@ -177,8 +177,8 @@ class AnimationComponent : GameComponent() {
                     }
                 } else {
                     if (boosting) {
-                        if (mJetSprite != null) {
-                            mJetSprite!!.visible = true
+                        if (jetSprite != null) {
+                            jetSprite!!.visible = true
                         }
                         if (abs(velocityX) < 100.0f && velocityY > 10.0f) {
                             mSprite!!.playAnimation(PlayerAnimations.BOOST_UP.ordinal)
@@ -199,12 +199,12 @@ class AnimationComponent : GameComponent() {
                 }
             } else if (currentAction == ActionType.ATTACK) {
                 mSprite!!.playAnimation(PlayerAnimations.STOMP.ordinal)
-                if (touchingGround && gameTime > mLandThumpDelay) {
-                    if (mLandThump != null && sound != null) {
+                if (touchingGround && gameTime > landThumpDelay) {
+                    if (landThump != null && sound != null) {
                         // modulate the sound slightly to avoid sounding too similar
-                        sound.play(mLandThump!!, false, SoundSystem.PRIORITY_HIGH, 1.0f,
+                        sound.play(landThump!!, false, SoundSystem.PRIORITY_HIGH, 1.0f,
                                 (Math.random() * 0.5f).toFloat() + 0.75f)
-                        mLandThumpDelay = gameTime + LAND_THUMP_DELAY
+                        landThumpDelay = gameTime + LAND_THUMP_DELAY
                     }
                 }
             } else if (currentAction == ActionType.HIT_REACT) {
@@ -214,13 +214,13 @@ class AnimationComponent : GameComponent() {
                 } else if (velocityX < 0.0f) {
                     parentObject.facingDirection.x = 1.0f
                 }
-                if (mSparksSprite != null) {
-                    mSparksSprite!!.visible = true
+                if (sparksSprite != null) {
+                    sparksSprite!!.visible = true
                 }
             } else if (currentAction == ActionType.DEATH) {
-                if (mPreviousAction != currentAction) {
-                    if (mExplosionSound != null) {
-                        sound.play(mExplosionSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                if (previousAction != currentAction) {
+                    if (explosionSound != null) {
+                        sound.play(explosionSound!!, false, SoundSystem.PRIORITY_NORMAL)
                     }
                     // by default, explode when hit with the DEATH hit type.
                     var explodingDeath = parentObject.lastReceivedHitType == HitType.DEATH
@@ -247,10 +247,10 @@ class AnimationComponent : GameComponent() {
                         mSprite!!.playAnimation(PlayerAnimations.DEATH.ordinal)
                         mExplodingDeath = false
                     }
-                    mFlickerTimeRemaining = 0.0f
-                    if (mSparksSprite != null) {
+                    flickerTimeRemaining = 0.0f
+                    if (sparksSprite != null) {
                         if (!mSprite!!.animationFinished()) {
-                            mSparksSprite!!.visible = true
+                            sparksSprite!!.visible = true
                         }
                     }
                 }
@@ -260,21 +260,21 @@ class AnimationComponent : GameComponent() {
             } else if (currentAction == ActionType.FROZEN) {
                 mSprite!!.playAnimation(PlayerAnimations.FROZEN.ordinal)
             }
-            if (mFlickerTimeRemaining > 0.0f) {
-                mFlickerTimeRemaining -= timeDelta
-                if (gameTime > mLastFlickerTime + FLICKER_INTERVAL) {
-                    mLastFlickerTime = gameTime
-                    mFlickerOn = !mFlickerOn
+            if (flickerTimeRemaining > 0.0f) {
+                flickerTimeRemaining -= timeDelta
+                if (gameTime > lastFlickerTime + FLICKER_INTERVAL) {
+                    lastFlickerTime = gameTime
+                    flickerOn = !flickerOn
                 }
-                mSprite!!.visible = mFlickerOn
-                if (mJetSprite != null && mJetSprite!!.visible) {
-                    mJetSprite!!.visible = mFlickerOn
+                mSprite!!.visible = flickerOn
+                if (jetSprite != null && jetSprite!!.visible) {
+                    jetSprite!!.visible = flickerOn
                 }
             } else {
                 mSprite!!.visible = visible
                 mSprite!!.setOpacity(opacity)
             }
-            mPreviousAction = currentAction
+            previousAction = currentAction
         }
     }
 
@@ -283,11 +283,11 @@ class AnimationComponent : GameComponent() {
     }
 
     fun setJetSprite(sprite: SpriteComponent?) {
-        mJetSprite = sprite
+        jetSprite = sprite
     }
 
     fun setSparksSprite(sprite: SpriteComponent?) {
-        mSparksSprite = sprite
+        sparksSprite = sprite
     }
 
     fun setPlayer(player: PlayerComponent?) {
@@ -299,17 +299,17 @@ class AnimationComponent : GameComponent() {
     }
 
     fun setLandThump(land: Sound?) {
-        mLandThump = land
+        landThump = land
     }
 
     fun setRocketSound(sound: Sound?) {
-        mRocketSound = sound
+        rocketSound = sound
     }
 
     fun setRubySounds(one: Sound?, two: Sound?, three: Sound?) {
-        mRubySound1 = one
-        mRubySound2 = two
-        mRubySound3 = three
+        rubySound1 = one
+        rubySound2 = two
+        rubySound3 = three
     }
 
     fun setInventory(inventory: InventoryComponent?) {
@@ -317,7 +317,7 @@ class AnimationComponent : GameComponent() {
     }
 
     fun setExplosionSound(sound: Sound?) {
-        mExplosionSound = sound
+        explosionSound = sound
     }
 
     companion object {
