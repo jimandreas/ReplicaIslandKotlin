@@ -39,7 +39,7 @@ import kotlin.math.sqrt
  * a) generated from data at compile time, or b) described by data at runtime.
  */
 class GameObjectFactory : BaseObject() {
-    private val mStaticData: FixedSizeArray<FixedSizeArray<BaseObject?>?>
+    private val staticBaseObjectArray: FixedSizeArray<FixedSizeArray<BaseObject?>?>
     private val componentPools: FixedSizeArray<GameComponentPool>
     private val poolSearchDummy: GameComponentPool
     private val gameObjectPool: GameObjectPool
@@ -367,7 +367,7 @@ class GameObjectFactory : BaseObject() {
     }
 
     private fun getStaticData(type: GameObjectType): FixedSizeArray<BaseObject?>? {
-        return mStaticData[type.ordinal]
+        return staticBaseObjectArray[type.ordinal]
     }
 
     private fun setStaticData(type: GameObjectType, data: FixedSizeArray<BaseObject?>) {
@@ -380,7 +380,7 @@ class GameObjectFactory : BaseObject() {
                 entry.shared = true
             }
         }
-        mStaticData[index] = data
+        staticBaseObjectArray[index] = data
     }
 
     private fun addStaticData(type: GameObjectType, thing: GameObject?, sprite: SpriteComponent?) {
@@ -399,9 +399,9 @@ class GameObjectFactory : BaseObject() {
     }
 
     fun clearStaticData() {
-        val typeCount = mStaticData.count
+        val typeCount = staticBaseObjectArray.count
         for (x in 0 until typeCount) {
-            val staticData = mStaticData[x]
+            val staticData = staticBaseObjectArray[x]
             if (staticData != null) {
                 val count = staticData.count
                 for (y in 0 until count) {
@@ -413,7 +413,7 @@ class GameObjectFactory : BaseObject() {
                     }
                 }
                 staticData.clear()
-                mStaticData[x] = null
+                staticBaseObjectArray[x] = null
             }
         }
     }
@@ -5093,9 +5093,9 @@ class GameObjectFactory : BaseObject() {
     init {
         gameObjectPool = GameObjectPool(MAX_GAME_OBJECTS)
         val objectTypeCount = GameObjectType.OBJECT_COUNT.ordinal
-        mStaticData = FixedSizeArray(objectTypeCount)
+        staticBaseObjectArray = FixedSizeArray(objectTypeCount)
         for (x in 0 until objectTypeCount) {
-            mStaticData.add(null)
+            staticBaseObjectArray.add(null)
         }
         val context = sSystemRegistry.contextParameters
         val halfHeight2 = context!!.gameHeight * 0.5f * (context.gameHeight * 0.5f)

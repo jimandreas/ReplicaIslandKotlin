@@ -46,15 +46,15 @@ class AndouKun : Activity(), SensorEventListener {
     private var gLSurfaceView: GLSurfaceView? = null
     private var mGame: Game? = null
     private var methodTracing = false
-    private var mLevelRow = 0
-    private var mLevelIndex = 0
+    private var levelRow = 0
+    private var levelIndex = 0
     private var totalGameTime = 0f
-    private var mRobotsDestroyed = 0
-    private var mPearlsCollected = 0
-    private var mPearlsTotal = 0
+    private var robotsDestroyed = 0
+    private var pearlsCollected = 0
+    private var pearlsTotal = 0
     private var mLastEnding = -1
     private var mLinearMode = 0
-    private var mDifficulty = 1
+    private var difficulty = 1
     private var extrasUnlocked = false
     private var sensorManager: SensorManager? = null
     private var prefsEditor: Editor? = null
@@ -62,8 +62,8 @@ class AndouKun : Activity(), SensorEventListener {
     private var lastRollTime = 0L
     private var pauseMessage: View? = null
     private var waitMessage: View? = null
-    private var mLevelNameBox: View? = null
-    private var mLevelName: TextView? = null
+    private var levelNameBox: View? = null
+    private var levelName: TextView? = null
     private var waitFadeAnimation: Animation? = null
     private var eventReporter: EventReporter? = null
     private var eventReporterThread: Thread? = null
@@ -89,8 +89,8 @@ class AndouKun : Activity(), SensorEventListener {
         gLSurfaceView = findViewById<View>(R.id.glsurfaceview) as GLSurfaceView
         pauseMessage = findViewById(R.id.pausedMessage)
         waitMessage = findViewById(R.id.pleaseWaitMessage)
-        mLevelNameBox = findViewById(R.id.levelNameBox)
-        mLevelName = findViewById<View>(R.id.levelName) as TextView
+        levelNameBox = findViewById(R.id.levelNameBox)
+        levelName = findViewById<View>(R.id.levelName) as TextView
         waitFadeAnimation = AnimationUtils.loadAnimation(this, R.anim.wait_message_fade)
 
 
@@ -107,8 +107,8 @@ class AndouKun : Activity(), SensorEventListener {
             val ratio = dm.widthPixels.toFloat() / dm.heightPixels
             defaultWidth = (defaultHeight * ratio).toInt()
         }
-        mLevelRow = 0
-        mLevelIndex = 0
+        levelRow = 0
+        levelIndex = 0
         prefsEditor = prefs.edit()
         // Make sure that old game information is cleared when we start a new game.
         if (intent.getBooleanExtra("newGame", false)) {
@@ -123,18 +123,18 @@ class AndouKun : Activity(), SensorEventListener {
             prefsEditor!!.remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
             prefsEditor!!.commit()
         }
-        mLevelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        mLevelIndex = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        levelIndex = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
         var completed = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, 0)
         totalGameTime = prefs.getFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, 0.0f)
-        mRobotsDestroyed = prefs.getInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, 0)
-        mPearlsCollected = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, 0)
-        mPearlsTotal = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, 0)
+        robotsDestroyed = prefs.getInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, 0)
+        pearlsCollected = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, 0)
+        pearlsTotal = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, 0)
         mLinearMode = prefs.getInt(PreferenceConstants.PREFERENCE_LINEAR_MODE,
                 if (intent.getBooleanExtra("linearMode", false)) 1 else 0)
         extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
-        mDifficulty = prefs.getInt(PreferenceConstants.PREFERENCE_DIFFICULTY, intent.getIntExtra("difficulty", 1))
-        mGame!!.bootstrap(this, dm.widthPixels, dm.heightPixels, defaultWidth, defaultHeight, mDifficulty)
+        difficulty = prefs.getInt(PreferenceConstants.PREFERENCE_DIFFICULTY, intent.getIntExtra("difficulty", 1))
+        mGame!!.bootstrap(this, dm.widthPixels, dm.heightPixels, defaultWidth, defaultHeight, difficulty)
         gLSurfaceView!!.setRenderer(mGame!!.renderer as GLSurfaceView.Renderer)
         var levelTreeResource = R.xml.level_tree
         if (mLinearMode != 0) {
@@ -154,30 +154,30 @@ class AndouKun : Activity(), SensorEventListener {
             i.putExtra("unlockAll", true)
             startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
         } else {
-            if (!LevelTree.levelIsValid(mLevelRow, mLevelIndex)) {
+            if (!LevelTree.levelIsValid(levelRow, levelIndex)) {
                 // bad data?  Let's try to recover.
 
                 // is the row valid?
-                if (LevelTree.rowIsValid(mLevelRow)) {
+                if (LevelTree.rowIsValid(levelRow)) {
                     // In that case, just start the row over.
-                    mLevelIndex = 0
+                    levelIndex = 0
                     completed = 0
-                } else if (LevelTree.rowIsValid(mLevelRow - 1)) {
+                } else if (LevelTree.rowIsValid(levelRow - 1)) {
                     // If not, try to back up a row.
-                    mLevelRow--
-                    mLevelIndex = 0
+                    levelRow--
+                    levelIndex = 0
                     completed = 0
                 }
-                if (!LevelTree.levelIsValid(mLevelRow, mLevelIndex)) {
+                if (!LevelTree.levelIsValid(levelRow, levelIndex)) {
                     // if all else fails, start the game over.
-                    mLevelRow = 0
-                    mLevelIndex = 0
+                    levelRow = 0
+                    levelIndex = 0
                     completed = 0
                 }
             }
-            LevelTree.updateCompletedState(mLevelRow, completed)
-            mGame!!.setPendingLevel(LevelTree.fetch(mLevelRow, mLevelIndex))
-            if (LevelTree.fetch(mLevelRow, mLevelIndex).showWaitMessage) {
+            LevelTree.updateCompletedState(levelRow, completed)
+            mGame!!.setPendingLevel(LevelTree.fetch(levelRow, levelIndex))
+            if (LevelTree.fetch(levelRow, levelIndex).showWaitMessage) {
                 showWaitMessage()
             } else {
                 hideWaitMessage()
@@ -406,12 +406,12 @@ class AndouKun : Activity(), SensorEventListener {
         super.onActivityResult(requestCode, resultCode, intent)
         if (requestCode == ACTIVITY_CHANGE_LEVELS) {
             if (resultCode == RESULT_OK) {
-                mLevelRow = intent.extras.getInt("row")
-                mLevelIndex = intent.extras.getInt("index")
-                LevelTree.updateCompletedState(mLevelRow, 0)
+                levelRow = intent.extras.getInt("row")
+                levelIndex = intent.extras.getInt("index")
+                LevelTree.updateCompletedState(levelRow, 0)
                 saveGame()
-                mGame!!.setPendingLevel(LevelTree.fetch(mLevelRow, mLevelIndex))
-                if (LevelTree.fetch(mLevelRow, mLevelIndex).showWaitMessage) {
+                mGame!!.setPendingLevel(LevelTree.fetch(levelRow, levelIndex))
+                if (LevelTree.fetch(levelRow, levelIndex).showWaitMessage) {
                     showWaitMessage()
                 } else {
                     hideWaitMessage()
@@ -440,27 +440,27 @@ class AndouKun : Activity(), SensorEventListener {
                 finish()
             }
             GameFlowEvent.EVENT_RESTART_LEVEL -> {
-                if (LevelTree.fetch(mLevelRow, mLevelIndex).restartable) {
+                if (LevelTree.fetch(levelRow, levelIndex).restartable) {
                     if (eventReporter != null) {
                         eventReporter!!.addEvent(EventReporter.EVENT_DEATH,
                                 mGame!!.lastDeathPosition!!.x,
                                 mGame!!.lastDeathPosition!!.y,
                                 mGame!!.gameTime,
-                                LevelTree.fetch(mLevelRow, mLevelIndex).name,
+                                LevelTree.fetch(levelRow, levelIndex).name,
                                 VERSION,
                                 sessionId)
                     }
                     mGame!!.restartLevel()
                     return
                 }
-                LevelTree.fetch(mLevelRow, mLevelIndex).completed = true
-                val currentGroup = LevelTree.levels[mLevelRow]
+                LevelTree.fetch(levelRow, levelIndex).completed = true
+                val currentGroup = LevelTree.levels[levelRow]
                 val count = currentGroup.levels.size
                 var groupCompleted = true
                 if (eventReporter != null) {
                     eventReporter!!.addEvent(EventReporter.EVENT_BEAT_LEVEL, 0f, 0f,
                             mGame!!.gameTime,
-                            LevelTree.fetch(mLevelRow, mLevelIndex).name,
+                            LevelTree.fetch(levelRow, levelIndex).name,
                             VERSION,
                             sessionId)
                 }
@@ -468,23 +468,23 @@ class AndouKun : Activity(), SensorEventListener {
                 while (x < count) {
                     if (currentGroup.levels[x].completed == false) {
                         // We haven't completed the group yet.
-                        mLevelIndex = x
+                        levelIndex = x
                         groupCompleted = false
                         break
                     }
                     x++
                 }
                 if (groupCompleted) {
-                    mLevelIndex = 0
-                    mLevelRow++
+                    levelIndex = 0
+                    levelRow++
                 }
                 totalGameTime += mGame!!.gameTime
-                mRobotsDestroyed += mGame!!.robotsDestroyed
-                mPearlsCollected += mGame!!.pearlsCollected
-                mPearlsTotal += mGame!!.pearlsTotal
-                if (mLevelRow < LevelTree.levels.size) {
-                    val currentLevel = LevelTree.fetch(mLevelRow, mLevelIndex)
-                    if (currentLevel.inThePast || LevelTree.levels[mLevelRow].levels.size > 1) {
+                robotsDestroyed += mGame!!.robotsDestroyed
+                pearlsCollected += mGame!!.pearlsCollected
+                pearlsTotal += mGame!!.pearlsTotal
+                if (levelRow < LevelTree.levels.size) {
+                    val currentLevel = LevelTree.fetch(levelRow, levelIndex)
+                    if (currentLevel.inThePast || LevelTree.levels[levelRow].levels.size > 1) {
                         // go to the level select.
                         val i = Intent(this, LevelSelectActivity::class.java)
                         startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
@@ -517,8 +517,8 @@ class AndouKun : Activity(), SensorEventListener {
                                 sessionId)
                     }
                     // We beat the game!
-                    mLevelRow = 0
-                    mLevelIndex = 0
+                    levelRow = 0
+                    levelIndex = 0
                     mLastEnding = mGame!!.lastEnding
                     extrasUnlocked = true
                     saveGame()
@@ -538,37 +538,37 @@ class AndouKun : Activity(), SensorEventListener {
                 }
             }
             GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL -> {
-                LevelTree.fetch(mLevelRow, mLevelIndex).completed = true
-                val currentGroup = LevelTree.levels[mLevelRow]
+                LevelTree.fetch(levelRow, levelIndex).completed = true
+                val currentGroup = LevelTree.levels[levelRow]
                 val count = currentGroup.levels.size
                 var groupCompleted = true
                 if (eventReporter != null) {
                     eventReporter!!.addEvent(EventReporter.EVENT_BEAT_LEVEL, 0f, 0f,
                             mGame!!.gameTime,
-                            LevelTree.fetch(mLevelRow, mLevelIndex).name,
+                            LevelTree.fetch(levelRow, levelIndex).name,
                             VERSION,
                             sessionId)
                 }
                 var x = 0
                 while (x < count) {
                     if (currentGroup.levels[x].completed == false) {
-                        mLevelIndex = x
+                        levelIndex = x
                         groupCompleted = false
                         break
                     }
                     x++
                 }
                 if (groupCompleted) {
-                    mLevelIndex = 0
-                    mLevelRow++
+                    levelIndex = 0
+                    levelRow++
                 }
                 totalGameTime += mGame!!.gameTime
-                mRobotsDestroyed += mGame!!.robotsDestroyed
-                mPearlsCollected += mGame!!.pearlsCollected
-                mPearlsTotal += mGame!!.pearlsTotal
-                if (mLevelRow < LevelTree.levels.size) {
-                    val currentLevel = LevelTree.fetch(mLevelRow, mLevelIndex)
-                    if (currentLevel.inThePast || LevelTree.levels[mLevelRow].levels.size > 1) {
+                robotsDestroyed += mGame!!.robotsDestroyed
+                pearlsCollected += mGame!!.pearlsCollected
+                pearlsTotal += mGame!!.pearlsTotal
+                if (levelRow < LevelTree.levels.size) {
+                    val currentLevel = LevelTree.fetch(levelRow, levelIndex)
+                    if (currentLevel.inThePast || LevelTree.levels[levelRow].levels.size > 1) {
                         val i = Intent(this, LevelSelectActivity::class.java)
                         startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
                         if (UIConstants.mOverridePendingTransition != null) {
@@ -598,8 +598,8 @@ class AndouKun : Activity(), SensorEventListener {
                                 VERSION,
                                 sessionId)
                     }
-                    mLevelRow = 0
-                    mLevelIndex = 0
+                    levelRow = 0
+                    levelIndex = 0
                     mLastEnding = mGame!!.lastEnding
                     extrasUnlocked = true
                     saveGame()
@@ -620,7 +620,7 @@ class AndouKun : Activity(), SensorEventListener {
             }
             GameFlowEvent.EVENT_SHOW_DIARY -> {
                 val i = Intent(this, DiaryActivity::class.java)
-                val level = LevelTree.fetch(mLevelRow, mLevelIndex)
+                val level = LevelTree.fetch(levelRow, levelIndex)
                 level.diaryCollected = true
                 i.putExtra("text", level.dialogResources!!.diaryEntry)
                 startActivity(i)
@@ -636,16 +636,16 @@ class AndouKun : Activity(), SensorEventListener {
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1 -> {
                 val i = Intent(this, ConversationDialogActivity::class.java)
-                i.putExtra("levelRow", mLevelRow)
-                i.putExtra("levelIndex", mLevelIndex)
+                i.putExtra("levelRow", levelRow)
+                i.putExtra("levelIndex", levelIndex)
                 i.putExtra("index", index)
                 i.putExtra("character", 1)
                 startActivity(i)
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2 -> {
                 val i = Intent(this, ConversationDialogActivity::class.java)
-                i.putExtra("levelRow", mLevelRow)
-                i.putExtra("levelIndex", mLevelIndex)
+                i.putExtra("levelRow", levelRow)
+                i.putExtra("levelIndex", levelIndex)
                 i.putExtra("index", index)
                 i.putExtra("character", 2)
                 startActivity(i)
@@ -669,19 +669,19 @@ class AndouKun : Activity(), SensorEventListener {
 
     private fun saveGame() {
         if (prefsEditor != null) {
-            val completed = LevelTree.packCompletedLevels(mLevelRow)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, mLevelRow)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, mLevelIndex)
+            val completed = LevelTree.packCompletedLevels(levelRow)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, levelRow)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, levelIndex)
             prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, completed)
             prefsEditor!!.putLong(PreferenceConstants.PREFERENCE_SESSION_ID, sessionId)
             prefsEditor!!.putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, totalGameTime)
             prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LAST_ENDING, mLastEnding)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, mRobotsDestroyed)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, mPearlsCollected)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, mPearlsTotal)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, robotsDestroyed)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, pearlsCollected)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, pearlsTotal)
             prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LINEAR_MODE, mLinearMode)
             prefsEditor!!.putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, extrasUnlocked)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_DIFFICULTY, mDifficulty)
+            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_DIFFICULTY, difficulty)
             prefsEditor!!.commit()
         }
     }
@@ -690,9 +690,9 @@ class AndouKun : Activity(), SensorEventListener {
         if (pauseMessage != null) {
             pauseMessage!!.visibility = View.VISIBLE
         }
-        if (mLevelNameBox != null && mLevelName != null) {
-            mLevelName!!.text = LevelTree.fetch(mLevelRow, mLevelIndex).name
-            mLevelNameBox!!.visibility = View.VISIBLE
+        if (levelNameBox != null && levelName != null) {
+            levelName!!.text = LevelTree.fetch(levelRow, levelIndex).name
+            levelNameBox!!.visibility = View.VISIBLE
         }
     }
 
@@ -700,8 +700,8 @@ class AndouKun : Activity(), SensorEventListener {
         if (pauseMessage != null) {
             pauseMessage!!.visibility = View.GONE
         }
-        if (mLevelNameBox != null) {
-            mLevelNameBox!!.visibility = View.GONE
+        if (levelNameBox != null) {
+            levelNameBox!!.visibility = View.GONE
         }
     }
 
