@@ -80,6 +80,10 @@ and to the Android team for continued support.
 
 Jim Andreas converted the project to Kotlin, which is also another island.  "The game is afoot!"
 
+IMPORTANT NOTE: the conversion is Komplete.  Linting runs clean and the game is playable.  All
+further changes will take place in the branch "kylica" and irregular updates of the *kylica* branch
+will be noted in the *CHANGELOG.md* on the *master* branch.
+
 This code was derived from the original code posted to the following link - still working
 as of Sept 2020:
 
