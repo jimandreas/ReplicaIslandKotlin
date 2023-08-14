@@ -28,7 +28,7 @@ class DebugLog {
             loggingEnabled = enabled
         }
 
-        fun v(tag: String?, msg: String?): Int {
+        fun v(tag: String, msg: String): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.v(tag, msg)
@@ -36,7 +36,7 @@ class DebugLog {
             return result
         }
 
-        fun v(tag: String?, msg: String?, tr: Throwable?): Int {
+        fun v(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.v(tag, msg, tr)
@@ -44,7 +44,7 @@ class DebugLog {
             return result
         }
 
-        fun d(tag: String?, msg: String?): Int {
+        fun d(tag: String, msg: String): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.d(tag, msg)
@@ -52,7 +52,7 @@ class DebugLog {
             return result
         }
 
-        fun d(tag: String?, msg: String?, tr: Throwable?): Int {
+        fun d(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.d(tag, msg, tr)
@@ -60,7 +60,7 @@ class DebugLog {
             return result
         }
 
-        fun i(tag: String?, msg: String?): Int {
+        fun i(tag: String, msg: String): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.i(tag, msg)
@@ -68,7 +68,7 @@ class DebugLog {
             return result
         }
 
-        fun i(tag: String?, msg: String?, tr: Throwable?): Int {
+        fun i(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.i(tag, msg, tr)
@@ -76,7 +76,7 @@ class DebugLog {
             return result
         }
 
-        fun w(tag: String?, msg: String?): Int {
+        fun w(tag: String, msg: String): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.w(tag, msg)
@@ -84,7 +84,7 @@ class DebugLog {
             return result
         }
 
-        fun w(tag: String?, msg: String?, tr: Throwable?): Int {
+        fun w(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.w(tag, msg, tr)
@@ -92,7 +92,7 @@ class DebugLog {
             return result
         }
 
-        fun w(tag: String?, tr: Throwable?): Int {
+        fun w(tag: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.w(tag, tr)
@@ -100,7 +100,7 @@ class DebugLog {
             return result
         }
 
-        fun e(tag: String?, msg: String?): Int {
+        fun e(tag: String, msg: String): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.e(tag, msg)
@@ -108,7 +108,7 @@ class DebugLog {
             return result
         }
 
-        fun e(tag: String?, msg: String?, tr: Throwable?): Int {
+        fun e(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
             if (loggingEnabled) {
                 result = Log.e(tag, msg, tr)

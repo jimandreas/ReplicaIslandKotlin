@@ -325,6 +325,7 @@ class GameObjectFactory : BaseObject() {
             GameObjectType.SMOKE_POOF -> newObject = spawnSmokePoof(x, y)
             GameObjectType.GEM_EFFECT -> newObject = spawnGemEffect(x, y)
             GameObjectType.GEM_EFFECT_SPAWNER -> newObject = spawnGemEffectSpawner(x, y)
+            else -> {}
         }
         return newObject
     }
@@ -3559,6 +3560,7 @@ class GameObjectFactory : BaseObject() {
             GameObjectType.DOOR_RED -> doorChannel = channelSystem!!.registerChannel(sRedButtonChannel)
             GameObjectType.DOOR_BLUE -> doorChannel = channelSystem!!.registerChannel(sBlueButtonChannel)
             GameObjectType.DOOR_GREEN -> doorChannel = channelSystem!!.registerChannel(sGreenButtonChannel)
+            else -> {}
         }
         doorAnim.setChannel(doorChannel)
         val dynamicCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
@@ -3641,6 +3643,7 @@ class GameObjectFactory : BaseObject() {
             GameObjectType.BUTTON_RED -> buttonChannel = channelSystem!!.registerChannel(sRedButtonChannel)
             GameObjectType.BUTTON_BLUE -> buttonChannel = channelSystem!!.registerChannel(sBlueButtonChannel)
             GameObjectType.BUTTON_GREEN -> buttonChannel = channelSystem!!.registerChannel(sGreenButtonChannel)
+            else -> {}
         }
         button.setChannel(buttonChannel)
         val dynamicCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?

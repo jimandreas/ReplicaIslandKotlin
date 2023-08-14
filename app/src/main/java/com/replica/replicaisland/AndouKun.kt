@@ -406,9 +406,11 @@ class AndouKun : Activity(), SensorEventListener {
         super.onActivityResult(requestCode, resultCode, intent)
         if (requestCode == ACTIVITY_CHANGE_LEVELS) {
             if (resultCode == RESULT_OK) {
-                levelRow = intent.extras.getInt("row")
-                levelIndex = intent.extras.getInt("index")
+
+                levelRow = intent.extras!!.getInt("row")
+                levelIndex = intent.extras!!.getInt("index")
                 LevelTree.updateCompletedState(levelRow, 0)
+
                 saveGame()
                 mGame!!.setPendingLevel(LevelTree.fetch(levelRow, levelIndex))
                 if (LevelTree.fetch(levelRow, levelIndex).showWaitMessage) {
