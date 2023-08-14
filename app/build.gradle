@@ -1,14 +1,22 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 28
+    namespace 'com.replica.replicaisland'
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.replica.replicaisland"
-        minSdkVersion 16
-        //noinspection OldTargetApi
-        targetSdkVersion 28
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
@@ -18,15 +26,22 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     lintOptions {
         abortOnError false
         disable 'UnusedResources', 'IconDuplicates', 'IconLocation'
     }
 }
-repositories {
-    mavenCentral()
-}
+
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.7.1"
+    //implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
 }

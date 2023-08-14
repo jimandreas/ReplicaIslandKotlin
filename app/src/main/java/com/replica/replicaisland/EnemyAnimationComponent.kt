@@ -104,6 +104,8 @@ class EnemyAnimationComponent : GameComponent() {
                         mState = AnimationState.IDLING
                     }
                 }
+
+                else -> {}
             }
         }
     }
