@@ -29,34 +29,34 @@ import java.io.InputStream
  * deserialization of tilemap files.
  */
 class TiledWorld : AllocationGuard {
-    private lateinit var mTilesArray: Array<IntArray>
-    private var mRowCount = 0
-    private var mColCount = 0
-    private var mWorkspaceBytes: ByteArray
+    private lateinit var tilesArray: Array<IntArray>
+    private var rowCount = 0
+    private var colCount = 0
+    private var workspaceBytes: ByteArray
 
     constructor(cols: Int, rows: Int) : super() {
-        mTilesArray = Array(cols) { IntArray(rows) }
-        mRowCount = rows
-        mColCount = cols
+        tilesArray = Array(cols) { IntArray(rows) }
+        rowCount = rows
+        colCount = cols
         for (x in 0 until cols) {
             for (y in 0 until rows) {
-                mTilesArray[x][y] = -1
+                tilesArray[x][y] = -1
             }
         }
-        mWorkspaceBytes = ByteArray(4)
+        workspaceBytes = ByteArray(4)
         calculateSkips()
     }
 
     constructor(stream: InputStream) : super() {
-        mWorkspaceBytes = ByteArray(4)
+        workspaceBytes = ByteArray(4)
         parseInput(stream)
         calculateSkips()
     }
 
     fun getTile(x: Int, y: Int): Int {
         var result = -1
-        if (x >= 0 && x < mColCount && y >= 0 && y < mRowCount) {
-            result = mTilesArray[x][y]
+        if (x >= 0 && x < colCount && y >= 0 && y < rowCount) {
+            result = tilesArray[x][y]
         }
         return result
     }
@@ -74,17 +74,17 @@ class TiledWorld : AllocationGuard {
         try {
             signature = byteStream.read()
             if (signature == 42) {
-                byteStream.read(mWorkspaceBytes, 0, 4)
-                val width = byteArrayToInt(mWorkspaceBytes)
-                byteStream.read(mWorkspaceBytes, 0, 4)
-                val height = byteArrayToInt(mWorkspaceBytes)
+                byteStream.read(workspaceBytes, 0, 4)
+                val width = byteArrayToInt(workspaceBytes)
+                byteStream.read(workspaceBytes, 0, 4)
+                val height = byteArrayToInt(workspaceBytes)
                 val totalTiles = width * height
                 val bytesRemaining = byteStream.available()
                 //TODO 2 fix: assert(bytesRemaining >= totalTiles)
                 if (bytesRemaining >= totalTiles) {
-                    mTilesArray = Array(width) { IntArray(height) }
-                    mRowCount = height
-                    mColCount = width
+                    tilesArray = Array(width) { IntArray(height) }
+                    rowCount = height
+                    colCount = width
                     for (y in 0 until height) {
                         for (x in 0 until width) {
                             // there is probably a better way to do this byte-sign extension
@@ -92,7 +92,7 @@ class TiledWorld : AllocationGuard {
                             if (byteData > 127) {
                                 byteData -= 256
                             }
-                            mTilesArray[x][y] = byteData
+                            tilesArray[x][y] = byteData
                         }
                     }
                     success = true
@@ -106,11 +106,11 @@ class TiledWorld : AllocationGuard {
 
     private fun calculateSkips() {
         var emptyTileCount = 0
-        for (y in mRowCount - 1 downTo 0) {
-            for (x in mColCount - 1 downTo 0) {
-                if (mTilesArray[x][y] < 0) {
+        for (y in rowCount - 1 downTo 0) {
+            for (x in colCount - 1 downTo 0) {
+                if (tilesArray[x][y] < 0) {
                     emptyTileCount++
-                    mTilesArray[x][y] = -emptyTileCount
+                    tilesArray[x][y] = -emptyTileCount
                 } else {
                     emptyTileCount = 0
                 }
@@ -119,14 +119,14 @@ class TiledWorld : AllocationGuard {
     }
 
     fun fetchWidth(): Int {
-        return mColCount
+        return colCount
     }
 
     fun fetchHeight(): Int {
-        return mRowCount
+        return rowCount
     }
 
     fun fetchTiles(): Array<IntArray> {
-        return mTilesArray
+        return tilesArray
     }
 }

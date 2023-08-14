@@ -22,19 +22,19 @@ import android.media.SoundPool
 import java.util.*
 
 class SoundSystem : BaseObject() {
-    private val mSoundPool: SoundPool
+    private val soundPool: SoundPool
     private val mSounds: FixedSizeArray<Sound>
-    private val mSearchDummy: Sound
+    private val searchDummy: Sound
 
     @set:Synchronized
     var soundEnabled = false
-    private val mLoopingStreams: IntArray
+    private val loopingStreams: IntArray
     override fun reset() {
-        mSoundPool.release()
+        soundPool.release()
         mSounds.clear()
         soundEnabled = true
-        for (x in mLoopingStreams.indices) {
-            mLoopingStreams[x] = -1
+        for (x in loopingStreams.indices) {
+            loopingStreams[x] = -1
         }
     }
 
@@ -47,7 +47,7 @@ class SoundSystem : BaseObject() {
                 val context = sSystemRegistry.contextParameters!!.context
                 result = Sound()
                 result.resource = resource
-                result.soundId = mSoundPool.load(context, resource, 1)
+                result.soundId = soundPool.load(context, resource, 1)
                 mSounds.add(result)
                 mSounds.sort(false)
             }
@@ -61,7 +61,7 @@ class SoundSystem : BaseObject() {
     fun play(sound: Sound, loop: Boolean, priority: Int): Int {
         var stream = -1
         if (soundEnabled) {
-            stream = mSoundPool.play(sound.soundId, 1.0f, 1.0f, priority, if (loop) -1 else 0, 1.0f)
+            stream = soundPool.play(sound.soundId, 1.0f, 1.0f, priority, if (loop) -1 else 0, 1.0f)
             if (loop) {
                 addLoopingStream(stream)
             }
@@ -73,7 +73,7 @@ class SoundSystem : BaseObject() {
     fun play(sound: Sound, loop: Boolean, priority: Int, volume: Float, rate: Float): Int {
         var stream = -1
         if (soundEnabled) {
-            stream = mSoundPool.play(sound.soundId, volume, volume, priority, if (loop) -1 else 0, rate)
+            stream = soundPool.play(sound.soundId, volume, volume, priority, if (loop) -1 else 0, rate)
             if (loop) {
                 addLoopingStream(stream)
             }
@@ -82,23 +82,23 @@ class SoundSystem : BaseObject() {
     }
 
     fun stop(stream: Int) {
-        mSoundPool.stop(stream)
+        soundPool.stop(stream)
         removeLoopingStream(stream)
     }
 
     fun pause(stream: Int) {
-        mSoundPool.pause(stream)
+        soundPool.pause(stream)
     }
 
     fun resume(stream: Int) {
-        mSoundPool.resume(stream)
+        soundPool.resume(stream)
     }
 
     fun stopAll() {
-        val count = mLoopingStreams.size
+        val count = loopingStreams.size
         for (x in count - 1 downTo 0) {
-            if (mLoopingStreams[x] >= 0) {
-                stop(mLoopingStreams[x])
+            if (loopingStreams[x] >= 0) {
+                stop(loopingStreams[x])
             }
         }
     }
@@ -109,37 +109,37 @@ class SoundSystem : BaseObject() {
     // that SoundPool does internally here, I've opted to just pause looping
     // sounds when the Activity is paused.
     fun pauseAll() {
-        val count = mLoopingStreams.size
+        val count = loopingStreams.size
         for (x in 0 until count) {
-            if (mLoopingStreams[x] >= 0) {
-                pause(mLoopingStreams[x])
+            if (loopingStreams[x] >= 0) {
+                pause(loopingStreams[x])
             }
         }
     }
 
     private fun addLoopingStream(stream: Int) {
-        val count = mLoopingStreams.size
+        val count = loopingStreams.size
         for (x in 0 until count) {
-            if (mLoopingStreams[x] < 0) {
-                mLoopingStreams[x] = stream
+            if (loopingStreams[x] < 0) {
+                loopingStreams[x] = stream
                 break
             }
         }
     }
 
     private fun removeLoopingStream(stream: Int) {
-        val count = mLoopingStreams.size
+        val count = loopingStreams.size
         for (x in 0 until count) {
-            if (mLoopingStreams[x] == stream) {
-                mLoopingStreams[x] = -1
+            if (loopingStreams[x] == stream) {
+                loopingStreams[x] = -1
                 break
             }
         }
     }
 
     private fun findSound(resource: Int): Int {
-        mSearchDummy.resource = resource
-        return mSounds.find(mSearchDummy, false)
+        searchDummy.resource = resource
+        return mSounds.find(searchDummy, false)
     }
 
     class Sound : AllocationGuard() {
@@ -174,12 +174,12 @@ class SoundSystem : BaseObject() {
 
     init {
         @Suppress("DEPRECATION")
-        mSoundPool = SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0)
+        soundPool = SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0)
         mSounds = FixedSizeArray(MAX_SOUNDS, sSoundComparator)
-        mSearchDummy = Sound()
-        mLoopingStreams = IntArray(MAX_STREAMS)
-        for (x in mLoopingStreams.indices) {
-            mLoopingStreams[x] = -1
+        searchDummy = Sound()
+        loopingStreams = IntArray(MAX_STREAMS)
+        for (x in loopingStreams.indices) {
+            loopingStreams[x] = -1
         }
     }
 }

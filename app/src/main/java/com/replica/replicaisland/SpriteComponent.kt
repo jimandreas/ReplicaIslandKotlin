@@ -30,11 +30,11 @@ class SpriteComponent : GameComponent {
     private var mWidth = 0
     private var mHeight = 0
     private var mOpacity = 0f
-    private var mRenderComponent: RenderComponent? = null
-    private var mCollisionComponent: DynamicCollisionComponent? = null
+    private var renderComponent: RenderComponent? = null
+    private var collisionComponent: DynamicCollisionComponent? = null
     var visible = false
     private var mCurrentAnimation: SpriteAnimation? = null
-    private var mAnimationsDirty = false
+    private var animationsDirty = false
 
     constructor(width: Int, height: Int) : super() {
         mAnimations = PhasedObjectManager()
@@ -58,20 +58,20 @@ class SpriteComponent : GameComponent {
         mAnimations.removeAll()
         mAnimations.commitUpdates()
         currentAnimationTime = 0.0f
-        mRenderComponent = null
-        mCollisionComponent = null
+        renderComponent = null
+        collisionComponent = null
         mCurrentAnimation = null
         mOpacity = 1.0f
-        mAnimationsDirty = false
+        animationsDirty = false
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         currentAnimationTime += timeDelta
         val animations = mAnimations
         val currentAnimIndex = currentAnimation
-        if (mAnimationsDirty) {
+        if (animationsDirty) {
             animations.commitUpdates()
-            mAnimationsDirty = false
+            animationsDirty = false
         }
         var validFrameAvailable = false
         if (animations.fetchCount() > 0 && currentAnimIndex != -1) {
@@ -92,7 +92,7 @@ class SpriteComponent : GameComponent {
             val currentFrame = currentAnimation!!.getFrame(currentAnimationTime)
             if (currentFrame != null) {
                 validFrameAvailable = true
-                val render = mRenderComponent
+                val render = renderComponent
                 if (render != null) {
                     val factory = sSystemRegistry.drawableFactory
                     if (visible && currentFrame.texture != null && factory != null) {
@@ -110,19 +110,19 @@ class SpriteComponent : GameComponent {
                         render.drawable = null
                     }
                 }
-                if (mCollisionComponent != null) {
-                    mCollisionComponent!!.setCollisionVolumes(currentFrame.attackVolumes,
+                if (collisionComponent != null) {
+                    collisionComponent!!.setCollisionVolumes(currentFrame.attackVolumes,
                             currentFrame.vulnerabilityVolumes)
                 }
             }
         }
         if (!validFrameAvailable) {
             // No current frame = draw nothing!
-            if (mRenderComponent != null) {
-                mRenderComponent!!.drawable = null
+            if (renderComponent != null) {
+                renderComponent!!.drawable = null
             }
-            if (mCollisionComponent != null) {
-                mCollisionComponent!!.setCollisionVolumes(null, null)
+            if (collisionComponent != null) {
+                collisionComponent!!.setCollisionVolumes(null, null)
             }
         }
     }
@@ -144,7 +144,7 @@ class SpriteComponent : GameComponent {
 
     fun addAnimation(anim: SpriteAnimation?) {
         mAnimations.add(anim as BaseObject)
-        mAnimationsDirty = true
+        animationsDirty = true
     }
 
     fun animationFinished(): Boolean {
@@ -171,11 +171,11 @@ class SpriteComponent : GameComponent {
     }
 
     fun setRenderComponent(component: RenderComponent?) {
-        mRenderComponent = component
+        renderComponent = component
     }
 
     fun setCollisionComponent(component: DynamicCollisionComponent?) {
-        mCollisionComponent = component
+        collisionComponent = component
     }
 
     fun setOpacity(opacity: Float) {

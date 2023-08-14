@@ -28,45 +28,45 @@ import kotlin.math.max
  * precision isn't necessary, so this simple implementation is sufficient.
  */
 class AABoxCollisionVolume : CollisionVolume {
-    private var mWidthHeight: Vector2
-    private var mBottomLeft: Vector2
+    private var widthHeight: Vector2
+    private var bottomLeft: Vector2
 
     constructor(offsetX: Float, offsetY: Float, width: Float, height: Float) : super() {
-        mBottomLeft = Vector2(offsetX, offsetY)
-        mWidthHeight = Vector2(width, height)
+        bottomLeft = Vector2(offsetX, offsetY)
+        widthHeight = Vector2(width, height)
     }
 
     constructor(offsetX: Int, offsetY: Int, width: Int, height: Int) : super() {
-        mBottomLeft = Vector2(offsetX, offsetY)
-        mWidthHeight = Vector2(width, height)
+        bottomLeft = Vector2(offsetX, offsetY)
+        widthHeight = Vector2(width, height)
     }
     
     constructor(offsetX: Float, offsetY: Float, width: Float, height: Float,
                 hit: Int) : super(hit) {
-        mBottomLeft = Vector2(offsetX, offsetY)
-        mWidthHeight = Vector2(width, height)
+        bottomLeft = Vector2(offsetX, offsetY)
+        widthHeight = Vector2(width, height)
     }
 
     constructor(offsetX: Int, offsetY: Int, width: Int, height: Int,
                 hit: Int) : super(hit) {
-        mBottomLeft = Vector2(offsetX.toFloat(), offsetY.toFloat())
-        mWidthHeight = Vector2(width.toFloat(), height.toFloat())
+        bottomLeft = Vector2(offsetX.toFloat(), offsetY.toFloat())
+        widthHeight = Vector2(width.toFloat(), height.toFloat())
     }
 
     override fun fetchMaxX(): Float {
-        return mBottomLeft.x + mWidthHeight.x
+        return bottomLeft.x + widthHeight.x
     }
 
     override fun fetchMinX(): Float {
-        return mBottomLeft.x
+        return bottomLeft.x
     }
 
     override fun fetchMaxY(): Float {
-        return mBottomLeft.y + mWidthHeight.y
+        return bottomLeft.y + widthHeight.y
     }
 
     override fun fetchMinY(): Float {
-        return mBottomLeft.y
+        return bottomLeft.y
     }
 
     /**
@@ -107,7 +107,7 @@ class AABoxCollisionVolume : CollisionVolume {
         val minX: Float
         val maxY: Float
         val minY: Float
-        if (mWidthHeight.length2() > 0) {
+        if (widthHeight.length2() > 0) {
             maxX = max(fetchMaxX(), other.fetchMaxX())
             minX = max(fetchMinX(), other.fetchMinX())
             maxY = max(fetchMaxY(), other.fetchMaxY())
@@ -120,7 +120,7 @@ class AABoxCollisionVolume : CollisionVolume {
         }
         val horizontalDelta = maxX - minX
         val verticalDelta = maxY - minY
-        mBottomLeft[minX] = minY
-        mWidthHeight[horizontalDelta] = verticalDelta
+        bottomLeft[minX] = minY
+        widthHeight[horizontalDelta] = verticalDelta
     }
 }

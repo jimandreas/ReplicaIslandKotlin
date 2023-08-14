@@ -28,22 +28,22 @@ import javax.microedition.khronos.opengles.GL11
  * vertex buffers and to insert edges between grid squares for tiling.
  */
 class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
-    private var mFloatVertexBuffer: FloatBuffer? = null
-    private var mFloatTexCoordBuffer: FloatBuffer? = null
-    private var mFixedVertexBuffer: IntBuffer? = null
-    private var mFixedTexCoordBuffer: IntBuffer? = null
-    private val mIndexBuffer: CharBuffer
-    private var mVertexBuffer: Buffer? = null
-    private var mTexCoordBuffer: Buffer? = null
-    private var mCoordinateSize = 0
-    private var mCoordinateType = 0
+    private var floatVertexBuffer: FloatBuffer? = null
+    private var floatTexCoordBuffer: FloatBuffer? = null
+    private var fixedVertexBuffer: IntBuffer? = null
+    private var fixedTexCoordBuffer: IntBuffer? = null
+    private val indexBuffer: CharBuffer
+    private var vertexBuffer: Buffer? = null
+    private var texCoordBuffer: Buffer? = null
+    private var coordinateSize = 0
+    private var coordinateType = 0
     private val mVertsAcross: Int
     private val mVertsDown: Int
     private val mIndexCount: Int
-    private var mUseHardwareBuffers: Boolean
-    private var mVertBufferIndex: Int
-    private var mIndexBufferIndex = 0
-    private var mTextureCoordBufferIndex = 0
+    private var useHardwareBuffers: Boolean
+    private var vertBufferIndex: Int
+    private var indexBufferIndex = 0
+    private var textureCoordBufferIndex = 0
 
     operator fun set(quadX: Int, quadY: Int, positions: Array<FloatArray>, uvs: Array<FloatArray>) {
         require(!(quadX < 0 || quadX * 2 >= mVertsAcross)) { "quadX" }
@@ -64,36 +64,36 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         val index = mVertsAcross * j + i
         val posIndex = index * 3
         val texIndex = index * 2
-        if (mCoordinateType == GL10.GL_FLOAT) {
-            mFloatVertexBuffer!!.put(posIndex, x)
-            mFloatVertexBuffer!!.put(posIndex + 1, y)
-            mFloatVertexBuffer!!.put(posIndex + 2, z)
-            mFloatTexCoordBuffer!!.put(texIndex, u)
-            mFloatTexCoordBuffer!!.put(texIndex + 1, v)
+        if (coordinateType == GL10.GL_FLOAT) {
+            floatVertexBuffer!!.put(posIndex, x)
+            floatVertexBuffer!!.put(posIndex + 1, y)
+            floatVertexBuffer!!.put(posIndex + 2, z)
+            floatTexCoordBuffer!!.put(texIndex, u)
+            floatTexCoordBuffer!!.put(texIndex + 1, v)
         } else {
-            mFixedVertexBuffer!!.put(posIndex, (x * (1 shl 16)).toInt())
-            mFixedVertexBuffer!!.put(posIndex + 1, (y * (1 shl 16)).toInt())
-            mFixedVertexBuffer!!.put(posIndex + 2, (z * (1 shl 16)).toInt())
-            mFixedTexCoordBuffer!!.put(texIndex, (u * (1 shl 16)).toInt())
-            mFixedTexCoordBuffer!!.put(texIndex + 1, (v * (1 shl 16)).toInt())
+            fixedVertexBuffer!!.put(posIndex, (x * (1 shl 16)).toInt())
+            fixedVertexBuffer!!.put(posIndex + 1, (y * (1 shl 16)).toInt())
+            fixedVertexBuffer!!.put(posIndex + 2, (z * (1 shl 16)).toInt())
+            fixedTexCoordBuffer!!.put(texIndex, (u * (1 shl 16)).toInt())
+            fixedTexCoordBuffer!!.put(texIndex + 1, (v * (1 shl 16)).toInt())
         }
     }
 
     fun beginDrawingStrips(gl: GL10, useTexture: Boolean) {
         beginDrawing(gl, useTexture)
-        if (!mUseHardwareBuffers) {
-            gl.glVertexPointer(3, mCoordinateType, 0, mVertexBuffer)
+        if (!useHardwareBuffers) {
+            gl.glVertexPointer(3, coordinateType, 0, vertexBuffer)
             if (useTexture) {
-                gl.glTexCoordPointer(2, mCoordinateType, 0, mTexCoordBuffer)
+                gl.glTexCoordPointer(2, coordinateType, 0, texCoordBuffer)
             }
         } else {
             val gl11 = gl as GL11
             // draw using hardware buffers
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertBufferIndex)
-            gl11.glVertexPointer(3, mCoordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureCoordBufferIndex)
-            gl11.glTexCoordPointer(2, mCoordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mIndexBufferIndex)
+            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
+            gl11.glVertexPointer(3, coordinateType, 0, 0)
+            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, textureCoordBufferIndex)
+            gl11.glTexCoordPointer(2, coordinateType, 0, 0)
+            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
         }
     }
 
@@ -103,9 +103,9 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         if (startIndex + indexCount >= mIndexCount) {
             count = mIndexCount - startIndex
         }
-        if (!mUseHardwareBuffers) {
+        if (!useHardwareBuffers) {
             gl.glDrawElements(GL10.GL_TRIANGLES, count,
-                    GL10.GL_UNSIGNED_SHORT, mIndexBuffer.position(startIndex))
+                    GL10.GL_UNSIGNED_SHORT, indexBuffer.position(startIndex))
         } else {
             val gl11 = gl as GL11
             gl11.glDrawElements(GL11.GL_TRIANGLES, count,
@@ -114,21 +114,21 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
     }
 
     fun draw(gl: GL10, useTexture: Boolean) {
-        if (!mUseHardwareBuffers) {
-            gl.glVertexPointer(3, mCoordinateType, 0, mVertexBuffer)
+        if (!useHardwareBuffers) {
+            gl.glVertexPointer(3, coordinateType, 0, vertexBuffer)
             if (useTexture) {
-                gl.glTexCoordPointer(2, mCoordinateType, 0, mTexCoordBuffer)
+                gl.glTexCoordPointer(2, coordinateType, 0, texCoordBuffer)
             }
             gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount,
-                    GL10.GL_UNSIGNED_SHORT, mIndexBuffer)
+                    GL10.GL_UNSIGNED_SHORT, indexBuffer)
         } else {
             val gl11 = gl as GL11
             // draw using hardware buffers
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertBufferIndex)
-            gl11.glVertexPointer(3, mCoordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureCoordBufferIndex)
-            gl11.glTexCoordPointer(2, mCoordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mIndexBufferIndex)
+            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
+            gl11.glVertexPointer(3, coordinateType, 0, 0)
+            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, textureCoordBufferIndex)
+            gl11.glTexCoordPointer(2, coordinateType, 0, 0)
+            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
             gl11.glDrawElements(GL11.GL_TRIANGLES, mIndexCount,
                     GL11.GL_UNSIGNED_SHORT, 0)
             gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
@@ -137,7 +137,7 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
     }
 
     fun usingHardwareBuffers(): Boolean {
-        return mUseHardwareBuffers
+        return useHardwareBuffers
     }
 
     /**
@@ -146,24 +146,24 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
      * explicitly deleting them) and make new ones.
      */
     fun invalidateHardwareBuffers() {
-        mVertBufferIndex = 0
-        mIndexBufferIndex = 0
-        mTextureCoordBufferIndex = 0
-        mUseHardwareBuffers = false
+        vertBufferIndex = 0
+        indexBufferIndex = 0
+        textureCoordBufferIndex = 0
+        useHardwareBuffers = false
     }
 
     /**
      * Deletes the hardware buffers allocated by this object (if any).
      */
     fun releaseHardwareBuffers(gl: GL10?) {
-        if (mUseHardwareBuffers) {
+        if (useHardwareBuffers) {
             if (gl is GL11) {
                 val buffer = IntArray(1)
-                buffer[0] = mVertBufferIndex
+                buffer[0] = vertBufferIndex
                 gl.glDeleteBuffers(1, buffer, 0)
-                buffer[0] = mTextureCoordBufferIndex
+                buffer[0] = textureCoordBufferIndex
                 gl.glDeleteBuffers(1, buffer, 0)
-                buffer[0] = mIndexBufferIndex
+                buffer[0] = indexBufferIndex
                 gl.glDeleteBuffers(1, buffer, 0)
             }
             invalidateHardwareBuffers()
@@ -178,48 +178,48 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
      * @param gl  A pointer to the OpenGL ES context.
      */
     fun generateHardwareBuffers(gl: GL10?) {
-        if (!mUseHardwareBuffers) {
+        if (!useHardwareBuffers) {
             DebugLog.i("Grid", "Using Hardware Buffers")
             if (gl is GL11) {
                 val buffer = IntArray(1)
 
                 // Allocate and fill the vertex buffer.
                 gl.glGenBuffers(1, buffer, 0)
-                mVertBufferIndex = buffer[0]
-                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertBufferIndex)
-                val vertexSize = mVertexBuffer!!.capacity() * mCoordinateSize
+                vertBufferIndex = buffer[0]
+                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
+                val vertexSize = vertexBuffer!!.capacity() * coordinateSize
                 gl.glBufferData(GL11.GL_ARRAY_BUFFER, vertexSize,
-                        mVertexBuffer, GL11.GL_STATIC_DRAW)
+                        vertexBuffer, GL11.GL_STATIC_DRAW)
 
                 // Allocate and fill the texture coordinate buffer.
                 gl.glGenBuffers(1, buffer, 0)
-                mTextureCoordBufferIndex = buffer[0]
+                textureCoordBufferIndex = buffer[0]
                 gl.glBindBuffer(GL11.GL_ARRAY_BUFFER,
-                        mTextureCoordBufferIndex)
-                val texCoordSize = mTexCoordBuffer!!.capacity() * mCoordinateSize
+                        textureCoordBufferIndex)
+                val texCoordSize = texCoordBuffer!!.capacity() * coordinateSize
                 gl.glBufferData(GL11.GL_ARRAY_BUFFER, texCoordSize,
-                        mTexCoordBuffer, GL11.GL_STATIC_DRAW)
+                        texCoordBuffer, GL11.GL_STATIC_DRAW)
 
                 // Unbind the array buffer.
                 gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
 
                 // Allocate and fill the index buffer.
                 gl.glGenBuffers(1, buffer, 0)
-                mIndexBufferIndex = buffer[0]
+                indexBufferIndex = buffer[0]
                 gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER,
-                        mIndexBufferIndex)
+                        indexBufferIndex)
                 // A char is 2 bytes.
-                val indexSize = mIndexBuffer.capacity() * 2
-                gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexSize, mIndexBuffer,
+                val indexSize = indexBuffer.capacity() * 2
+                gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexSize, indexBuffer,
                         GL11.GL_STATIC_DRAW)
 
                 // Unbind the element array buffer.
                 gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
-                mUseHardwareBuffers = true
+                useHardwareBuffers = true
                 // TODO: fix assertions
-//                assert(mVertBufferIndex != 0)
-//                assert(mTextureCoordBufferIndex != 0)
-//                assert(mIndexBufferIndex != 0)
+//                assert(vertBufferIndex != 0)
+//                assert(textureCoordBufferIndex != 0)
+//                assert(indexBufferIndex != 0)
 //                assert(gl11.glGetError() == 0)
             }
         }
@@ -252,33 +252,33 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         require(!(vertsAcross < 0 || vertsAcross >= 65536)) { "quadsAcross" }
         require(!(vertsDown < 0 || vertsDown >= 65536)) { "quadsDown" }
         require(vertsAcross * vertsDown < 65536) { "quadsAcross * quadsDown >= 32768" }
-        mUseHardwareBuffers = false
+        useHardwareBuffers = false
         mVertsAcross = vertsAcross
         mVertsDown = vertsDown
         val size = vertsAcross * vertsDown
         if (useFixedPoint) {
-            mFixedVertexBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 3)
+            fixedVertexBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 3)
                     .order(ByteOrder.nativeOrder()).asIntBuffer()
-            mFixedTexCoordBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 2)
+            fixedTexCoordBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 2)
                     .order(ByteOrder.nativeOrder()).asIntBuffer()
-            mVertexBuffer = mFixedVertexBuffer
-            mTexCoordBuffer = mFixedTexCoordBuffer
-            mCoordinateSize = FIXED_SIZE
-            mCoordinateType = GL10.GL_FIXED
+            vertexBuffer = fixedVertexBuffer
+            texCoordBuffer = fixedTexCoordBuffer
+            coordinateSize = FIXED_SIZE
+            coordinateType = GL10.GL_FIXED
         } else {
-            mFloatVertexBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 3)
+            floatVertexBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 3)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer()
-            mFloatTexCoordBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 2)
+            floatTexCoordBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 2)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer()
-            mVertexBuffer = mFloatVertexBuffer
-            mTexCoordBuffer = mFloatTexCoordBuffer
-            mCoordinateSize = FLOAT_SIZE
-            mCoordinateType = GL10.GL_FLOAT
+            vertexBuffer = floatVertexBuffer
+            texCoordBuffer = floatTexCoordBuffer
+            coordinateSize = FLOAT_SIZE
+            coordinateType = GL10.GL_FLOAT
         }
         val quadCount = quadsAcross * quadsDown
         val indexCount = quadCount * 6
         mIndexCount = indexCount
-        mIndexBuffer = ByteBuffer.allocateDirect(CHAR_SIZE * indexCount)
+        indexBuffer = ByteBuffer.allocateDirect(CHAR_SIZE * indexCount)
                 .order(ByteOrder.nativeOrder()).asCharBuffer()
 
         /*
@@ -302,15 +302,15 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
                 val b = (indexY * mVertsAcross + indexX + 1).toChar()
                 val c = ((indexY + 1) * mVertsAcross + indexX).toChar()
                 val d = ((indexY + 1) * mVertsAcross + indexX + 1).toChar()
-                mIndexBuffer.put(i++, a)
-                mIndexBuffer.put(i++, b)
-                mIndexBuffer.put(i++, c)
-                mIndexBuffer.put(i++, b)
-                mIndexBuffer.put(i++, c)
-                mIndexBuffer.put(i++, d)
+                indexBuffer.put(i++, a)
+                indexBuffer.put(i++, b)
+                indexBuffer.put(i++, c)
+                indexBuffer.put(i++, b)
+                indexBuffer.put(i++, c)
+                indexBuffer.put(i++, d)
             }
         }
 
-        mVertBufferIndex = 0
+        vertBufferIndex = 0
     }
 }

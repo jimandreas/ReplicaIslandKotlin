@@ -28,9 +28,9 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
     private var mWorld: TiledWorld? = null
     private var mWorldPixelWidth = 0f
     private var mWorldPixelHeight = 0f
-    private var mTilesPerRow = 0
-    private var mTilesPerColumn = 0
-    private var mGenerated = false
+    private var tilesPerRow = 0
+    private var tilesPerColumn = 0
+    private var generated = false
     override fun reset() {}
     fun setWorld(world: TiledWorld?) {
         mWorld = world
@@ -107,17 +107,17 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
     fun draw(x: Float, y: Float, scrollOriginX: Float, scrollOriginY: Float) {
         val world = mWorld
         val gl = gL
-        if (!mGenerated && world != null && gl != null && mTexture != null) {
+        if (!generated && world != null && gl != null && mTexture != null) {
             val tilesAcross = mWorld!!.fetchWidth()
             val tilesDown = mWorld!!.fetchHeight()
             mWorldPixelWidth = mWorld!!.fetchWidth() * mTileWidth.toFloat()
             mWorldPixelHeight = mWorld!!.fetchHeight() * mTileHeight.toFloat()
-            mTilesPerRow = tilesAcross
-            mTilesPerColumn = tilesDown
+            tilesPerRow = tilesAcross
+            tilesPerColumn = tilesDown
             val bufferLibrary = sSystemRegistry.bufferLibrary
             val grid = generateGrid(mWorldPixelWidth.toInt(), mWorldPixelHeight.toInt(), 0, 0)
             mTileMap = grid
-            mGenerated = true
+            generated = true
             if (grid != null) {
                 bufferLibrary!!.add(grid)
                 if (sSystemRegistry.contextParameters!!.supportsVBOs) {
@@ -133,13 +133,13 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                 val originY = (y - scrollOriginY).toInt()
                 val worldPixelWidth = mWorldPixelWidth
                 val percentageScrollRight = if (scrollOriginX != 0.0f) scrollOriginX / worldPixelWidth else 0.0f
-                val tileSpaceX = percentageScrollRight * mTilesPerRow
+                val tileSpaceX = percentageScrollRight * tilesPerRow
                 val leftTile = tileSpaceX.toInt()
 
                 // calculate the top tile index
                 val worldPixelHeight = mWorldPixelHeight
                 val percentageScrollUp = if (scrollOriginY != 0.0f) scrollOriginY / worldPixelHeight else 0.0f
-                val tileSpaceY = percentageScrollUp * mTilesPerColumn
+                val tileSpaceY = percentageScrollUp * tilesPerColumn
                 val bottomTile = tileSpaceY.toInt()
 
                 // calculate any sub-tile slop that our scroll position may require.
@@ -159,11 +159,11 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                         originY.toFloat(),
                         0.0f)
                 val indexesPerTile = 6
-                val indexesPerRow = mTilesPerRow * indexesPerTile
+                val indexesPerRow = tilesPerRow * indexesPerTile
                 val startOffset = leftTile * indexesPerTile
                 val count = (endX - leftTile) * indexesPerTile
                 var tileY = bottomTile
-                while (tileY < endY && tileY < mTilesPerColumn) {
+                while (tileY < endY && tileY < tilesPerColumn) {
                     val row = tileY * indexesPerRow
                     tileMap.drawStrip(gl, true, row + startOffset, count)
                     tileY++

@@ -21,78 +21,78 @@ import com.replica.replicaisland.CollisionParameters.HitType
 import com.replica.replicaisland.GameObject.ActionType
 
 class NPCComponent : GameComponent() {
-    private var mPauseTime = 0f
-    private var mTargetXVelocity = 0f
-    private var mLastHitTileX = 0
-    private var mLastHitTileY = 0
-    private var mDialogEvent = 0
-    private var mDialogIndex = 0
-    private var mHitReactComponent: HitReactionComponent? = null
-    private val mQueuedCommands: IntArray
-    private var mQueueTop = 0
-    private var mQueueBottom = 0
-    private var mExecutingQueue = false
-    private val mPreviousPosition: Vector2
+    private var pauseTime = 0f
+    private var targetXVelocity = 0f
+    private var lastHitTileX = 0
+    private var lastHitTileY = 0
+    private var dialogEvent = 0
+    private var dialogIndex = 0
+    private var hitReactComponent: HitReactionComponent? = null
+    private val queuedCommands: IntArray
+    private var queueTop = 0
+    private var queueBottom = 0
+    private var executingQueue = false
+    private val previousPosition: Vector2
     private var mUpImpulse = 0f
     private var mDownImpulse = 0f
     private var mHorizontalImpulse = 0f
     private var mSlowHorizontalImpulse = 0f
     private var mAcceleration = 0f
-    private var mGameEvent = 0
-    private var mGameEventIndex = 0
-    private var mSpawnGameEventOnDeath = false
-    private var mReactToHits = false
+    private var gameEvent = 0
+    private var gameEventIndex = 0
+    private var spawnGameEventOnDeath = false
+    private var reactToHits = false
     private var mFlying = false
     private var mPauseOnAttack = false
-    private var mDeathTime = 0f
-    private var mDeathFadeDelay = 0f
+    private var deathTime = 0f
+    private var deathFadeDelay = 0f
     override fun reset() {
-        mPauseTime = 0.0f
-        mTargetXVelocity = 0.0f
-        mLastHitTileX = 0
-        mLastHitTileY = 0
-        mDialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
-        mDialogIndex = 0
-        mHitReactComponent = null
-        mQueueTop = 0
-        mQueueBottom = 0
-        mPreviousPosition.zero()
-        mExecutingQueue = false
+        pauseTime = 0.0f
+        targetXVelocity = 0.0f
+        lastHitTileX = 0
+        lastHitTileY = 0
+        dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
+        dialogIndex = 0
+        hitReactComponent = null
+        queueTop = 0
+        queueBottom = 0
+        previousPosition.zero()
+        executingQueue = false
         mUpImpulse = UP_IMPULSE
         mDownImpulse = DOWN_IMPULSE
         mHorizontalImpulse = HORIZONTAL_IMPULSE
         mSlowHorizontalImpulse = SLOW_HORIZONTAL_IMPULSE
         mAcceleration = ACCELERATION
-        mGameEvent = -1
-        mGameEventIndex = -1
-        mSpawnGameEventOnDeath = false
-        mReactToHits = false
+        gameEvent = -1
+        gameEventIndex = -1
+        spawnGameEventOnDeath = false
+        reactToHits = false
         mFlying = false
-        mDeathTime = 0.0f
-        mDeathFadeDelay = DEATH_FADE_DELAY
+        deathTime = 0.0f
+        deathFadeDelay = DEATH_FADE_DELAY
         mPauseOnAttack = true
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject?
-        if (mReactToHits && mPauseTime <= 0.0f && parentObject!!.currentAction === ActionType.HIT_REACT) {
-            mPauseTime = PAUSE_TIME_HIT_REACT
+        if (reactToHits && pauseTime <= 0.0f && parentObject!!.currentAction === ActionType.HIT_REACT) {
+            pauseTime = PAUSE_TIME_HIT_REACT
             pauseMovement(parentObject)
             parentObject!!.velocity.x = -parentObject.facingDirection.x * HIT_IMPULSE
             parentObject.acceleration.x = HIT_ACCELERATION
         } else if (parentObject!!.currentAction === ActionType.DEATH) {
-            if (mSpawnGameEventOnDeath && mGameEvent != -1) {
+            if (spawnGameEventOnDeath && gameEvent != -1) {
                 if (Utils.close(parentObject!!.velocity.x, 0.0f)
                         && parentObject.touchingGround()) {
-                    if (mDeathTime < mDeathFadeDelay && mDeathTime + timeDelta >= mDeathFadeDelay) {
+                    if (deathTime < deathFadeDelay && deathTime + timeDelta >= deathFadeDelay) {
                         val hud = sSystemRegistry.hudSystem
                         if (hud != null) {
                             hud.startFade(false, 1.5f)
-                            hud.sendGameEventOnFadeComplete(mGameEvent, mGameEventIndex)
-                            mGameEvent = -1
+                            hud.sendGameEventOnFadeComplete(gameEvent, gameEventIndex)
+                            gameEvent = -1
                         }
                     }
-                    mDeathTime += timeDelta
+                    deathTime += timeDelta
                 }
             }
             // nothing else to do.
@@ -102,17 +102,17 @@ class NPCComponent : GameComponent() {
             parentObject.targetVelocity.x = 0f
             return
         } else if (parentObject.currentAction === ActionType.INVALID ||
-                !mReactToHits && parentObject.currentAction === ActionType.HIT_REACT) {
+                !reactToHits && parentObject.currentAction === ActionType.HIT_REACT) {
             parentObject.currentAction = ActionType.MOVE
         }
-        if (mPauseTime <= 0.0f) {
+        if (pauseTime <= 0.0f) {
             val hotSpotSystem = sSystemRegistry.hotSpotSystem
             if (hotSpotSystem != null) {
                 val centerX = parentObject.centeredPositionX
                 val hitTileX = hotSpotSystem.getHitTileX(centerX)
                 val hitTileY = hotSpotSystem.getHitTileY(parentObject.position.y + 10.0f)
                 var accepted = true
-                if (hitTileX != mLastHitTileX || hitTileY != mLastHitTileY) {
+                if (hitTileX != lastHitTileX || hitTileY != lastHitTileY) {
                     val hotSpot = hotSpotSystem.getHotSpotByTile(hitTileX, hitTileY)
                     if (hotSpot >= HotSpotSystem.HotSpotType.NPC_GO_RIGHT && hotSpot <= HotSpotSystem.HotSpotType.NPC_SLOW) {
                         // movement-related commands are immediate
@@ -122,68 +122,68 @@ class NPCComponent : GameComponent() {
                         // when mPauseOnAttack is false, attacks are also immediate.
                         accepted = executeCommand(hotSpot, parentObject, timeDelta)
                     } else if (hotSpot == HotSpotSystem.HotSpotType.NPC_RUN_QUEUED_COMMANDS) {
-                        if (!mExecutingQueue && mQueueTop != mQueueBottom) {
-                            mExecutingQueue = true
+                        if (!executingQueue && queueTop != queueBottom) {
+                            executingQueue = true
                         }
                     } else if (hotSpot > HotSpotSystem.HotSpotType.NONE) {
                         queueCommand(hotSpot)
                     }
                 }
-                if (mExecutingQueue) {
-                    if (mQueueTop != mQueueBottom) {
+                if (executingQueue) {
+                    if (queueTop != queueBottom) {
                         accepted = executeCommand(nextCommand(), parentObject, timeDelta)
                         if (accepted) {
                             advanceQueue()
                         }
                     } else {
-                        mExecutingQueue = false
+                        executingQueue = false
                     }
                 }
                 if (accepted) {
-                    mLastHitTileX = hitTileX
-                    mLastHitTileY = hitTileY
+                    lastHitTileX = hitTileX
+                    lastHitTileY = hitTileY
                 }
             }
         } else {
-            mPauseTime -= timeDelta
-            if (mPauseTime < 0.0f) {
+            pauseTime -= timeDelta
+            if (pauseTime < 0.0f) {
                 resumeMovement(parentObject)
-                mPauseTime = 0.0f
+                pauseTime = 0.0f
                 parentObject.currentAction = ActionType.MOVE
             }
         }
-        mPreviousPosition.set(parentObject.position)
+        previousPosition.set(parentObject.position)
     }
 
     private fun executeCommand(hotSpot: Int, parentObject: GameObject?, timeDelta: Float): Boolean {
         var hitAccepted = true
         val camera = sSystemRegistry.cameraSystem
         when (hotSpot) {
-            HotSpotSystem.HotSpotType.WAIT_SHORT -> if (mPauseTime == 0.0f) {
-                mPauseTime = PAUSE_TIME_SHORT
+            HotSpotSystem.HotSpotType.WAIT_SHORT -> if (pauseTime == 0.0f) {
+                pauseTime = PAUSE_TIME_SHORT
                 pauseMovement(parentObject)
             }
-            HotSpotSystem.HotSpotType.WAIT_MEDIUM -> if (mPauseTime == 0.0f) {
-                mPauseTime = PAUSE_TIME_MEDIUM
+            HotSpotSystem.HotSpotType.WAIT_MEDIUM -> if (pauseTime == 0.0f) {
+                pauseTime = PAUSE_TIME_MEDIUM
                 pauseMovement(parentObject)
             }
-            HotSpotSystem.HotSpotType.WAIT_LONG -> if (mPauseTime == 0.0f) {
-                mPauseTime = PAUSE_TIME_LONG
+            HotSpotSystem.HotSpotType.WAIT_LONG -> if (pauseTime == 0.0f) {
+                pauseTime = PAUSE_TIME_LONG
                 pauseMovement(parentObject)
             }
             HotSpotSystem.HotSpotType.ATTACK -> {
                 if (mPauseOnAttack) {
-                    if (mPauseTime == 0.0f) {
-                        mPauseTime = PAUSE_TIME_ATTACK
+                    if (pauseTime == 0.0f) {
+                        pauseTime = PAUSE_TIME_ATTACK
                         pauseMovement(parentObject)
                     }
                 }
                 parentObject!!.currentAction = ActionType.ATTACK
             }
-            HotSpotSystem.HotSpotType.TALK -> if (mHitReactComponent != null) {
+            HotSpotSystem.HotSpotType.TALK -> if (hitReactComponent != null) {
                 if (parentObject!!.lastReceivedHitType != HitType.COLLECT) {
-                    mHitReactComponent!!.setSpawnGameEventOnHit(
-                            HitType.COLLECT, mDialogEvent, mDialogIndex)
+                    hitReactComponent!!.setSpawnGameEventOnHit(
+                            HitType.COLLECT, dialogEvent, dialogIndex)
                     if (parentObject.velocity.x != 0.0f) {
                         pauseMovement(parentObject)
                     }
@@ -191,14 +191,14 @@ class NPCComponent : GameComponent() {
                 } else {
                     parentObject.currentAction = ActionType.MOVE
                     resumeMovement(parentObject)
-                    mHitReactComponent!!.setSpawnGameEventOnHit(HitType.INVALID, 0, 0)
+                    hitReactComponent!!.setSpawnGameEventOnHit(HitType.INVALID, 0, 0)
                     parentObject.lastReceivedHitType = HitType.INVALID
                 }
             }
-            HotSpotSystem.HotSpotType.WALK_AND_TALK -> if (mDialogEvent != GameFlowEvent.EVENT_INVALID) {
+            HotSpotSystem.HotSpotType.WALK_AND_TALK -> if (dialogEvent != GameFlowEvent.EVENT_INVALID) {
                 val level = sSystemRegistry.levelSystem
-                level!!.sendGameEvent(mDialogEvent, mDialogIndex, true)
-                mDialogEvent = GameFlowEvent.EVENT_INVALID
+                level!!.sendGameEvent(dialogEvent, dialogIndex, true)
+                dialogEvent = GameFlowEvent.EVENT_INVALID
             }
             HotSpotSystem.HotSpotType.TAKE_CAMERA_FOCUS -> if (camera != null) {
                 camera.target = parentObject
@@ -214,11 +214,11 @@ class NPCComponent : GameComponent() {
                     hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0)
                 }
             }
-            HotSpotSystem.HotSpotType.GAME_EVENT -> if (mGameEvent != -1) {
+            HotSpotSystem.HotSpotType.GAME_EVENT -> if (gameEvent != -1) {
                 val level = sSystemRegistry.levelSystem
                 if (level != null) {
-                    level.sendGameEvent(mGameEvent, mGameEventIndex, true)
-                    mGameEvent = -1
+                    level.sendGameEvent(gameEvent, gameEventIndex, true)
+                    gameEvent = -1
                 }
             }
             HotSpotSystem.HotSpotType.NPC_GO_UP_FROM_GROUND -> {
@@ -227,13 +227,13 @@ class NPCComponent : GameComponent() {
                 } else {
                     parentObject.velocity.y = mUpImpulse
                     parentObject.targetVelocity.y = 0.0f
-                    mTargetXVelocity = 0.0f
+                    targetXVelocity = 0.0f
                 }
             }
             HotSpotSystem.HotSpotType.NPC_GO_UP -> {
                 parentObject!!.velocity.y = mUpImpulse
                 parentObject.targetVelocity.y = 0.0f
-                mTargetXVelocity = 0.0f
+                targetXVelocity = 0.0f
             }
             HotSpotSystem.HotSpotType.NPC_GO_DOWN_FROM_CEILING -> {
                 if (!parentObject!!.touchingCeiling()) {
@@ -242,7 +242,7 @@ class NPCComponent : GameComponent() {
                     parentObject.velocity.y = mDownImpulse
                     parentObject.targetVelocity.y = 0.0f
                     if (mFlying) {
-                        mTargetXVelocity = 0.0f
+                        targetXVelocity = 0.0f
                     }
                 }
             }
@@ -250,7 +250,7 @@ class NPCComponent : GameComponent() {
                 parentObject!!.velocity.y = mDownImpulse
                 parentObject.targetVelocity.y = 0.0f
                 if (mFlying) {
-                    mTargetXVelocity = 0.0f
+                    targetXVelocity = 0.0f
                 }
             }
             HotSpotSystem.HotSpotType.NPC_GO_LEFT -> {
@@ -330,52 +330,52 @@ class NPCComponent : GameComponent() {
     }
 
     private fun pauseMovement(parentObject: GameObject?) {
-        mTargetXVelocity = parentObject!!.targetVelocity.x
+        targetXVelocity = parentObject!!.targetVelocity.x
         parentObject.targetVelocity.x = 0.0f
         parentObject.velocity.x = 0.0f
     }
 
     private fun resumeMovement(parentObject: GameObject?) {
-        parentObject!!.targetVelocity.x = mTargetXVelocity
+        parentObject!!.targetVelocity.x = targetXVelocity
         parentObject.acceleration.x = mAcceleration
     }
 
     private fun selectDialog(hitSpot: Int) {
-        mDialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
-        mDialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1
+        dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
+        dialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1
         if (hitSpot >= HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1) {
-            mDialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
-            mDialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
+            dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
+            dialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
         }
     }
 
     private fun nextCommand(): Int {
         var result = HotSpotSystem.HotSpotType.NONE
-        if (mQueueTop != mQueueBottom) {
-            result = mQueuedCommands[mQueueTop]
+        if (queueTop != queueBottom) {
+            result = queuedCommands[queueTop]
         }
         return result
     }
 
     private fun advanceQueue(): Int {
         var result = HotSpotSystem.HotSpotType.NONE
-        if (mQueueTop != mQueueBottom) {
-            result = mQueuedCommands[mQueueTop]
-            mQueueTop = (mQueueTop + 1) % COMMAND_QUEUE_SIZE
+        if (queueTop != queueBottom) {
+            result = queuedCommands[queueTop]
+            queueTop = (queueTop + 1) % COMMAND_QUEUE_SIZE
         }
         return result
     }
 
     private fun queueCommand(hotspot: Int) {
-        val nextSlot = (mQueueBottom + 1) % COMMAND_QUEUE_SIZE
-        if (nextSlot != mQueueTop) { // only comply if there is space left in the buffer
-            mQueuedCommands[mQueueBottom] = hotspot
-            mQueueBottom = nextSlot
+        val nextSlot = (queueBottom + 1) % COMMAND_QUEUE_SIZE
+        if (nextSlot != queueTop) { // only comply if there is space left in the buffer
+            queuedCommands[queueBottom] = hotspot
+            queueBottom = nextSlot
         }
     }
 
     fun setHitReactionComponent(hitReact: HitReactionComponent?) {
-        mHitReactComponent = hitReact
+        hitReactComponent = hitReact
     }
 
     fun setSpeeds(horizontalImpulse: Float, slowHorizontalImpulse: Float, upImpulse: Float, downImpulse: Float, acceleration: Float) {
@@ -387,13 +387,13 @@ class NPCComponent : GameComponent() {
     }
 
     fun setGameEvent(event: Int, index: Int, spawnOnDeath: Boolean) {
-        mGameEvent = event
-        mGameEventIndex = index
-        mSpawnGameEventOnDeath = spawnOnDeath
+        gameEvent = event
+        gameEventIndex = index
+        spawnGameEventOnDeath = spawnOnDeath
     }
 
     fun setReactToHits(react: Boolean) {
-        mReactToHits = react
+        reactToHits = react
     }
 
     fun setFlying(flying: Boolean) {
@@ -423,8 +423,8 @@ class NPCComponent : GameComponent() {
 
     init {
         setPhaseToThis(ComponentPhases.THINK.ordinal)
-        mQueuedCommands = IntArray(COMMAND_QUEUE_SIZE)
-        mPreviousPosition = Vector2()
+        queuedCommands = IntArray(COMMAND_QUEUE_SIZE)
+        previousPosition = Vector2()
         reset()
     }
 }

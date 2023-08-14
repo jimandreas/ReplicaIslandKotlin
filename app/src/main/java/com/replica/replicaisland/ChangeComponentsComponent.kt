@@ -24,28 +24,28 @@ import com.replica.replicaisland.GameObject.ActionType
  * switching in and out of those modes by activating and deactivating specific game components.
  */
 class ChangeComponentsComponent : GameComponent() {
-    private var mComponentsToInsert: FixedSizeArray<GameComponent?>
-    private var mComponentsToRemove: FixedSizeArray<GameComponent?>
+    private var componentsToInsert: FixedSizeArray<GameComponent?>
+    private var componentsToRemove: FixedSizeArray<GameComponent?>
     private var mPingPong = false
     private var mActivated = false
     var currentlySwapped = false
         private set
-    private var mSwapOnAction: ActionType? = null
-    private var mLastAction: ActionType? = null
+    private var swapOnAction: ActionType? = null
+    private var lastAction: ActionType? = null
     override fun reset() {
         val factory = sSystemRegistry.gameObjectFactory
-        // GameComponents hanging out in the mComponentsToInsert list are not part of the object
+        // GameComponents hanging out in the componentsToInsert list are not part of the object
         // hierarchy, so we need to manually release them.
         if (factory != null) {
-            var unrelasedComponents = mComponentsToInsert
+            var unrelasedComponents = componentsToInsert
             if (mActivated) {
                 if (!mPingPong) {
                     // if we've activated and are not set to ping pong, the contents of
-                    // mComponentsToInsert have already been inserted into the object and
+                    // componentsToInsert have already been inserted into the object and
                     // will be cleaned up with all the other of the object's components.
-                    // In that case, mComponentsToRemove contains objects that need manual
+                    // In that case, componentsToRemove contains objects that need manual
                     // clean up.
-                    unrelasedComponents = mComponentsToRemove
+                    unrelasedComponents = componentsToRemove
                 }
             }
             val inactiveComponentCount = unrelasedComponents.count
@@ -56,22 +56,22 @@ class ChangeComponentsComponent : GameComponent() {
                 }
             }
         }
-        mComponentsToInsert.clear()
-        mComponentsToRemove.clear()
+        componentsToInsert.clear()
+        componentsToRemove.clear()
         mPingPong = false
         mActivated = false
         currentlySwapped = false
-        mSwapOnAction = ActionType.INVALID
-        mLastAction = ActionType.INVALID
+        swapOnAction = ActionType.INVALID
+        lastAction = ActionType.INVALID
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mSwapOnAction != ActionType.INVALID) {
+        if (swapOnAction != ActionType.INVALID) {
             val parentObject = parent as GameObject
             val currentAction = parentObject.currentAction
-            if (currentAction != mLastAction) {
-                mLastAction = currentAction
-                if (currentAction == mSwapOnAction) {
+            if (currentAction != lastAction) {
+                lastAction = currentAction
+                if (currentAction == swapOnAction) {
                     activate(parentObject)
                 }
             }
@@ -79,11 +79,11 @@ class ChangeComponentsComponent : GameComponent() {
     }
 
     fun addSwapInComponent(component: GameComponent?) {
-        mComponentsToInsert.add(component)
+        componentsToInsert.add(component)
     }
 
     fun addSwapOutComponent(component: GameComponent?) {
-        mComponentsToRemove.add(component)
+        componentsToRemove.add(component)
     }
 
     fun setPingPongBehavior(pingPong: Boolean) {
@@ -91,7 +91,7 @@ class ChangeComponentsComponent : GameComponent() {
     }
 
     fun setSwapAction(action: ActionType?) {
-        mSwapOnAction = action
+        swapOnAction = action
     }
 
     /** Inserts and removes components added to the swap-in and swap-out list, respectively.
@@ -100,20 +100,20 @@ class ChangeComponentsComponent : GameComponent() {
      */
     fun activate(parent: GameObject) {
         if (!mActivated || mPingPong) {
-            val removeCount = mComponentsToRemove.count
+            val removeCount = componentsToRemove.count
             for (x in 0 until removeCount) {
-                parent.remove(mComponentsToRemove[x])
+                parent.remove(componentsToRemove[x])
             }
-            val addCount = mComponentsToInsert.count
+            val addCount = componentsToInsert.count
             for (x in 0 until addCount) {
-                parent.add(mComponentsToInsert[x] as BaseObject)
+                parent.add(componentsToInsert[x] as BaseObject)
             }
             mActivated = true
             currentlySwapped = !currentlySwapped
             if (mPingPong) {
-                val swap = mComponentsToInsert
-                mComponentsToInsert = mComponentsToRemove
-                mComponentsToRemove = swap
+                val swap = componentsToInsert
+                componentsToInsert = componentsToRemove
+                componentsToRemove = swap
             }
         }
     }
@@ -123,8 +123,8 @@ class ChangeComponentsComponent : GameComponent() {
     }
 
     init {
-        mComponentsToInsert = FixedSizeArray(MAX_COMPONENT_SWAPS)
-        mComponentsToRemove = FixedSizeArray(MAX_COMPONENT_SWAPS)
+        componentsToInsert = FixedSizeArray(MAX_COMPONENT_SWAPS)
+        componentsToRemove = FixedSizeArray(MAX_COMPONENT_SWAPS)
         reset()
     }
 }

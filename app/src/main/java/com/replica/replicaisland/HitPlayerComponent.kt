@@ -19,18 +19,18 @@ import com.replica.replicaisland.HitReactionComponent
 
 class HitPlayerComponent : GameComponent() {
     private var mDistance2 = 0f
-    private var mPlayerPosition: Vector2 = Vector2()
-    private var mMyPosition: Vector2 = Vector2()
+    private var playerPosition: Vector2 = Vector2()
+    private var myPosition: Vector2 = Vector2()
     private var mHitReact: HitReactionComponent? = null
     private var mHitType = 0
-    private var mHitDirection = false
+    private var hitDirection = false
     override fun reset() {
         mDistance2 = 0.0f
-        mPlayerPosition.zero()
-        mMyPosition.zero()
+        playerPosition.zero()
+        myPosition.zero()
         mHitReact = null
         mHitType = CollisionParameters.HitType.INVALID
-        mHitDirection = false // by default, hit myself
+        hitDirection = false // by default, hit myself
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -38,13 +38,13 @@ class HitPlayerComponent : GameComponent() {
         if (manager != null && mHitReact != null) {
             val player = manager.player
             if (player != null && player.life > 0) {
-                mPlayerPosition[player.centeredPositionX] = player.centeredPositionY
+                playerPosition[player.centeredPositionX] = player.centeredPositionY
                 val parentObject = parent as GameObject
-                mMyPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
-                if (mMyPosition.distance2(mPlayerPosition) <= mDistance2) {
+                myPosition[parentObject.centeredPositionX] = parentObject.centeredPositionY
+                if (myPosition.distance2(playerPosition) <= mDistance2) {
                     val playerHitReact = player.findByClass(HitReactionComponent::class.java)
                     if (playerHitReact != null) {
-                        if (!mHitDirection) {
+                        if (!hitDirection) {
                             // hit myself
                             val accepted = mHitReact!!.receivedHit(parentObject, player, mHitType)
                             playerHitReact.hitVictim(player, parentObject, mHitType, accepted)
@@ -64,7 +64,7 @@ class HitPlayerComponent : GameComponent() {
         mDistance2 = distance * distance
         mHitReact = hitReact
         mHitType = hitType
-        mHitDirection = hitPlayer
+        hitDirection = hitPlayer
     }
 
     init {

@@ -19,20 +19,20 @@ class ExtrasMenuActivity : Activity() {
     private var mLinearModeButton: View? = null
     private var mLevelSelectButton: View? = null
     private var mControlsButton: View? = null
-    private var mBackground: View? = null
+    private var background: View? = null
     private var mLevelSelectLocked: View? = null
     private var mLinearModeLocked: View? = null
-    private var mButtonFlickerAnimation: Animation? = null
-    private var mFadeOutAnimation: Animation? = null
-    private var mAlternateFadeOutAnimation: Animation? = null
-    private var mLockedAnimation: Animation? = null
-    private var mPendingGameStart = 0
+    private var buttonFlickerAnimation: Animation? = null
+    private var fadeOutAnimation: Animation? = null
+    private var alternateFadeOutAnimation: Animation? = null
+    private var lockedAnimation: Animation? = null
+    private var pendingGameStart = 0
     private val sLinearModeButtonListener = View.OnClickListener {
         val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
         val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
         val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
         if (row != 0 || index != 0) {
-            mPendingGameStart = START_LINEAR_MODE
+            pendingGameStart = START_LINEAR_MODE
             showDialog(NEW_GAME_DIALOG)
         } else {
             startGame(START_LINEAR_MODE)
@@ -43,7 +43,7 @@ class ExtrasMenuActivity : Activity() {
         val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
         val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
         if (row != 0 || index != 0) {
-            mPendingGameStart = START_LEVEL_SELECT
+            pendingGameStart = START_LEVEL_SELECT
             showDialog(NEW_GAME_DIALOG)
         } else {
             startGame(START_LEVEL_SELECT)
@@ -53,11 +53,11 @@ class ExtrasMenuActivity : Activity() {
     private val sControlsButtonListener = View.OnClickListener { v ->
         val i = Intent(baseContext, SetPreferencesActivity::class.java)
         i.putExtra("controlConfig", true)
-        v.startAnimation(mButtonFlickerAnimation)
-        mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-        mBackground!!.startAnimation(mFadeOutAnimation)
-        mLinearModeButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mLevelSelectButton!!.startAnimation(mAlternateFadeOutAnimation)
+        v.startAnimation(buttonFlickerAnimation)
+        fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+        background!!.startAnimation(fadeOutAnimation)
+        mLinearModeButton!!.startAnimation(alternateFadeOutAnimation)
+        mLevelSelectButton!!.startAnimation(alternateFadeOutAnimation)
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,21 +74,21 @@ class ExtrasMenuActivity : Activity() {
         mControlsButton = findViewById(R.id.controlsButton)
         mLinearModeLocked = findViewById(R.id.linearModeLocked)
         mLevelSelectLocked = findViewById(R.id.levelSelectLocked)
-        mBackground = findViewById(R.id.mainMenuBackground)
-        mButtonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
-        mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-        mAlternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        background = findViewById(R.id.mainMenuBackground)
+        buttonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
+        fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        alternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
         if (extrasUnlocked) {
             mLinearModeButton!!.setOnClickListener(sLinearModeButtonListener)
             mLevelSelectButton!!.setOnClickListener(sLevelSelectButtonListener)
             mLinearModeLocked!!.visibility = View.GONE
             mLevelSelectLocked!!.visibility = View.GONE
         } else {
-            mLockedAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_out)
+            lockedAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_out)
             mLinearModeButton!!.setOnClickListener(sLockedSelectButtonListener)
             mLevelSelectButton!!.setOnClickListener(sLockedSelectButtonListener)
-            mLinearModeLocked!!.startAnimation(mLockedAnimation)
-            mLevelSelectLocked!!.startAnimation(mLockedAnimation)
+            mLinearModeLocked!!.startAnimation(lockedAnimation)
+            mLevelSelectLocked!!.startAnimation(lockedAnimation)
         }
         mControlsButton!!.setOnClickListener(sControlsButtonListener)
 
@@ -121,7 +121,7 @@ class ExtrasMenuActivity : Activity() {
         if (id == NEW_GAME_DIALOG) {
             dialog = AlertDialog.Builder(this)
                     .setTitle(R.string.new_game_dialog_title)
-                    .setPositiveButton(R.string.new_game_dialog_ok) { _, whichButton -> startGame(mPendingGameStart) }
+                    .setPositiveButton(R.string.new_game_dialog_ok) { _, whichButton -> startGame(pendingGameStart) }
                     .setNegativeButton(R.string.new_game_dialog_cancel, null)
                     .setMessage(R.string.new_game_dialog_message)
                     .create()
@@ -140,18 +140,18 @@ class ExtrasMenuActivity : Activity() {
             val i = Intent(baseContext, DifficultyMenuActivity::class.java)
             i.putExtra("linearMode", true)
             i.putExtra("newGame", true)
-            mLinearModeButton!!.startAnimation(mButtonFlickerAnimation)
-            mButtonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            mLinearModeButton!!.startAnimation(buttonFlickerAnimation)
+            buttonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
         } else if (type == START_LEVEL_SELECT) {
             val i = Intent(baseContext, DifficultyMenuActivity::class.java)
             i.putExtra("startAtLevelSelect", true)
             i.putExtra("newGame", true)
-            mLevelSelectButton!!.startAnimation(mButtonFlickerAnimation)
-            mButtonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            mLevelSelectButton!!.startAnimation(buttonFlickerAnimation)
+            buttonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
         }
     }
 
-    private inner class StartActivityAfterAnimation(private val mIntent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation(private val intent: Intent) : AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             mLinearModeButton!!.visibility = View.INVISIBLE
             mLinearModeButton!!.clearAnimation()
@@ -159,7 +159,7 @@ class ExtrasMenuActivity : Activity() {
             mLevelSelectButton!!.clearAnimation()
             mControlsButton!!.visibility = View.INVISIBLE
             mControlsButton!!.clearAnimation()
-            startActivity(mIntent)
+            startActivity(intent)
             finish()
             if (UIConstants.mOverridePendingTransition != null) {
                 try {

@@ -38,59 +38,59 @@ import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
 class MainMenuActivity : Activity() {
-    private var mPaused = false
+    private var paused = false
     private var mStartButton: View? = null
-    private var mOptionsButton: View? = null
+    private var optionsButton: View? = null
     private var mExtrasButton: View? = null
-    private var mBackground: View? = null
+    private var background: View? = null
     private var mTicker: View? = null
-    private var mButtonFlickerAnimation: Animation? = null
-    private var mFadeOutAnimation: Animation? = null
-    private var mAlternateFadeOutAnimation: Animation? = null
-    private var mFadeInAnimation: Animation? = null
-    private var mJustCreated = false
-    private var mSelectedControlsString: String? = null
+    private var buttonFlickerAnimation: Animation? = null
+    private var fadeOutAnimation: Animation? = null
+    private var alternateFadeOutAnimation: Animation? = null
+    private var fadeInAnimation: Animation? = null
+    private var justCreated = false
+    private var selectedControlsString: String? = null
 
     // Create an anonymous implementation of OnClickListener
     private val sContinueButtonListener = View.OnClickListener { v ->
-        if (!mPaused) {
+        if (!paused) {
             val i = Intent(baseContext, AndouKun::class.java)
-            v.startAnimation(mButtonFlickerAnimation)
-            mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-            mBackground!!.startAnimation(mFadeOutAnimation)
-            mOptionsButton!!.startAnimation(mAlternateFadeOutAnimation)
-            mExtrasButton!!.startAnimation(mAlternateFadeOutAnimation)
-            mTicker!!.startAnimation(mAlternateFadeOutAnimation)
-            mPaused = true
+            v.startAnimation(buttonFlickerAnimation)
+            fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            background!!.startAnimation(fadeOutAnimation)
+            optionsButton!!.startAnimation(alternateFadeOutAnimation)
+            mExtrasButton!!.startAnimation(alternateFadeOutAnimation)
+            mTicker!!.startAnimation(alternateFadeOutAnimation)
+            paused = true
         }
     }
     private val sOptionButtonListener = View.OnClickListener { v ->
-        if (!mPaused) {
+        if (!paused) {
             val i = Intent(baseContext, SetPreferencesActivity::class.java)
-            v.startAnimation(mButtonFlickerAnimation)
-            mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-            mBackground!!.startAnimation(mFadeOutAnimation)
-            mStartButton!!.startAnimation(mAlternateFadeOutAnimation)
-            mExtrasButton!!.startAnimation(mAlternateFadeOutAnimation)
-            mTicker!!.startAnimation(mAlternateFadeOutAnimation)
-            mPaused = true
+            v.startAnimation(buttonFlickerAnimation)
+            fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            background!!.startAnimation(fadeOutAnimation)
+            mStartButton!!.startAnimation(alternateFadeOutAnimation)
+            mExtrasButton!!.startAnimation(alternateFadeOutAnimation)
+            mTicker!!.startAnimation(alternateFadeOutAnimation)
+            paused = true
         }
     }
     private val sExtrasButtonListener = View.OnClickListener { v ->
-        if (!mPaused) {
+        if (!paused) {
             val i = Intent(baseContext, ExtrasMenuActivity::class.java)
-            v.startAnimation(mButtonFlickerAnimation)
-            mButtonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-            mPaused = true
+            v.startAnimation(buttonFlickerAnimation)
+            buttonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            paused = true
         }
     }
     private val sStartButtonListener = View.OnClickListener { v ->
-        if (!mPaused) {
+        if (!paused) {
             val i = Intent(baseContext, DifficultyMenuActivity::class.java)
             i.putExtra("newGame", true)
-            v.startAnimation(mButtonFlickerAnimation)
-            mButtonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-            mPaused = true
+            v.startAnimation(buttonFlickerAnimation)
+            buttonFlickerAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+            paused = true
         }
     }
 
@@ -101,19 +101,19 @@ class MainMenuActivity : Activity() {
             super.onCreate(null)
         }
         setContentView(R.layout.mainmenu)
-        mPaused = true
+        paused = true
         mStartButton = findViewById(R.id.startButton)
-        mOptionsButton = findViewById(R.id.optionButton)
-        mBackground = findViewById(R.id.mainMenuBackground)
-        if (mOptionsButton != null) {
-            mOptionsButton!!.setOnClickListener(sOptionButtonListener)
+        optionsButton = findViewById(R.id.optionButton)
+        background = findViewById(R.id.mainMenuBackground)
+        if (optionsButton != null) {
+            optionsButton!!.setOnClickListener(sOptionButtonListener)
         }
         mExtrasButton = findViewById(R.id.extrasButton)
         mExtrasButton!!.setOnClickListener(sExtrasButtonListener)
-        mButtonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
-        mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-        mAlternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-        mFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        buttonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
+        fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        alternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
         val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
         val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
         val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
@@ -134,7 +134,7 @@ class MainMenuActivity : Activity() {
             mTicker!!.requestFocus()
             mTicker!!.isSelected = true
         }
-        mJustCreated = true
+        justCreated = true
 
         // Keep the volume control type consistent across all activities.
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -145,14 +145,14 @@ class MainMenuActivity : Activity() {
 
     override fun onPause() {
         super.onPause()
-        mPaused = true
+        paused = true
     }
 
     @SuppressLint("ApplySharedPref")
     override fun onResume() {
         super.onResume()
-        mPaused = false
-        mButtonFlickerAnimation!!.setAnimationListener(null)
+        paused = false
+        buttonFlickerAnimation!!.setAnimationListener(null)
         if (mStartButton != null) {
 
             // Change "start" to "continue" if there's a saved game.
@@ -181,19 +181,19 @@ class MainMenuActivity : Activity() {
                 // TODO: is there a better way to do this?  Seems like a kind of neat
                 // way to do custom device profiles.
                 val navType = getString(R.string.nav_type)
-                mSelectedControlsString = getString(R.string.control_setup_dialog_trackball)
+                selectedControlsString = getString(R.string.control_setup_dialog_trackball)
                 if (navType != null) {
                     if (navType.equals("DPad", ignoreCase = true)) {
                         // Turn off the click-to-attack pref on devices that have a dpad.
                         val editor = prefs.edit()
                         editor.putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, false)
                         editor.commit()
-                        mSelectedControlsString = getString(R.string.control_setup_dialog_dpad)
+                        selectedControlsString = getString(R.string.control_setup_dialog_dpad)
                     } else if (navType.equals("None", ignoreCase = true)) {
                         val editor = prefs.edit()
 
                         // This test relies on the PackageManager if api version >= 5.
-                        mSelectedControlsString = if (touch.supportsMultitouch(this)) {
+                        selectedControlsString = if (touch.supportsMultitouch(this)) {
                             // Default to screen controls.
                             editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
                             getString(R.string.control_setup_dialog_screen)
@@ -251,14 +251,14 @@ class MainMenuActivity : Activity() {
                 }
             }
         }
-        if (mBackground != null) {
-            mBackground!!.clearAnimation()
+        if (background != null) {
+            background!!.clearAnimation()
         }
         if (mTicker != null) {
             mTicker!!.clearAnimation()
-            mTicker!!.animation = mFadeInAnimation
+            mTicker!!.animation = fadeInAnimation
         }
-        if (mJustCreated) {
+        if (justCreated) {
             if (mStartButton != null) {
                 mStartButton!!.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_slide))
             }
@@ -267,15 +267,15 @@ class MainMenuActivity : Activity() {
                 anim.startOffset = 500L
                 mExtrasButton!!.startAnimation(anim)
             }
-            if (mOptionsButton != null) {
+            if (optionsButton != null) {
                 val anim = AnimationUtils.loadAnimation(this, R.anim.button_slide)
                 anim.startOffset = 1000L
-                mOptionsButton!!.startAnimation(anim)
+                optionsButton!!.startAnimation(anim)
             }
-            mJustCreated = false
+            justCreated = false
         } else {
             mStartButton!!.clearAnimation()
-            mOptionsButton!!.clearAnimation()
+            optionsButton!!.clearAnimation()
             mExtrasButton!!.clearAnimation()
         }
     }
@@ -303,7 +303,7 @@ class MainMenuActivity : Activity() {
                     .create()
         } else if (id == CONTROL_SETUP_DIALOG) {
             val messageFormat = resources.getString(R.string.control_setup_dialog_message)
-            val message = String.format(messageFormat, mSelectedControlsString)
+            val message = String.format(messageFormat, selectedControlsString)
             val sytledMessage: CharSequence = Html.fromHtml(message) // lame.
             AlertDialog.Builder(this)
                     .setTitle(R.string.control_setup_dialog_title)
@@ -321,9 +321,9 @@ class MainMenuActivity : Activity() {
         return dialog
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val mIntent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) : AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
-            startActivity(mIntent)
+            startActivity(intent)
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@MainMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)

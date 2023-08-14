@@ -28,29 +28,29 @@ import kotlin.math.abs
  * if appropriate conditions are met.
  */
 class PatrolComponent : GameComponent() {
-    private var mMaxSpeed = 0f
+    private var maxSpeed = 0f
     private var mAcceleration = 0f
     private var mAttack = false
-    private var mAttackAtDistance = 0f
-    private var mAttackStopsMovement = false
-    private var mAttackDuration = 0f
-    private var mAttackDelay = 0f
-    private var mTurnToFacePlayer = false
+    private var attackAtDistance = 0f
+    private var attackStopsMovement = false
+    private var attackDuration = 0f
+    private var attackDelay = 0f
+    private var turnToFacePlayer = false
     private var mFlying = false
-    private var mLastAttackTime = 0f
-    private var mWorkingVector: Vector2 = Vector2()
-    private var mWorkingVector2: Vector2 = Vector2()
+    private var lastAttackTime = 0f
+    private var workingVector: Vector2 = Vector2()
+    private var workingVector2: Vector2 = Vector2()
     override fun reset() {
-        mTurnToFacePlayer = false
-        mMaxSpeed = 0.0f
+        turnToFacePlayer = false
+        maxSpeed = 0.0f
         mAcceleration = 0.0f
         mAttack = false
-        mAttackAtDistance = 0.0f
-        mAttackStopsMovement = false
-        mAttackDuration = 0.0f
-        mAttackDelay = 0.0f
-        mWorkingVector.zero()
-        mWorkingVector2.zero()
+        attackAtDistance = 0.0f
+        attackStopsMovement = false
+        attackDuration = 0.0f
+        attackDelay = 0.0f
+        workingVector.zero()
+        workingVector2.zero()
         mFlying = false
     }
 
@@ -70,7 +70,7 @@ class PatrolComponent : GameComponent() {
                 updateAttack(player, parentObject)
             }
             if (parentObject.currentAction == ActionType.MOVE
-                    && mMaxSpeed > 0.0f) {
+                    && maxSpeed > 0.0f) {
                 var hotSpot = HotSpotType.NONE
                 val hotSpotSystem = sSystemRegistry.hotSpotSystem
                 if (hotSpotSystem != null) {
@@ -84,8 +84,8 @@ class PatrolComponent : GameComponent() {
                         || hotSpot == HotSpotType.GO_LEFT) && targetVelocityX >= 0.0f
                 var goRight = (parentObject.touchingLeftWall()
                         || hotSpot == HotSpotType.GO_RIGHT) && targetVelocityX <= 0.0f
-                var pause = mMaxSpeed == 0.0f || hotSpot == HotSpotType.GO_DOWN
-                if (mTurnToFacePlayer && player != null && player.life > 0) {
+                var pause = maxSpeed == 0.0f || hotSpot == HotSpotType.GO_DOWN
+                if (turnToFacePlayer && player != null && player.life > 0) {
                     val horizontalDelta = (player.centeredPositionX
                             - parentObject.centeredPositionX)
                     val targetFacingDirection = Utils.sign(horizontalDelta)
@@ -122,10 +122,10 @@ class PatrolComponent : GameComponent() {
                         }
                     }
                     if (goRight) {
-                        parentObject.targetVelocity.x = mMaxSpeed
+                        parentObject.targetVelocity.x = maxSpeed
                         parentObject.acceleration.x = mAcceleration
                     } else if (goLeft) {
-                        parentObject.targetVelocity.x = -mMaxSpeed
+                        parentObject.targetVelocity.x = -maxSpeed
                         parentObject.acceleration.x = mAcceleration
                     } else if (pause) {
                         parentObject.targetVelocity.x = 0f
@@ -138,21 +138,21 @@ class PatrolComponent : GameComponent() {
                             || hotSpot == HotSpotType.GO_DOWN)
                     if (goUp) {
                         parentObject.targetVelocity.x = 0.0f
-                        parentObject.targetVelocity.y = mMaxSpeed
+                        parentObject.targetVelocity.y = maxSpeed
                         parentObject.acceleration.y = mAcceleration
                         parentObject.acceleration.x = mAcceleration
                     } else if (goDown) {
                         parentObject.targetVelocity.x = 0.0f
-                        parentObject.targetVelocity.y = -mMaxSpeed
+                        parentObject.targetVelocity.y = -maxSpeed
                         parentObject.acceleration.y = mAcceleration
                         parentObject.acceleration.x = mAcceleration
                     } else if (goRight) {
-                        parentObject.targetVelocity.x = mMaxSpeed
+                        parentObject.targetVelocity.x = maxSpeed
                         parentObject.acceleration.x = mAcceleration
                         parentObject.acceleration.y = mAcceleration
                         parentObject.targetVelocity.y = 0.0f
                     } else if (goLeft) {
-                        parentObject.targetVelocity.x = -mMaxSpeed
+                        parentObject.targetVelocity.x = -maxSpeed
                         parentObject.acceleration.x = mAcceleration
                         parentObject.acceleration.y = mAcceleration
                         parentObject.targetVelocity.y = 0.0f
@@ -181,17 +181,17 @@ class PatrolComponent : GameComponent() {
         }
         if (visible && parentObject.currentAction == ActionType.MOVE) {
             var closeEnough = false
-            val timeToAttack = gameTime - mLastAttackTime > mAttackDelay
-            if (mAttackAtDistance > 0 && player != null && player.life > 0 && timeToAttack) {
+            val timeToAttack = gameTime - lastAttackTime > attackDelay
+            if (attackAtDistance > 0 && player != null && player.life > 0 && timeToAttack) {
                 // only attack if we are facing the player
                 if (Utils.sign(player.position.x - parentObject.position.x)
                         == Utils.sign(parentObject.facingDirection.x)) {
-                    mWorkingVector.set(parentObject.position)
-                    mWorkingVector.x = parentObject.centeredPositionX
-                    mWorkingVector2.set(player.position)
-                    mWorkingVector2.x = player.centeredPositionX
-                    if (mWorkingVector2.distance2(mWorkingVector) <
-                            mAttackAtDistance * mAttackAtDistance) {
+                    workingVector.set(parentObject.position)
+                    workingVector.x = parentObject.centeredPositionX
+                    workingVector2.set(player.position)
+                    workingVector2.x = player.centeredPositionX
+                    if (workingVector2.distance2(workingVector) <
+                            attackAtDistance * attackAtDistance) {
                         closeEnough = true
                     }
                 }
@@ -202,17 +202,17 @@ class PatrolComponent : GameComponent() {
             if (timeToAttack && closeEnough) {
                 // Time to attack.
                 parentObject.currentAction = ActionType.ATTACK
-                mLastAttackTime = gameTime
-                if (mAttackStopsMovement) {
+                lastAttackTime = gameTime
+                if (attackStopsMovement) {
                     parentObject.velocity.zero()
                     parentObject.targetVelocity.zero()
                 }
             }
         } else if (parentObject.currentAction == ActionType.ATTACK) {
-            if (gameTime - mLastAttackTime > mAttackDuration) {
+            if (gameTime - lastAttackTime > attackDuration) {
                 parentObject.currentAction = ActionType.MOVE
-                if (mAttackStopsMovement) {
-                    parentObject.targetVelocity.x = mMaxSpeed * Utils.sign(parentObject.facingDirection.x)
+                if (attackStopsMovement) {
+                    parentObject.targetVelocity.x = maxSpeed * Utils.sign(parentObject.facingDirection.x)
                     parentObject.acceleration.x = mAcceleration
                 }
             }
@@ -220,20 +220,20 @@ class PatrolComponent : GameComponent() {
     }
 
     fun setMovementSpeed(speed: Float, acceleration: Float) {
-        mMaxSpeed = speed
+        maxSpeed = speed
         mAcceleration = acceleration
     }
 
     fun setupAttack(distance: Float, duration: Float, delay: Float, stopMovement: Boolean) {
         mAttack = true
-        mAttackAtDistance = distance
-        mAttackStopsMovement = stopMovement
-        mAttackDuration = duration
-        mAttackDelay = delay
+        attackAtDistance = distance
+        attackStopsMovement = stopMovement
+        attackDuration = duration
+        attackDelay = delay
     }
 
     fun setTurnToFacePlayer(turn: Boolean) {
-        mTurnToFacePlayer = turn
+        turnToFacePlayer = turn
     }
 
     fun setFlying(flying: Boolean) {

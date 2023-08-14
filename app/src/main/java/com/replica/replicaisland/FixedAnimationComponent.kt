@@ -18,9 +18,9 @@
 package com.replica.replicaisland
 
 class FixedAnimationComponent : GameComponent() {
-    private var mAnimationIndex = 0
+    private var animationIndex = 0
     override fun reset() {
-        mAnimationIndex = 0
+        animationIndex = 0
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -28,12 +28,12 @@ class FixedAnimationComponent : GameComponent() {
         val parentObject = parent as GameObject
         val sprite = parentObject.findByClass(SpriteComponent::class.java)
         if (sprite != null) {
-            sprite.playAnimation(mAnimationIndex)
+            sprite.playAnimation(animationIndex)
         }
     }
 
     fun setAnimation(index: Int) {
-        mAnimationIndex = index
+        animationIndex = index
     }
 
     init {

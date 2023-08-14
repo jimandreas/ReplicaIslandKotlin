@@ -25,45 +25,45 @@ package com.replica.replicaisland
  */
 class DynamicCollisionComponent : GameComponent() {
     private var mAttackVolumes: FixedSizeArray<CollisionVolume>? = null
-    private var mVulnerabilityVolumes: FixedSizeArray<CollisionVolume>? = null
-    private val mBoundingVolume: SphereCollisionVolume = SphereCollisionVolume(0.0f, 0.0f, 0.0f)
-    private var mHitReactionComponent: HitReactionComponent? = null
+    private var vulnerabilityVolumes: FixedSizeArray<CollisionVolume>? = null
+    private val boundingVolume: SphereCollisionVolume = SphereCollisionVolume(0.0f, 0.0f, 0.0f)
+    private var hitReactionComponent: HitReactionComponent? = null
     override fun reset() {
         mAttackVolumes = null
-        mVulnerabilityVolumes = null
-        mBoundingVolume.center = Vector2.ZERO
-        mBoundingVolume.radius = 0.0f
-        mHitReactionComponent = null
+        vulnerabilityVolumes = null
+        boundingVolume.center = Vector2.ZERO
+        boundingVolume.radius = 0.0f
+        hitReactionComponent = null
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val collision = sSystemRegistry.gameObjectCollisionSystem
-        if (collision != null && mBoundingVolume.radius > 0.0f) {
-            collision.registerForCollisions(parent as GameObject, mHitReactionComponent, mBoundingVolume,
-                    mAttackVolumes, mVulnerabilityVolumes)
+        if (collision != null && boundingVolume.radius > 0.0f) {
+            collision.registerForCollisions(parent as GameObject, hitReactionComponent, boundingVolume,
+                    mAttackVolumes, vulnerabilityVolumes)
         }
     }
 
     fun setHitReactionComponent(component: HitReactionComponent?) {
-        mHitReactionComponent = component
+        hitReactionComponent = component
     }
 
     fun setCollisionVolumes(attackVolumes: FixedSizeArray<CollisionVolume>?,
                             vulnerableVolumes: FixedSizeArray<CollisionVolume>?) {
-        if (mVulnerabilityVolumes != vulnerableVolumes || mAttackVolumes != attackVolumes) {
+        if (vulnerabilityVolumes != vulnerableVolumes || mAttackVolumes != attackVolumes) {
             mAttackVolumes = attackVolumes
-            mVulnerabilityVolumes = vulnerableVolumes
-            mBoundingVolume.reset()
+            vulnerabilityVolumes = vulnerableVolumes
+            boundingVolume.reset()
             if (mAttackVolumes != null) {
                 val count = mAttackVolumes!!.count
                 for (x in 0 until count) {
-                    mBoundingVolume.growBy(mAttackVolumes!![x]!!)
+                    boundingVolume.growBy(mAttackVolumes!![x]!!)
                 }
             }
-            if (mVulnerabilityVolumes != null) {
-                val count = mVulnerabilityVolumes!!.count
+            if (vulnerabilityVolumes != null) {
+                val count = vulnerabilityVolumes!!.count
                 for (x in 0 until count) {
-                    mBoundingVolume.growBy(mVulnerabilityVolumes!![x]!!)
+                    boundingVolume.growBy(vulnerabilityVolumes!![x]!!)
                 }
             }
         }

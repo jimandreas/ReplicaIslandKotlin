@@ -31,37 +31,37 @@ import java.util.*
  * larger regions so that they can leave the visible area of the game world and not be immediately
  * deactivated.
  */
-class GameObjectManager(private val mMaxActivationRadius: Float) : ObjectManager(MAX_GAME_OBJECTS) {
-    private val mInactiveObjects: FixedSizeArray<BaseObject?>
-    private val mMarkedForDeathObjects: FixedSizeArray<GameObject?>
+class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(MAX_GAME_OBJECTS) {
+    private val inactiveObjects: FixedSizeArray<BaseObject?>
+    private val markedForDeathObjects: FixedSizeArray<GameObject?>
     var player: GameObject? = null
-    private var mVisitingGraph: Boolean
-    private val mCameraFocus: Vector2
+    private var visitingGraph: Boolean
+    private val cameraFocus: Vector2
     override fun commitUpdates() {
         super.commitUpdates()
         val factory = sSystemRegistry.gameObjectFactory
-        val objectsToKillCount = mMarkedForDeathObjects.count
+        val objectsToKillCount = markedForDeathObjects.count
         if (factory != null && objectsToKillCount > 0) {
-            val deathArray: Array<Any?> = mMarkedForDeathObjects.array as Array<Any?>
+            val deathArray: Array<Any?> = markedForDeathObjects.array as Array<Any?>
             for (x in 0 until objectsToKillCount) {
                 factory.destroy(deathArray[x] as GameObject)
             }
-            mMarkedForDeathObjects.clear()
+            markedForDeathObjects.clear()
         }
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         commitUpdates()
         val camera = sSystemRegistry.cameraSystem
-        mCameraFocus[camera!!.fetchFocusPositionX()] = camera.fetchFocusPositionY()
-        mVisitingGraph = true
+        cameraFocus[camera!!.fetchFocusPositionX()] = camera.fetchFocusPositionY()
+        visitingGraph = true
         val objects = fetchObjects()
         val count = objects.count
         if (count > 0) {
             val objectArray: Array<Any?> = objects.array as Array<Any?>
             for (i in count - 1 downTo 0) {
                 val gameObject = objectArray[i] as GameObject?
-                val distance2 = mCameraFocus.distance2(gameObject!!.position)
+                val distance2 = cameraFocus.distance2(gameObject!!.position)
                 if (distance2 < gameObject.activationRadius * gameObject.activationRadius
                         || gameObject.activationRadius == -1f) {
                     gameObject.update(timeDelta, this)
@@ -73,35 +73,35 @@ class GameObjectManager(private val mMaxActivationRadius: Float) : ObjectManager
                     objects.swapWithLast(i)
                     objects.removeLast()
                     if (gameObject.destroyOnDeactivation) {
-                        mMarkedForDeathObjects.add(gameObject)
+                        markedForDeathObjects.add(gameObject)
                     } else {
-                        mInactiveObjects.add(gameObject as BaseObject?)
+                        inactiveObjects.add(gameObject as BaseObject?)
                     }
                 }
             }
         }
-        mInactiveObjects.sort(false)
-        val inactiveCount = mInactiveObjects.count
+        inactiveObjects.sort(false)
+        val inactiveCount = inactiveObjects.count
         if (inactiveCount > 0) {
-            val inactiveArray: Array<Any?> = mInactiveObjects.array as Array<Any?>
+            val inactiveArray: Array<Any?> = inactiveObjects.array as Array<Any?>
             for (i in inactiveCount - 1 downTo 0) {
                 val gameObject = inactiveArray[i] as GameObject?
                 val position = gameObject!!.position
-                val distance2 = mCameraFocus.distance2(position)
-                val xDistance = position.x - mCameraFocus.x
+                val distance2 = cameraFocus.distance2(position)
+                val xDistance = position.x - cameraFocus.x
                 if (distance2 < gameObject.activationRadius * gameObject.activationRadius
                         || gameObject.activationRadius == -1f) {
                     gameObject.update(timeDelta, this)
-                    mInactiveObjects.swapWithLast(i)
-                    mInactiveObjects.removeLast()
+                    inactiveObjects.swapWithLast(i)
+                    inactiveObjects.removeLast()
                     objects.add(gameObject)
-                } else if (xDistance < -mMaxActivationRadius) {
+                } else if (xDistance < -maxActivationRadius) {
                     // We've passed the focus, we can stop processing now
                     break
                 }
             }
         }
-        mVisitingGraph = false
+        visitingGraph = false
     }
 
     override fun add(thing: BaseObject) {
@@ -118,23 +118,23 @@ class GameObjectManager(private val mMaxActivationRadius: Float) : ObjectManager
     }
 
     fun destroy(thing: GameObject?) {
-        mMarkedForDeathObjects.add(thing)
+        markedForDeathObjects.add(thing)
         remove(thing)
     }
 
     fun destroyAll() {
-        //TODO 2 fix: assert(mVisitingGraph == false)
+        //TODO 2 fix: assert(visitingGraph == false)
         commitUpdates()
         val objects = fetchObjects()
         val count = objects.count
         for (i in count - 1 downTo 0) {
-            mMarkedForDeathObjects.add(objects[i] as GameObject?)
+            markedForDeathObjects.add(objects[i] as GameObject?)
             objects.remove(i)
         }
-        val inactiveObjectCount = mInactiveObjects.count
+        val inactiveObjectCount = inactiveObjects.count
         for (j in inactiveObjectCount - 1 downTo 0) {
-            mMarkedForDeathObjects.add(mInactiveObjects[j] as GameObject?)
-            mInactiveObjects.remove(j)
+            markedForDeathObjects.add(inactiveObjects[j] as GameObject?)
+            inactiveObjects.remove(j)
         }
         player = null
     }
@@ -166,10 +166,10 @@ class GameObjectManager(private val mMaxActivationRadius: Float) : ObjectManager
     }
 
     init {
-        mInactiveObjects = FixedSizeArray(MAX_GAME_OBJECTS)
-        mInactiveObjects.setComparator(sGameObjectComparator)
-        mMarkedForDeathObjects = FixedSizeArray(MAX_GAME_OBJECTS)
-        mVisitingGraph = false
-        mCameraFocus = Vector2()
+        inactiveObjects = FixedSizeArray(MAX_GAME_OBJECTS)
+        inactiveObjects.setComparator(sGameObjectComparator)
+        markedForDeathObjects = FixedSizeArray(MAX_GAME_OBJECTS)
+        visitingGraph = false
+        cameraFocus = Vector2()
     }
 }

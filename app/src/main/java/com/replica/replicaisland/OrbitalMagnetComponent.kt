@@ -19,21 +19,21 @@ package com.replica.replicaisland
 import kotlin.math.sqrt
 
 class OrbitalMagnetComponent : GameComponent() {
-    private var mStrength = 0f
+    private var strength = 0f
     private val mCenter: Vector2 = Vector2()
-    private val mDelta: Vector2 = Vector2()
+    private val delta: Vector2 = Vector2()
     private val mRim: Vector2 = Vector2()
     private val mVelocity: Vector2 = Vector2()
-    private var mMagnetRadius = 0f
+    private var magnetRadius = 0f
     private var mAreaRadius = 0f
     override fun reset() {
         mCenter.zero()
-        mDelta.zero()
+        delta.zero()
         mRim.zero()
         mVelocity.zero()
-        mStrength = DEFAULT_STRENGTH
+        strength = DEFAULT_STRENGTH
         mAreaRadius = 0.0f
-        mMagnetRadius = 0.0f
+        magnetRadius = 0.0f
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -54,14 +54,14 @@ class OrbitalMagnetComponent : GameComponent() {
         mCenter[centerX] = centerY
         val targetX = target.centeredPositionX
         val targetY = target.centeredPositionY
-        mDelta[targetX] = targetY
-        mDelta.subtract(mCenter)
-        val distanceFromCenter2 = mDelta.length2()
+        delta[targetX] = targetY
+        delta.subtract(mCenter)
+        val distanceFromCenter2 = delta.length2()
         val area2 = mAreaRadius * mAreaRadius
         if (distanceFromCenter2 < area2) {
-            mRim.set(mDelta)
+            mRim.set(delta)
             mRim.normalize()
-            mRim.multiply(mMagnetRadius)
+            mRim.multiply(magnetRadius)
             mRim.add(mCenter)
             // rim is now the closest point on the magnet circle
 
@@ -73,25 +73,25 @@ class OrbitalMagnetComponent : GameComponent() {
             mVelocity.set(gravityVector)
             mVelocity.multiply(timeDelta)
             targetVelocity.subtract(mVelocity)
-            mDelta.add(targetVelocity)
-            mDelta.normalize()
-            mDelta.multiply(mMagnetRadius)
-            mDelta.add(mCenter)
+            delta.add(targetVelocity)
+            delta.normalize()
+            delta.multiply(magnetRadius)
+            delta.add(mCenter)
 
-            // mDelta is now the next point on the magnet circle in the direction of
+            // delta is now the next point on the magnet circle in the direction of
             // movement.
-            mDelta.subtract(mRim)
-            mDelta.normalize()
-            // Now mDelta is the tangent to the magnet circle, pointing in the direction
+            delta.subtract(mRim)
+            delta.normalize()
+            // Now delta is the tangent to the magnet circle, pointing in the direction
             // of movement.
-            mVelocity.set(mDelta)
+            mVelocity.set(delta)
             mVelocity.normalize()
 
             // mVelocity is now the direction to push the player
-            mVelocity.multiply(mStrength)
-            if (distanceFromCenter2 > mMagnetRadius * mMagnetRadius) {
+            mVelocity.multiply(strength)
+            if (distanceFromCenter2 > magnetRadius * magnetRadius) {
                 val distance = sqrt(distanceFromCenter2.toDouble()).toFloat()
-                var weight = (distance - mMagnetRadius) / (mAreaRadius - mMagnetRadius)
+                var weight = (distance - magnetRadius) / (mAreaRadius - magnetRadius)
                 weight = 1.0f - weight
                 mVelocity.multiply(weight)
             }
@@ -106,7 +106,7 @@ class OrbitalMagnetComponent : GameComponent() {
 
     fun setup(areaRadius: Float, orbitRadius: Float) {
         mAreaRadius = areaRadius
-        mMagnetRadius = orbitRadius
+        magnetRadius = orbitRadius
     }
 
     companion object {

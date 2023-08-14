@@ -25,13 +25,13 @@ package com.replica.replicaisland
 class ScrollerComponent : GameComponent {
     private var mWidth = 0
     private var mHeight = 0
-    private var mHalfWidth = 0f
-    private var mHalfHeight = 0f
-    private var mRenderComponent: RenderComponent? = null
+    private var halfWidth = 0f
+    private var halfHeight = 0f
+    private var renderComponent: RenderComponent? = null
     private var mSpeedX = 0f
     private var mSpeedY = 0f
     private var mTexture: Texture? = null
-    private var mVertGrid: TiledVertexGrid? = null
+    private var vertGrid: TiledVertexGrid? = null
 
     constructor(speedX: Float, speedY: Float, width: Int, height: Int, texture: Texture?) : super() {
         reset()
@@ -43,7 +43,7 @@ class ScrollerComponent : GameComponent {
     constructor(speedX: Float, speedY: Float, width: Int, height: Int, grid: TiledVertexGrid?) : super() {
         reset()
         setup(speedX, speedY, width, height)
-        mVertGrid = grid
+        vertGrid = grid
         setPhaseToThis(ComponentPhases.PRE_DRAW.ordinal)
     }
 
@@ -55,13 +55,13 @@ class ScrollerComponent : GameComponent {
     override fun reset() {
         mWidth = 0
         mHeight = 0
-        mHalfWidth = 0.0f
-        mHalfHeight = 0.0f
-        mRenderComponent = null
+        halfWidth = 0.0f
+        halfHeight = 0.0f
+        renderComponent = null
         mSpeedX = 0.0f
         mSpeedY = 0.0f
         mTexture = null
-        mVertGrid = null
+        vertGrid = null
     }
 
     fun setScrollSpeed(speedX: Float, speedY: Float) {
@@ -74,8 +74,8 @@ class ScrollerComponent : GameComponent {
         mSpeedY = speedY
         mWidth = width
         mHeight = height
-        mHalfWidth = sSystemRegistry.contextParameters!!.gameWidth / 2.0f //width / 2.0f;
-        mHalfHeight = sSystemRegistry.contextParameters!!.gameHeight / 2.0f //height / 2.0f;
+        halfWidth = sSystemRegistry.contextParameters!!.gameWidth / 2.0f //width / 2.0f;
+        halfHeight = sSystemRegistry.contextParameters!!.gameHeight / 2.0f //height / 2.0f;
     }
 
     private fun setUseTexture(texture: Texture?) {
@@ -84,11 +84,11 @@ class ScrollerComponent : GameComponent {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val drawableFactory = sSystemRegistry.drawableFactory
-        if (mRenderComponent != null && drawableFactory != null) {
+        if (renderComponent != null && drawableFactory != null) {
             val background: ScrollableBitmap?
-            if (mVertGrid != null) {
+            if (vertGrid != null) {
                 val bg = drawableFactory.allocateTiledBackgroundVertexGrid()
-                bg!!.setGrid(mVertGrid)
+                bg!!.setGrid(vertGrid)
                 background = bg
             } else {
                 background = drawableFactory.allocateScrollableBitmap()
@@ -97,16 +97,16 @@ class ScrollerComponent : GameComponent {
             background.width = mWidth
             background.height = mHeight
             val camera = sSystemRegistry.cameraSystem
-            var originX = camera!!.fetchFocusPositionX() - mHalfWidth
-            var originY = camera.fetchFocusPositionY() - mHalfHeight
+            var originX = camera!!.fetchFocusPositionX() - halfWidth
+            var originY = camera.fetchFocusPositionY() - halfHeight
             originX *= mSpeedX
             originY *= mSpeedY
             background.setScrollOrigin(originX, originY)
-            mRenderComponent!!.drawable = background
+            renderComponent!!.drawable = background
         }
     }
 
     fun setRenderComponent(render: RenderComponent?) {
-        mRenderComponent = render
+        renderComponent = render
     }
 }

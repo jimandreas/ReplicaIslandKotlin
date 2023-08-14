@@ -24,35 +24,35 @@ import kotlin.math.min
 class SphereCollisionVolume : CollisionVolume {
     var radius: Float
     private var mCenter: Vector2
-    private var mWorkspaceVector: Vector2
-    private var mWorkspaceVector2: Vector2
+    private var workspaceVector: Vector2
+    private var workspaceVector2: Vector2
 
     constructor(radius: Float, centerX: Float, centerY: Float) : super() {
         this.radius = radius
         mCenter = Vector2(centerX, centerY)
-        mWorkspaceVector = Vector2()
-        mWorkspaceVector2 = Vector2()
+        workspaceVector = Vector2()
+        workspaceVector2 = Vector2()
     }
 
     constructor(radius: Int, centerX: Int, centerY: Int) : super() {
         this.radius = radius.toFloat()
         mCenter = Vector2(centerX, centerY)
-        mWorkspaceVector = Vector2()
-        mWorkspaceVector2 = Vector2()
+        workspaceVector = Vector2()
+        workspaceVector2 = Vector2()
     }
     
     constructor(radius: Float, centerX: Float, centerY: Float, hit: Int) : super(hit) {
         this.radius = radius
         mCenter = Vector2(centerX, centerY)
-        mWorkspaceVector = Vector2()
-        mWorkspaceVector2 = Vector2()
+        workspaceVector = Vector2()
+        workspaceVector2 = Vector2()
     }
 
     constructor(radius: Int, centerX: Int, centerY: Int, hit: Int) : super(hit) {
         this.radius = radius.toFloat()
         mCenter = Vector2(centerX, centerY)
-        mWorkspaceVector = Vector2()
-        mWorkspaceVector2 = Vector2()
+        workspaceVector = Vector2()
+        workspaceVector2 = Vector2()
     }
 
     override fun fetchMaxX(): Float {
@@ -89,14 +89,14 @@ class SphereCollisionVolume : CollisionVolume {
             // It's more accurate to do a sphere-as-box test than a box-as-sphere test.
             result = other.intersects(otherPosition, otherFlip, this, position, flip)
         } else {
-            mWorkspaceVector.set(position!!)
-            offsetByCenter(mWorkspaceVector, mCenter, flip)
+            workspaceVector.set(position!!)
+            offsetByCenter(workspaceVector, mCenter, flip)
             var otherRadius = 0f
             if (other is SphereCollisionVolume) {
                 val sphereOther = other
-                mWorkspaceVector2.set(otherPosition!!)
-                offsetByCenter(mWorkspaceVector2, sphereOther.center!!, otherFlip)
-                mWorkspaceVector.subtract(mWorkspaceVector2)
+                workspaceVector2.set(otherPosition!!)
+                offsetByCenter(workspaceVector2, sphereOther.center!!, otherFlip)
+                workspaceVector.subtract(workspaceVector2)
                 otherRadius = sphereOther.radius
             } else {
                 // Whatever this volume is, pretend it's a sphere.
@@ -106,13 +106,13 @@ class SphereCollisionVolume : CollisionVolume {
                         - other.minYPosition(otherFlip))
                 val centerX = deltaX / 2.0f
                 val centerY = deltaY / 2.0f
-                mWorkspaceVector2.set(otherPosition!!)
-                mWorkspaceVector2.x += centerX
-                mWorkspaceVector2.y += centerY
+                workspaceVector2.set(otherPosition!!)
+                workspaceVector2.x += centerX
+                workspaceVector2.y += centerY
                 otherRadius = max(deltaX, deltaY)
             }
             val maxDistance = radius + otherRadius
-            val distance2 = mWorkspaceVector.length2()
+            val distance2 = workspaceVector.length2()
             val maxDistance2 = maxDistance * maxDistance
             if (distance2 < maxDistance2) {
                 result = true

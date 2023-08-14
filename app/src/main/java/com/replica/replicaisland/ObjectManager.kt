@@ -26,19 +26,19 @@ package com.replica.replicaisland
  */
 open class ObjectManager : BaseObject {
     private var mObjects: FixedSizeArray<BaseObject?>
-    private var mPendingAdditions: FixedSizeArray<BaseObject>
-    private var mPendingRemovals: FixedSizeArray<BaseObject?>
+    private var pendingAdditions: FixedSizeArray<BaseObject>
+    private var pendingRemovals: FixedSizeArray<BaseObject?>
 
     constructor() : super() {
         mObjects = FixedSizeArray(DEFAULT_ARRAY_SIZE)
-        mPendingAdditions = FixedSizeArray(DEFAULT_ARRAY_SIZE)
-        mPendingRemovals = FixedSizeArray(DEFAULT_ARRAY_SIZE)
+        pendingAdditions = FixedSizeArray(DEFAULT_ARRAY_SIZE)
+        pendingRemovals = FixedSizeArray(DEFAULT_ARRAY_SIZE)
     }
 
     constructor(arraySize: Int) : super() {
         mObjects = FixedSizeArray(arraySize)
-        mPendingAdditions = FixedSizeArray(arraySize)
-        mPendingRemovals = FixedSizeArray(arraySize)
+        pendingAdditions = FixedSizeArray(arraySize)
+        pendingRemovals = FixedSizeArray(arraySize)
     }
 
     override fun reset() {
@@ -51,23 +51,23 @@ open class ObjectManager : BaseObject {
     }
 
     open fun commitUpdates() {
-        val additionCount = mPendingAdditions.count
+        val additionCount = pendingAdditions.count
         if (additionCount > 0) {
-            val additionsArray: Array<Any?> = mPendingAdditions.array  as Array<Any?>
+            val additionsArray: Array<Any?> = pendingAdditions.array  as Array<Any?>
             for (i in 0 until additionCount) {
                 val `object` = additionsArray[i] as BaseObject?
                 mObjects.add(`object`)
             }
-            mPendingAdditions.clear()
+            pendingAdditions.clear()
         }
-        val removalCount = mPendingRemovals.count
+        val removalCount = pendingRemovals.count
         if (removalCount > 0) {
-            val removalsArray: Array<Any?> = mPendingRemovals.array  as Array<Any?>
+            val removalsArray: Array<Any?> = pendingRemovals.array  as Array<Any?>
             for (i in 0 until removalCount) {
                 val `object` = removalsArray[i] as BaseObject?
                 mObjects.remove(`object`, true)
             }
-            mPendingRemovals.clear()
+            pendingRemovals.clear()
         }
     }
 
@@ -93,7 +93,7 @@ open class ObjectManager : BaseObject {
 
     /** Returns the count after the next commitUpdates() is called.  */
     fun fetchConcreteCount(): Int {
-        return mObjects.count + mPendingAdditions.count - mPendingRemovals.count
+        return mObjects.count + pendingAdditions.count - pendingRemovals.count
     }
 
     fun fetch(index: Int): BaseObject? {
@@ -101,20 +101,20 @@ open class ObjectManager : BaseObject {
     }
 
     open fun add(thing: BaseObject) {
-        mPendingAdditions.add(thing)
+        pendingAdditions.add(thing)
     }
 
     open fun remove(thing: BaseObject?) {
-        mPendingRemovals.add(thing)
+        pendingRemovals.add(thing)
     }
 
     fun removeAll() {
         val count = mObjects.count
         val objectArray: Array<Any?> = mObjects.array  as Array<Any?>
         for (i in 0 until count) {
-            mPendingRemovals.add(objectArray[i] as BaseObject?)
+            pendingRemovals.add(objectArray[i] as BaseObject?)
         }
-        mPendingAdditions.clear()
+        pendingAdditions.clear()
     }
 
     /**
@@ -135,7 +135,7 @@ open class ObjectManager : BaseObject {
     }
 
     protected fun fetchPendingObjects(): FixedSizeArray<BaseObject> {
-        return mPendingAdditions
+        return pendingAdditions
     }
 
     companion object {

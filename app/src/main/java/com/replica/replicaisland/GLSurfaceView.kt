@@ -129,11 +129,11 @@ import kotlin.math.abs
  * <pre class="prettyprint">
  * class MyGLSurfaceView extends GLSurfaceView {
  *
- * private MyRenderer mMyRenderer;
+ * private MyRenderer myRenderer;
  *
  * public void start() {
- * mMyRenderer = ...;
- * setRenderer(mMyRenderer);
+ * myRenderer = ...;
+ * setRenderer(myRenderer);
  * }
  *
  * public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -142,7 +142,7 @@ import kotlin.math.abs
  * // This method will be called on the rendering
  * // thread:
  * public void run() {
- * mMyRenderer.handleDpadCenter();
+ * myRenderer.handleDpadCenter();
  * }});
  * return true;
  * }
@@ -193,7 +193,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * @param glWrapper the new GLWrapper
      */
     fun setGLWrapper(glWrapper: GLWrapper?) {
-        mGLWrapper = glWrapper
+        gLWrapper = glWrapper
     }
 
     /**
@@ -226,17 +226,17 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     fun setRenderer(renderer: Renderer) {
         checkRenderThreadState()
-        if (mEGLConfigChooser == null) {
-            mEGLConfigChooser = SimpleEGLConfigChooser(true)
+        if (eGLConfigChooser == null) {
+            eGLConfigChooser = SimpleEGLConfigChooser(true)
         }
-        if (mEGLContextFactory == null) {
-            mEGLContextFactory = DefaultContextFactory()
+        if (eGLContextFactory == null) {
+            eGLContextFactory = DefaultContextFactory()
         }
-        if (mEGLWindowSurfaceFactory == null) {
-            mEGLWindowSurfaceFactory = DefaultWindowSurfaceFactory()
+        if (eGLWindowSurfaceFactory == null) {
+            eGLWindowSurfaceFactory = DefaultWindowSurfaceFactory()
         }
-        mGLThread = GLThread(renderer)
-        mGLThread!!.start()
+        gLThread = GLThread(renderer)
+        gLThread!!.start()
     }
 
     /**
@@ -253,7 +253,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     fun setEGLContextFactory(factory: EGLContextFactory?) {
         checkRenderThreadState()
-        mEGLContextFactory = factory
+        eGLContextFactory = factory
     }
 
     /**
@@ -269,7 +269,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     fun setEGLWindowSurfaceFactory(factory: EGLWindowSurfaceFactory?) {
         checkRenderThreadState()
-        mEGLWindowSurfaceFactory = factory
+        eGLWindowSurfaceFactory = factory
     }
 
     /**
@@ -287,7 +287,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     fun setEGLConfigChooser(configChooser: EGLConfigChooser?) {
         checkRenderThreadState()
-        mEGLConfigChooser = configChooser
+        eGLConfigChooser = configChooser
     }
 
     /**
@@ -363,7 +363,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     fun setEGLContextClientVersion(version: Int) {
         checkRenderThreadState()
-        mEGLContextClientVersion = version
+        eGLContextClientVersion = version
     }
     /**
      * Get the current rendering mode. May be called
@@ -393,9 +393,9 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * @see .RENDERMODE_WHEN_DIRTY
      */
     var renderMode: Int
-        get() = mGLThread!!.renderMode
+        get() = gLThread!!.renderMode
         set(renderMode) {
-            mGLThread!!.renderMode = renderMode
+            gLThread!!.renderMode = renderMode
         }
 
     /**
@@ -406,7 +406,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * from any thread. Must not be called before a renderer has been set.
      */
     fun requestRender() {
-        mGLThread!!.requestRender()
+        gLThread!!.requestRender()
     }
 
     /**
@@ -414,7 +414,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * not normally called or subclassed by clients of GLSurfaceView.
      */
     override fun surfaceCreated(holder: SurfaceHolder) {
-        mGLThread!!.surfaceCreated()
+        gLThread!!.surfaceCreated()
     }
 
     /**
@@ -423,7 +423,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         // Surface will be destroyed when we return
-        mGLThread!!.surfaceDestroyed()
+        gLThread!!.surfaceDestroyed()
     }
 
     /**
@@ -431,7 +431,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * not normally called or subclassed by clients of GLSurfaceView.
      */
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, w: Int, h: Int) {
-        mGLThread!!.onWindowResize(w, h)
+        gLThread!!.onWindowResize(w, h)
     }
 
     /**
@@ -441,7 +441,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * Must not be called before a renderer has been set.
      */
     fun onPause() {
-        mGLThread!!.onPause()
+        gLThread!!.onPause()
     }
 
     /**
@@ -452,27 +452,27 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * Must not be called before a renderer has been set.
      */
     fun onResume() {
-        mGLThread!!.onResume()
+        gLThread!!.onResume()
     }
 
     fun flushTextures(library: TextureLibrary?) {
-        mGLThread!!.flushTextures(library)
+        gLThread!!.flushTextures(library)
     }
 
     fun loadTextures(library: TextureLibrary?) {
-        mGLThread!!.loadTextures(library)
+        gLThread!!.loadTextures(library)
     }
 
     fun flushBuffers(library: BufferLibrary?) {
-        mGLThread!!.flushBuffers(library)
+        gLThread!!.flushBuffers(library)
     }
 
     fun loadBuffers(library: BufferLibrary?) {
-        mGLThread!!.loadBuffers(library)
+        gLThread!!.loadBuffers(library)
     }
 
     fun setSafeMode(safeMode: Boolean) {
-        mGLThread!!.setSafeMode(safeMode)
+        gLThread!!.setSafeMode(safeMode)
     }
 
     /**
@@ -482,7 +482,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * @param r the runnable to be run on the GL rendering thread.
      */
     fun queueEvent(r: Runnable?) {
-        mGLThread!!.queueEvent(r)
+        gLThread!!.queueEvent(r)
     }
 
     /**
@@ -490,7 +490,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        mGLThread!!.onWindowFocusChanged(hasFocus)
+        gLThread!!.onWindowFocusChanged(hasFocus)
     }
 
     /**
@@ -500,7 +500,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      */
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mGLThread!!.requestExitAndWait()
+        gLThread!!.requestExitAndWait()
     }
     // ----------------------------------------------------------------------
     /**
@@ -671,10 +671,10 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
     private inner class DefaultContextFactory : EGLContextFactory {
         private val EGL_CONTEXT_CLIENT_VERSION = 0x3098
         override fun createContext(egl: EGL10?, display: EGLDisplay?, eglConfig: EGLConfig?): EGLContext? {
-            val attrib_list = intArrayOf(EGL_CONTEXT_CLIENT_VERSION, mEGLContextClientVersion,
+            val attrib_list = intArrayOf(EGL_CONTEXT_CLIENT_VERSION, eGLContextClientVersion,
                     EGL10.EGL_NONE)
             return egl!!.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT,
-                    if (mEGLContextClientVersion != 0) attrib_list else null)
+                    if (eGLContextClientVersion != 0) attrib_list else null)
         }
 
         override fun destroyContext(egl: EGL10?, display: EGLDisplay?,
@@ -749,7 +749,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
 
         protected var mConfigSpec: IntArray
         private fun filterConfigSpec(configSpec: IntArray): IntArray {
-            if (mEGLContextClientVersion != 2) {
+            if (eGLContextClientVersion != 2) {
                 return configSpec
             }
             /* We know none of the subclasses define EGL_RENDERABLE_TYPE.
@@ -859,8 +859,8 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
 
             /*
              * Get to the default display.
-             */mEglDisplay = mEgl!!.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
-            if (mEglDisplay === EGL10.EGL_NO_DISPLAY) {
+             */eglDisplay = mEgl!!.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
+            if (eglDisplay === EGL10.EGL_NO_DISPLAY) {
                 throw RuntimeException("eglGetDisplay failed")
             }
 
@@ -868,19 +868,19 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
              * We can now initialize EGL for that display
              */
             val version = IntArray(2)
-            if (!mEgl!!.eglInitialize(mEglDisplay, version)) {
+            if (!mEgl!!.eglInitialize(eglDisplay, version)) {
                 throw RuntimeException("eglInitialize failed")
             }
-            mEglConfig = mEGLConfigChooser!!.chooseConfig(mEgl, mEglDisplay)
+            mEglConfig = eGLConfigChooser!!.chooseConfig(mEgl, eglDisplay)
 
             /*
             * Create an OpenGL ES context. This must be done only once, an
             * OpenGL context is a somewhat heavy object.
-            */mEglContext = mEGLContextFactory!!.createContext(mEgl, mEglDisplay, mEglConfig)
-            if (mEglContext == null || mEglContext === EGL10.EGL_NO_CONTEXT) {
+            */eglContext = eGLContextFactory!!.createContext(mEgl, eglDisplay, mEglConfig)
+            if (eglContext == null || eglContext === EGL10.EGL_NO_CONTEXT) {
                 throwEglException("createContext")
             }
-            mEglSurface = null
+            eglSurface = null
         }
 
         /*
@@ -892,34 +892,34 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
              *  The window size has changed, so we need to create a new
              *  surface.
              */
-            if (mEglSurface != null && mEglSurface !== EGL10.EGL_NO_SURFACE) {
+            if (eglSurface != null && eglSurface !== EGL10.EGL_NO_SURFACE) {
 
                 /*
                  * Unbind and destroy the old EGL surface, if
                  * there is one.
                  */
-                mEgl!!.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+                mEgl!!.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
                         EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT)
-                mEGLWindowSurfaceFactory!!.destroySurface(mEgl, mEglDisplay, mEglSurface)
+                eGLWindowSurfaceFactory!!.destroySurface(mEgl, eglDisplay, eglSurface)
             }
 
             /*
              * Create an EGL surface we can render into.
-             */mEglSurface = mEGLWindowSurfaceFactory!!.createWindowSurface(mEgl,
-                    mEglDisplay, mEglConfig, holder)
-            if (mEglSurface == null || mEglSurface === EGL10.EGL_NO_SURFACE) {
+             */eglSurface = eGLWindowSurfaceFactory!!.createWindowSurface(mEgl,
+                    eglDisplay, mEglConfig, holder)
+            if (eglSurface == null || eglSurface === EGL10.EGL_NO_SURFACE) {
                 throwEglException("createWindowSurface")
             }
 
             /*
              * Before we can issue GL commands, we need to make sure
              * the context is current and bound to a surface.
-             */if (!mEgl!!.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
+             */if (!mEgl!!.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
                 throwEglException("eglMakeCurrent")
             }
-            var gl = mEglContext!!.gl
-            if (mGLWrapper != null) {
-                gl = mGLWrapper!!.wrap(gl)
+            var gl = eglContext!!.gl
+            if (gLWrapper != null) {
+                gl = gLWrapper!!.wrap(gl)
             }
             if (debugFlags and (DEBUG_CHECK_GL_ERROR or DEBUG_LOG_GL_CALLS) != 0) {
                 var configFlags = 0
@@ -940,7 +940,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
          * @return false if the context has been lost.
          */
         fun swap(): Boolean {
-            mEgl!!.eglSwapBuffers(mEglDisplay, mEglSurface)
+            mEgl!!.eglSwapBuffers(eglDisplay, eglSurface)
 
             /*
              * Always check for EGL_CONTEXT_LOST, which means the context
@@ -951,23 +951,23 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         }
 
         fun destroySurface() {
-            if (mEglSurface != null && mEglSurface !== EGL10.EGL_NO_SURFACE) {
-                mEgl!!.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+            if (eglSurface != null && eglSurface !== EGL10.EGL_NO_SURFACE) {
+                mEgl!!.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
                         EGL10.EGL_NO_SURFACE,
                         EGL10.EGL_NO_CONTEXT)
-                mEGLWindowSurfaceFactory!!.destroySurface(mEgl, mEglDisplay, mEglSurface)
-                mEglSurface = null
+                eGLWindowSurfaceFactory!!.destroySurface(mEgl, eglDisplay, eglSurface)
+                eglSurface = null
             }
         }
 
         fun finish() {
-            if (mEglContext != null) {
-                mEGLContextFactory!!.destroyContext(mEgl, mEglDisplay, mEglContext)
-                mEglContext = null
+            if (eglContext != null) {
+                eGLContextFactory!!.destroyContext(mEgl, eglDisplay, eglContext)
+                eglContext = null
             }
-            if (mEglDisplay != null) {
-                mEgl!!.eglTerminate(mEglDisplay)
-                mEglDisplay = null
+            if (eglDisplay != null) {
+                mEgl!!.eglTerminate(eglDisplay)
+                eglDisplay = null
             }
         }
 
@@ -982,10 +982,10 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         }
 
         var mEgl: EGL10? = null
-        var mEglDisplay: EGLDisplay? = null
-        var mEglSurface: EGLSurface? = null
+        var eglDisplay: EGLDisplay? = null
+        var eglSurface: EGLSurface? = null
         var mEglConfig: EGLConfig? = null
-        var mEglContext: EGLContext? = null
+        var eglContext: EGLContext? = null
     }
 
     /**
@@ -1017,18 +1017,18 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
          * synchronized(sGLThreadManager) block.
          */
         private fun stopEglLocked() {
-            if (mHaveEglSurface) {
-                mHaveEglSurface = false
-                mEglHelper!!.destroySurface()
+            if (haveEglSurface) {
+                haveEglSurface = false
+                eglHelper!!.destroySurface()
                 sGLThreadManager.releaseEglSurfaceLocked(this)
             }
         }
 
         @Throws(InterruptedException::class)
         private fun guardedRun() {
-            mEglHelper = EglHelper()
-            mHaveEglContext = false
-            mHaveEglSurface = false
+            eglHelper = EglHelper()
+            haveEglContext = false
+            haveEglSurface = false
             try {
                 var gl: GL10? = null
                 var createEglSurface = false
@@ -1042,16 +1042,16 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                 while (true) {
                     synchronized(sGLThreadManager) {
                         while (true) {
-                            if (mShouldExit) {
+                            if (shouldExit) {
                                 return
                             }
-                            if (mEventQueue.isNotEmpty()) {
-                                event = mEventQueue.removeAt(0)
+                            if (eventQueue.isNotEmpty()) {
+                                event = eventQueue.removeAt(0)
                                 break
                             }
 
                             // Do we need to release the EGL surface?
-                            if (mHaveEglSurface && mPaused) {
+                            if (haveEglSurface && mPaused) {
                                 if (LOG_SURFACE) {
                                     DebugLog.i("GLThread", "releasing EGL surface because paused tid=$id")
                                 }
@@ -1059,56 +1059,56 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                             }
 
                             // Have we lost the surface view surface?
-                            if (!mHasSurface && !mWaitingForSurface) {
+                            if (!hasSurface && !waitingForSurface) {
                                 if (LOG_SURFACE) {
                                     DebugLog.i("GLThread", "noticed surfaceView surface lost tid=$id")
                                 }
-                                if (mHaveEglSurface) {
+                                if (haveEglSurface) {
                                     stopEglLocked()
                                 }
-                                mWaitingForSurface = true
+                                waitingForSurface = true
                                 sGLThreadManager.notifyAll()
                             }
 
                             // Have we acquired the surface view surface?
-                            if (mHasSurface && mWaitingForSurface) {
+                            if (hasSurface && waitingForSurface) {
                                 if (LOG_SURFACE) {
                                     DebugLog.i("GLThread", "noticed surfaceView surface acquired tid=$id")
                                 }
-                                mWaitingForSurface = false
+                                waitingForSurface = false
                                 sGLThreadManager.notifyAll()
                             }
                             if (doRenderNotification) {
                                 wantRenderNotification = false
                                 doRenderNotification = false
-                                mRenderComplete = true
+                                renderComplete = true
                                 sGLThreadManager.notifyAll()
                             }
 
                             // Ready to draw?
-                            if (!mPaused && mHasSurface
+                            if (!mPaused && hasSurface
                                     && mWidth > 0 && mHeight > 0
                                     && (mRequestRender || mRenderMode == RENDERMODE_CONTINUOUSLY)) {
-                                if (mHaveEglContext && !mHaveEglSurface) {
+                                if (haveEglContext && !haveEglSurface) {
                                     // Let's make sure the context hasn't been lost.
-                                    if (!mEglHelper!!.verifyContext()) {
-                                        mEglHelper!!.finish()
+                                    if (!eglHelper!!.verifyContext()) {
+                                        eglHelper!!.finish()
                                         mRenderer.onSurfaceLost()
-                                        mHaveEglContext = false
+                                        haveEglContext = false
                                     }
                                 }
                                 // If we don't have an egl surface, try to acquire one.
-                                if (!mHaveEglContext && sGLThreadManager.tryAcquireEglSurfaceLocked(this)) {
-                                    mHaveEglContext = true
-                                    mEglHelper!!.start()
+                                if (!haveEglContext && sGLThreadManager.tryAcquireEglSurfaceLocked(this)) {
+                                    haveEglContext = true
+                                    eglHelper!!.start()
                                     sGLThreadManager.notifyAll()
                                 }
-                                if (mHaveEglContext && !mHaveEglSurface) {
-                                    mHaveEglSurface = true
+                                if (haveEglContext && !haveEglSurface) {
+                                    haveEglSurface = true
                                     createEglSurface = true
                                     sizeChanged = true
                                 }
-                                if (mHaveEglSurface) {
+                                if (haveEglSurface) {
                                     if (mSizeChanged) {
                                         sizeChanged = true
                                         w = mWidth
@@ -1144,13 +1144,13 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                     }
                     if (mHasFocus) {
                         if (createEglSurface) {
-                            gl = mEglHelper!!.createSurface(holder) as GL10?
+                            gl = eglHelper!!.createSurface(holder) as GL10?
                             sGLThreadManager.checkGLDriver(gl)
                             if (LOG_RENDERER) {
                                 DebugLog.w("GLThread", "onSurfaceCreated")
                             }
                             mGL = gl
-                            mRenderer.onSurfaceCreated(gl, mEglHelper!!.mEglConfig)
+                            mRenderer.onSurfaceCreated(gl, eglHelper!!.mEglConfig)
                             createEglSurface = false
                             framesSinceResetHack = 0
                         }
@@ -1186,7 +1186,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                             DebugLog.w("GLThread", "Safe Mode Wait...")
                         }
                         framesSinceResetHack++
-                        if (!mEglHelper!!.swap()) {
+                        if (!eglHelper!!.swap()) {
                             if (LOG_SURFACE) {
                                 DebugLog.i("GLThread", "egl surface lost tid=$id")
                             }
@@ -1203,7 +1203,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                  * clean-up everything...
                  */synchronized(sGLThreadManager) {
                     stopEglLocked()
-                    mEglHelper!!.finish()
+                    eglHelper!!.finish()
                 }
             }
         }
@@ -1233,7 +1233,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                 if (LOG_THREADS) {
                     DebugLog.i("GLThread", "surfaceCreated tid=$id")
                 }
-                mHasSurface = true
+                hasSurface = true
                 sGLThreadManager.notifyAll()
             }
         }
@@ -1243,9 +1243,9 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                 if (LOG_THREADS) {
                     DebugLog.i("GLThread", "surfaceDestroyed tid=$id")
                 }
-                mHasSurface = false
+                hasSurface = false
                 sGLThreadManager.notifyAll()
-                while (!mWaitingForSurface && !mExited) {
+                while (!waitingForSurface && !exited) {
                     try {
                         sGLThreadManager.wait()
                     } catch (e: InterruptedException) {
@@ -1276,11 +1276,11 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                 mHeight = h
                 mSizeChanged = true
                 mRequestRender = true
-                mRenderComplete = false
+                renderComplete = false
                 sGLThreadManager.notifyAll()
 
                 // Wait for thread to react to resize and render a frame
-                while (!mExited && !mPaused && !mRenderComplete) {
+                while (!exited && !mPaused && !renderComplete) {
                     if (LOG_SURFACE) {
                         DebugLog.i("Main thread", "onWindowResize waiting for render complete.")
                     }
@@ -1296,7 +1296,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         fun loadTextures(library: TextureLibrary?) {
             synchronized(this) {
                 //TODO 2 fix (mGL != null)
-                if (mGL != null && mHasSurface) {
+                if (mGL != null && hasSurface) {
                     mRenderer.loadTextures(mGL, library)
                 }
             }
@@ -1367,9 +1367,9 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
             // don't call this from GLThread thread or it is a guaranteed
             // deadlock!
             synchronized(sGLThreadManager) {
-                mShouldExit = true
+                shouldExit = true
                 sGLThreadManager.notifyAll()
-                while (!mExited) {
+                while (!exited) {
                     try {
                         sGLThreadManager.wait()
                     } catch (ex: InterruptedException) {
@@ -1386,7 +1386,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         fun queueEvent(r: Runnable?) {
             requireNotNull(r) { "r must not be null" }
             synchronized(sGLThreadManager) {
-                mEventQueue.add(r)
+                eventQueue.add(r)
                 sGLThreadManager.notifyAll()
             }
         }
@@ -1397,26 +1397,26 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
 
         // Once the thread is started, all accesses to the following member
         // variables are protected by the sGLThreadManager monitor
-        private var mShouldExit = false
-        var mExited = false
+        private var shouldExit = false
+        var exited = false
         private var mPaused = false
-        private var mHasSurface = false
-        private var mWaitingForSurface = false
-        private var mHaveEglContext = false
-        private var mHaveEglSurface = false
+        private var hasSurface = false
+        private var waitingForSurface = false
+        private var haveEglContext = false
+        private var haveEglSurface = false
         private var mWidth = 0
         private var mHeight = 0
         private var mRenderMode: Int
         private var mRequestRender = true
-        private var mRenderComplete = false
-        private val mEventQueue = ArrayList<Runnable>()
+        private var renderComplete = false
+        private val eventQueue = ArrayList<Runnable>()
         private var mGL: GL10? = null
         private var mHasFocus = false
         private var mSafeMode = false
 
         // End of member variables protected by the sGLThreadManager monitor.
         private val mRenderer: Renderer
-        private var mEglHelper: EglHelper? = null
+        private var eglHelper: EglHelper? = null
 
         init {
             mRenderMode = RENDERMODE_CONTINUOUSLY
@@ -1439,23 +1439,23 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                 if (c == '\n') {
                     flushBuilder()
                 } else {
-                    mBuilder.append(c)
+                    builder.append(c)
                 }
             }
         }
 
         private fun flushBuilder() {
-            if (mBuilder.isNotEmpty()) {
-                DebugLog.v("GLSurfaceView", mBuilder.toString())
-                mBuilder.delete(0, mBuilder.length)
+            if (builder.isNotEmpty()) {
+                DebugLog.v("GLSurfaceView", builder.toString())
+                builder.delete(0, builder.length)
             }
         }
 
-        private val mBuilder = StringBuilder()
+        private val builder = StringBuilder()
     }
 
     private fun checkRenderThreadState() {
-        check(mGLThread == null) { "setRenderer has already been called for this instance." }
+        check(gLThread == null) { "setRenderer has already been called for this instance." }
     }
 
     private class GLThreadManager {
@@ -1464,9 +1464,9 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
             if (LOG_THREADS) {
                 DebugLog.i("GLThread", "exiting tid=" + thread.id)
             }
-            thread.mExited = true
-            if (mEglOwner === thread) {
-                mEglOwner = null
+            thread.exited = true
+            if (eglOwner === thread) {
+                eglOwner = null
             }
             notifyAll()
         }
@@ -1479,13 +1479,13 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
          * @return true if the right to use an EGL surface was acquired.
          */
         fun tryAcquireEglSurfaceLocked(thread: GLThread): Boolean {
-            if (mEglOwner === thread || mEglOwner == null) {
-                mEglOwner = thread
+            if (eglOwner === thread || eglOwner == null) {
+                eglOwner = thread
                 notifyAll()
                 return true
             }
             checkGLESVersion()
-            return mMultipleGLESContextsAllowed
+            return multipleGLESContextsAllowed
         }
 
         /*
@@ -1493,41 +1493,41 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
          * sGLThreadManager monitor when this is called.
          */
         fun releaseEglSurfaceLocked(thread: GLThread) {
-            if (mEglOwner === thread) {
-                mEglOwner = null
+            if (eglOwner === thread) {
+                eglOwner = null
             }
             notifyAll()
         }
 
         @Synchronized
         fun checkGLDriver(gl: GL10?) {
-            if (!mGLESDriverCheckComplete) {
+            if (!gLESDriverCheckComplete) {
                 checkGLESVersion()
-                if (mGLESVersion < kGLES_20) {
+                if (gLESVersion < kGLES_20) {
                     val renderer = gl!!.glGetString(GL10.GL_RENDERER)
-                    mMultipleGLESContextsAllowed = false
+                    multipleGLESContextsAllowed = false
                     notifyAll()
                 }
-                mGLESDriverCheckComplete = true
+                gLESDriverCheckComplete = true
             }
         }
 
         private fun checkGLESVersion() {
-            if (!mGLESVersionCheckComplete) {
-                mGLESVersion = ConfigurationInfo.GL_ES_VERSION_UNDEFINED
-                if (mGLESVersion >= kGLES_20) {
-                    mMultipleGLESContextsAllowed = true
+            if (!gLESVersionCheckComplete) {
+                gLESVersion = ConfigurationInfo.GL_ES_VERSION_UNDEFINED
+                if (gLESVersion >= kGLES_20) {
+                    multipleGLESContextsAllowed = true
                 }
-                mGLESVersionCheckComplete = true
+                gLESVersionCheckComplete = true
             }
         }
 
-        private var mGLESVersionCheckComplete = false
-        private var mGLESVersion = 0
-        private var mGLESDriverCheckComplete = false
-        private var mMultipleGLESContextsAllowed = false
-        private val mGLContextCount = 0
-        private var mEglOwner: GLThread? = null
+        private var gLESVersionCheckComplete = false
+        private var gLESVersion = 0
+        private var gLESDriverCheckComplete = false
+        private var multipleGLESContextsAllowed = false
+        private val gLContextCount = 0
+        private var eglOwner: GLThread? = null
 
         companion object {
             private const val kGLES_20 = 0x20000
@@ -1535,11 +1535,11 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
     }
 
     private var mSizeChanged = true
-    private var mGLThread: GLThread? = null
-    private var mEGLConfigChooser: EGLConfigChooser? = null
-    private var mEGLContextFactory: EGLContextFactory? = null
-    private var mEGLWindowSurfaceFactory: EGLWindowSurfaceFactory? = null
-    private var mGLWrapper: GLWrapper? = null
+    private var gLThread: GLThread? = null
+    private var eGLConfigChooser: EGLConfigChooser? = null
+    private var eGLContextFactory: EGLContextFactory? = null
+    private var eGLWindowSurfaceFactory: EGLWindowSurfaceFactory? = null
+    private var gLWrapper: GLWrapper? = null
     /**
      * Get the current value of the debug flags.
      * @return the current value of the debug flags.
@@ -1555,7 +1555,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
      * @see .DEBUG_LOG_GL_CALLS
      */
     var debugFlags = 0
-    private var mEGLContextClientVersion = 0
+    private var eGLContextClientVersion = 0
 
     companion object {
         private const val LOG_THREADS = false

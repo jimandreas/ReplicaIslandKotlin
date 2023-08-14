@@ -16,32 +16,32 @@
 package com.replica.replicaisland
 
 class InventoryComponent : GameComponent() {
-    private val mInventory: UpdateRecord
-    private var mInventoryChanged = false
+    private val inventory: UpdateRecord
+    private var inventoryChanged = false
     override fun reset() {
-        mInventoryChanged = true
-        mInventory.reset()
+        inventoryChanged = true
+        inventory.reset()
     }
 
     fun applyUpdate(record: UpdateRecord) {
-        mInventory.add(record)
-        mInventoryChanged = true
+        inventory.add(record)
+        inventoryChanged = true
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (mInventoryChanged) {
+        if (inventoryChanged) {
             val hud = sSystemRegistry.hudSystem
-            hud?.updateInventory(mInventory)
-            mInventoryChanged = false
+            hud?.updateInventory(inventory)
+            inventoryChanged = false
         }
     }
 
     fun fetchRecord(): UpdateRecord {
-        return mInventory
+        return inventory
     }
 
     fun setChangedValue() {
-        mInventoryChanged = true
+        inventoryChanged = true
     }
 
     class UpdateRecord : BaseObject() {
@@ -65,7 +65,7 @@ class InventoryComponent : GameComponent() {
     }
 
     init {
-        mInventory = UpdateRecord()
+        inventory = UpdateRecord()
         reset()
         setPhaseToThis(ComponentPhases.FRAME_END.ordinal)
     }

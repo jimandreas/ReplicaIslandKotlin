@@ -32,9 +32,9 @@ import java.lang.reflect.InvocationTargetException
 
 class AnimationPlayerActivity : Activity() {
     private var mAnimation: AnimationDrawable? = null
-    private var mAnimationType = 0
-    private var mAnimationEndTime: Long = 0
-    private val mKillActivityHandler = KillActivityHandler()
+    private var animationType = 0
+    private var animationEndTime: Long = 0
+    private val killActivityHandler = KillActivityHandler()
 
     internal inner class KillActivityHandler : Handler() {
         override fun handleMessage(msg: Message) {
@@ -66,18 +66,18 @@ class AnimationPlayerActivity : Activity() {
             super.onCreate(null)
         }
         val callingIntent = intent
-        mAnimationType = callingIntent.getIntExtra("animation", KYLE_DEATH)
-        if (mAnimationType == KYLE_DEATH) {
+        animationType = callingIntent.getIntExtra("animation", KYLE_DEATH)
+        if (animationType == KYLE_DEATH) {
             setContentView(R.layout.animation_player)
             val canvasImage = findViewById<View>(R.id.animation_canvas) as ImageView
             canvasImage.setImageResource(R.drawable.kyle_fall)
             mAnimation = canvasImage.drawable as AnimationDrawable
         } else {
-            if (mAnimationType == WANDA_ENDING || mAnimationType == KABOCHA_ENDING) {
+            if (animationType == WANDA_ENDING || animationType == KABOCHA_ENDING) {
 
                 val metrics = DisplayMetrics()
                 windowManager.defaultDisplay.getMetrics(metrics)
-                val startX = if (mAnimationType == WANDA_ENDING) {
+                val startX = if (animationType == WANDA_ENDING) {
                     setContentView(R.layout.good_ending_animation)
                     200 * metrics.density
                 } else {
@@ -104,8 +104,8 @@ class AnimationPlayerActivity : Activity() {
                 background.startAnimation(backgroundAnim)
                 foreground.startAnimation(foregroundAnim)
                 gameOver.startAnimation(gameOverAnim)
-                mAnimationEndTime = gameOverAnim.duration + System.currentTimeMillis()
-            } else if (mAnimationType == ROKUDOU_ENDING) {
+                animationEndTime = gameOverAnim.duration + System.currentTimeMillis()
+            } else if (animationType == ROKUDOU_ENDING) {
                 setContentView(R.layout.rokudou_ending_animation)
                 val background = findViewById<View>(R.id.animation_background)
                 val sphere = findViewById<View>(R.id.animation_sphere)
@@ -122,7 +122,7 @@ class AnimationPlayerActivity : Activity() {
                 cliffs.startAnimation(cliffsAnim)
                 rokudou.startAnimation(rokudouAnim)
                 gameOver.startAnimation(gameOverAnim)
-                mAnimationEndTime = gameOverAnim.duration + System.currentTimeMillis()
+                animationEndTime = gameOverAnim.duration + System.currentTimeMillis()
             }
             // TODO: handle assert
 //            else {
@@ -136,7 +136,7 @@ class AnimationPlayerActivity : Activity() {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val time = System.currentTimeMillis()
-        if (time > mAnimationEndTime) {
+        if (time > animationEndTime) {
             finish()
         } else {
             try {
@@ -151,7 +151,7 @@ class AnimationPlayerActivity : Activity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         if (hasFocus && mAnimation != null) {
             mAnimation!!.start()
-            mKillActivityHandler.sleep(mAnimation!!.getDuration(0) * mAnimation!!.numberOfFrames.toLong())
+            killActivityHandler.sleep(mAnimation!!.getDuration(0) * mAnimation!!.numberOfFrames.toLong())
         }
     }
 

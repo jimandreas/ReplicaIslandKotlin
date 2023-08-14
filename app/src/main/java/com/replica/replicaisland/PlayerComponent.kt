@@ -29,20 +29,20 @@ class PlayerComponent : GameComponent() {
     private var mTouchingGround = false
     private var mState: State? = null
     private var mTimer = 0f
-    private var mTimer2 = 0f
+    private var timer2 = 0f
     private var mFuel = 0f
-    private var mJumpTime = 0f
+    private var jumpTime = 0f
     private var ghostActive = false
-    private var mGhostDeactivatedTime = 0f
-    private var mGhostChargeTime = 0f
+    private var ghostDeactivatedTime = 0f
+    private var ghostChargeTime = 0f
     private var mInventory: InventoryComponent? = null
-    private val mHotSpotTestPoint: Vector2 = Vector2()
+    private val hotSpotTestPoint: Vector2 = Vector2()
     private var mInvincibleSwap: ChangeComponentsComponent? = null
-    private var mInvincibleEndTime = 0f
-    private var mHitReaction: HitReactionComponent? = null
-    private var mFuelAirRefillSpeed = 0f
+    private var invincibleEndTime = 0f
+    private var hitReaction: HitReactionComponent? = null
+    private var fuelAirRefillSpeed = 0f
     private var mDifficultyConstants: DifficultyConstants? = null
-    private var mInvincibleFader // HACK!
+    private var invincibleFader // HACK!
             : FadeDrawableComponent? = null
 
     // Variables recorded for animation decisions.
@@ -53,20 +53,20 @@ class PlayerComponent : GameComponent() {
         mTouchingGround = false
         mState = State.MOVE
         mTimer = 0.0f
-        mTimer2 = 0.0f
+        timer2 = 0.0f
         mFuel = 0.0f
-        mJumpTime = 0.0f
+        jumpTime = 0.0f
         ghostActive = false
-        mGhostDeactivatedTime = 0.0f
+        ghostDeactivatedTime = 0.0f
         mInventory = null
-        mGhostChargeTime = 0.0f
-        mHotSpotTestPoint.zero()
+        ghostChargeTime = 0.0f
+        hotSpotTestPoint.zero()
         mInvincibleSwap = null
-        mInvincibleEndTime = 0.0f
-        mHitReaction = null
+        invincibleEndTime = 0.0f
+        hitReaction = null
         mDifficultyConstants = difficultyConstants
-        mFuelAirRefillSpeed = mDifficultyConstants!!.whatIsFuelAirRefillSpeed()
-        mInvincibleFader = null
+        fuelAirRefillSpeed = mDifficultyConstants!!.whatIsFuelAirRefillSpeed()
+        invincibleFader = null
     }
 
     private fun move(time: Float, timeDelta: Float, parentObject: GameObject?) {
@@ -77,7 +77,7 @@ class PlayerComponent : GameComponent() {
                 mFuel += if (mTouchingGround) {
                     mDifficultyConstants!!.whatIsFuelGroundRefillSpeed() * timeDelta
                 } else {
-                    mFuelAirRefillSpeed * timeDelta
+                    fuelAirRefillSpeed * timeDelta
                 }
                 if (mFuel > FUEL_AMOUNT) {
                     mFuel = FUEL_AMOUNT
@@ -95,8 +95,8 @@ class PlayerComponent : GameComponent() {
                         // In this case, velocity is instant so we don't need to scale
                         // it by time.
                         impulse!!.y = AIR_VERTICAL_IMPULSE_SPEED_FROM_GROUND
-                        mJumpTime = time
-                    } else if (time > mJumpTime + JUMP_TO_JETS_DELAY) {
+                        jumpTime = time
+                    } else if (time > jumpTime + JUMP_TO_JETS_DELAY) {
                         if (mFuel > 0.0f) {
                             mFuel -= timeDelta
                             impulse!!.y = AIR_VERTICAL_IMPULSE_SPEED * timeDelta
@@ -165,22 +165,22 @@ class PlayerComponent : GameComponent() {
                 inventory.coinCount = 0
                 mInventory!!.setChangedValue()
                 parentObject.life = mDifficultyConstants!!.whatIsMaxPlayerLife()
-                if (mInvincibleEndTime < gameTime) {
+                if (invincibleEndTime < gameTime) {
                     mInvincibleSwap!!.activate(parentObject)
-                    mInvincibleEndTime = gameTime + mDifficultyConstants!!.whatIsGlowDuration()
-                    if (mHitReaction != null) {
-                        mHitReaction!!.setForceInvincible(true)
+                    invincibleEndTime = gameTime + mDifficultyConstants!!.whatIsGlowDuration()
+                    if (hitReaction != null) {
+                        hitReaction!!.setForceInvincible(true)
                     }
                 } else {
                     // invincibility is already active, extend it.
-                    mInvincibleEndTime = gameTime + mDifficultyConstants!!.whatIsGlowDuration()
+                    invincibleEndTime = gameTime + mDifficultyConstants!!.whatIsGlowDuration()
                     // HACK HACK HACK.  This really doesn't go here.
                     // To extend the invincible time we need to increment the value above (easy)
                     // and also tell the component managing the glow sprite to reset its
                     // timer (not easy).  Next time, make a shared value system for this
                     // kind of case!!
-                    if (mInvincibleFader != null) {
-                        mInvincibleFader!!.resetPhase()
+                    if (invincibleFader != null) {
+                        invincibleFader!!.resetPhase()
                     }
                 }
             }
@@ -188,11 +188,11 @@ class PlayerComponent : GameComponent() {
                 gotoWin(gameTime)
             }
         }
-        if (mInvincibleEndTime > 0.0f && (mInvincibleEndTime < gameTime || mState == State.DEAD)) {
+        if (invincibleEndTime > 0.0f && (invincibleEndTime < gameTime || mState == State.DEAD)) {
             mInvincibleSwap!!.activate(parentObject)
-            mInvincibleEndTime = 0.0f
-            if (mHitReaction != null) {
-                mHitReaction!!.setForceInvincible(false)
+            invincibleEndTime = 0.0f
+            if (hitReaction != null) {
+                hitReaction!!.setForceInvincible(false)
             }
         }
 
@@ -248,9 +248,9 @@ class PlayerComponent : GameComponent() {
             if (attackButton.getTriggered(time) && !mTouchingGround) {
                 gotoStomp(parentObject)
             } else if (attackButton.pressed && mTouchingGround
-                    && mGhostDeactivatedTime + GHOST_REACTIVATION_DELAY < time) {
-                mGhostChargeTime += timeDelta
-                if (mGhostChargeTime > GHOST_CHARGE_TIME) {
+                    && ghostDeactivatedTime + GHOST_REACTIVATION_DELAY < time) {
+                ghostChargeTime += timeDelta
+                if (ghostChargeTime > GHOST_CHARGE_TIME) {
                     val factory = sSystemRegistry.gameObjectFactory
                     val manager = sSystemRegistry.gameObjectManager
                     if (factory != null && manager != null) {
@@ -275,7 +275,7 @@ class PlayerComponent : GameComponent() {
                     }
                 }
             } else if (!attackButton.pressed) {
-                mGhostChargeTime = 0.0f
+                ghostChargeTime = 0.0f
             }
         }
     }
@@ -284,7 +284,7 @@ class PlayerComponent : GameComponent() {
         parentObject!!.currentAction = ActionType.ATTACK
         mState = State.STOMP
         mTimer = -1.0f
-        mTimer2 = -1.0f
+        timer2 = -1.0f
         parentObject.impulse.zero()
         parentObject.velocity[0.0f] = 0.0f
         parentObject.positionLocked = true
@@ -299,8 +299,8 @@ class PlayerComponent : GameComponent() {
             parentObject!!.velocity[0.0f] = STOMP_VELOCITY
             parentObject.positionLocked = false
         }
-        if (mTouchingGround && mTimer2 < 0.0f) {
-            mTimer2 = time
+        if (mTouchingGround && timer2 < 0.0f) {
+            timer2 = time
             val camera = sSystemRegistry.cameraSystem
             camera?.shake(STOMP_DELAY_TIME, STOMP_SHAKE_MAGNITUDE)
             val vibrator = sSystemRegistry.vibrationSystem
@@ -316,7 +316,7 @@ class PlayerComponent : GameComponent() {
                 manager.add(smoke2!!)
             }
         }
-        if (mTimer2 > 0.0f && time - mTimer2 > STOMP_DELAY_TIME) {
+        if (timer2 > 0.0f && time - timer2 > STOMP_DELAY_TIME) {
             parentObject!!.positionLocked = false
             gotoMove(parentObject)
         }
@@ -410,7 +410,7 @@ class PlayerComponent : GameComponent() {
     }
 
     private fun statePostGhostDelay(time: Float, timeDelta: Float, parentObject: GameObject?) {
-        if (time > mGhostDeactivatedTime) {
+        if (time > ghostDeactivatedTime) {
             if (!ghostActive) { // The ghost might have activated again during this delay.
                 val camera = sSystemRegistry.cameraSystem
                 if (camera != null) {
@@ -423,7 +423,7 @@ class PlayerComponent : GameComponent() {
 
     fun deactivateGhost(delay: Float) {
         ghostActive = false
-        mGhostDeactivatedTime = sSystemRegistry.timeSystem!!.gameTime + delay
+        ghostDeactivatedTime = sSystemRegistry.timeSystem!!.gameTime + delay
         gotoPostGhostDelay()
     }
 
@@ -436,11 +436,11 @@ class PlayerComponent : GameComponent() {
     }
 
     fun setHitReactionComponent(hitReact: HitReactionComponent?) {
-        mHitReaction = hitReact
+        hitReaction = hitReact
     }
 
     fun setInvincibleFader(fader: FadeDrawableComponent?) {
-        mInvincibleFader = fader
+        invincibleFader = fader
     }
 
     fun adjustDifficulty(parent: GameObject, levelAttemps: Int) {
@@ -451,10 +451,10 @@ class PlayerComponent : GameComponent() {
         if (levelAttemps >= mDifficultyConstants!!.whatIsDDAStage1Attempts()) {
             if (levelAttemps >= mDifficultyConstants!!.whatIsDDAStage2Attempts()) {
                 parent.life += mDifficultyConstants!!.whatIsDDAStage2LifeBoost()
-                mFuelAirRefillSpeed = mDifficultyConstants!!.whatIsDDAStage2FuelAirRefillSpeed()
+                fuelAirRefillSpeed = mDifficultyConstants!!.whatIsDDAStage2FuelAirRefillSpeed()
             } else {
                 parent.life += mDifficultyConstants!!.whatIsDDAStage1LifeBoost()
-                mFuelAirRefillSpeed = mDifficultyConstants!!.whatIsDDAStage1FuelAirRefillSpeed()
+                fuelAirRefillSpeed = mDifficultyConstants!!.whatIsDDAStage1FuelAirRefillSpeed()
             }
         }
     }

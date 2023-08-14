@@ -24,36 +24,36 @@ import java.util.*
  * Sorting is performed on add.
  */
 open class PhasedObjectManager : ObjectManager {
-    private var mDirty: Boolean
-    private var mSearchDummy // A dummy object allocated up-front for searching by phase.
+    private var dirty: Boolean
+    private var searchDummy // A dummy object allocated up-front for searching by phase.
             : PhasedObject
 
     constructor() : super() {
-        mDirty = false
+        dirty = false
         fetchObjects().setComparator(sPhasedObjectComparator)
         fetchPendingObjects().setComparator(sPhasedObjectComparator)
-        mSearchDummy = PhasedObject()
+        searchDummy = PhasedObject()
     }
 
     constructor(arraySize: Int) : super(arraySize) {
-        mDirty = false
+        dirty = false
         fetchObjects().setComparator(sPhasedObjectComparator)
         fetchPendingObjects().setComparator(sPhasedObjectComparator)
-        mSearchDummy = PhasedObject()
+        searchDummy = PhasedObject()
     }
 
     override fun commitUpdates() {
         super.commitUpdates()
-        if (mDirty) {
+        if (dirty) {
             fetchObjects().sort(true)
-            mDirty = false
+            dirty = false
         }
     }
 
     override fun add(thing: BaseObject) {
         if (thing is PhasedObject) {
             super.add(thing)
-            mDirty = true
+            dirty = true
         } else {
             // The only reason to restrict PhasedObjectManager to PhasedObjects is so that
             // the PhasedObjectComparator can assume all of its contents are PhasedObjects and
@@ -63,13 +63,13 @@ open class PhasedObjectManager : ObjectManager {
     }
 
     fun find(phase: Int): BaseObject? {
-        mSearchDummy.setPhaseToThis(phase)
-        var index = fetchObjects().find(mSearchDummy, false)
+        searchDummy.setPhaseToThis(phase)
+        var index = fetchObjects().find(searchDummy, false)
         var result: BaseObject? = null
         if (index != -1) {
             result = fetchObjects()[index]
         } else {
-            index = fetchPendingObjects().find(mSearchDummy, false)
+            index = fetchPendingObjects().find(searchDummy, false)
             if (index != -1) {
                 result = fetchPendingObjects()[index]
             }

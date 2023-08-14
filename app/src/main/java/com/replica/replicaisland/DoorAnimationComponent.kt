@@ -32,16 +32,16 @@ class DoorAnimationComponent : GameComponent() {
     private var mSprite: SpriteComponent? = null
     private var mState = 0
     private var mChannel: ChannelSystem.Channel? = null
-    private var mSolidSurface: SolidSurfaceComponent? = null
-    private var mStayOpenTime = 0f
+    private var solidSurface: SolidSurfaceComponent? = null
+    private var stayOpenTime = 0f
     private var mCloseSound: Sound? = null
     private var mOpenSound: Sound? = null
     override fun reset() {
         mSprite = null
         mState = STATE_CLOSED
         mChannel = null
-        mSolidSurface = null
-        mStayOpenTime = DEFAULT_STAY_OPEN_TIME
+        solidSurface = null
+        stayOpenTime = DEFAULT_STAY_OPEN_TIME
         mCloseSound = null
         mOpenSound = null
     }
@@ -53,8 +53,8 @@ class DoorAnimationComponent : GameComponent() {
                 // snap open.
                 mSprite!!.playAnimation(Animation.OPEN)
                 mState = STATE_OPEN
-                if (mSolidSurface != null) {
-                    parentObject.remove(mSolidSurface)
+                if (solidSurface != null) {
+                    parentObject.remove(solidSurface)
                 }
             } else {
                 var timeOffset = timeSinceTriggered
@@ -65,8 +65,8 @@ class DoorAnimationComponent : GameComponent() {
                     // simply reverse direction.
                     timeOffset = openAnimationLength - mSprite!!.currentAnimationTime
                 } else {
-                    if (mSolidSurface != null) {
-                        parentObject.remove(mSolidSurface)
+                    if (solidSurface != null) {
+                        parentObject.remove(solidSurface)
                     }
                 }
                 mState = STATE_OPENING
@@ -83,15 +83,15 @@ class DoorAnimationComponent : GameComponent() {
     private fun close(timeSinceTriggered: Float, parentObject: GameObject) {
         if (mSprite != null) {
             val closeAnimationLength = mSprite!!.findAnimation(Animation.CLOSING)!!.length
-            if (timeSinceTriggered > mStayOpenTime + closeAnimationLength) {
+            if (timeSinceTriggered > stayOpenTime + closeAnimationLength) {
                 // snap open.
                 mSprite!!.playAnimation(Animation.CLOSED)
                 mState = STATE_CLOSED
-                if (mSolidSurface != null) {
-                    parentObject.add(mSolidSurface as BaseObject)
+                if (solidSurface != null) {
+                    parentObject.add(solidSurface as BaseObject)
                 }
             } else {
-                var timeOffset = timeSinceTriggered - mStayOpenTime
+                var timeOffset = timeSinceTriggered - stayOpenTime
                 if (mState == STATE_OPENING) {
                     timeOffset = closeAnimationLength - mSprite!!.currentAnimationTime
                 }
@@ -113,10 +113,10 @@ class DoorAnimationComponent : GameComponent() {
                 val time = sSystemRegistry.timeSystem
                 val gameTime = time!!.gameTime
                 val delta = gameTime - lastPressedTime
-                if (delta < mStayOpenTime
+                if (delta < stayOpenTime
                         && (mState == STATE_CLOSED || mState == STATE_CLOSING)) {
                     open(delta, parent as GameObject)
-                } else if (delta > mStayOpenTime
+                } else if (delta > stayOpenTime
                         && (mState == STATE_OPEN || mState == STATE_OPENING)) {
                     close(delta, parent as GameObject)
                 }
@@ -129,8 +129,8 @@ class DoorAnimationComponent : GameComponent() {
             } else if (mState == STATE_CLOSING && mSprite!!.animationFinished()) {
                 mSprite!!.playAnimation(Animation.CLOSED)
                 mState = STATE_CLOSED
-                if (mSolidSurface != null) {
-                    (parent as GameObject).add(mSolidSurface as BaseObject)
+                if (solidSurface != null) {
+                    (parent as GameObject).add(solidSurface as BaseObject)
                 }
             }
 
@@ -153,11 +153,11 @@ class DoorAnimationComponent : GameComponent() {
     }
 
     fun setSolidSurface(surface: SolidSurfaceComponent?) {
-        mSolidSurface = surface
+        solidSurface = surface
     }
 
     fun setStayOpenTime(time: Float) {
-        mStayOpenTime = time
+        stayOpenTime = time
     }
 
     fun setSounds(openSound: Sound?, closeSound: Sound?) {

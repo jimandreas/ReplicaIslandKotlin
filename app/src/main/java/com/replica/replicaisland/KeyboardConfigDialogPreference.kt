@@ -31,28 +31,28 @@ import android.widget.TextView
 
 class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
                                                                defStyle: Int = android.R.attr.dialogPreferenceStyle) : DialogPreference(context, attrs, defStyle), DialogInterface.OnKeyListener {
-    private var mSharedPrefs: SharedPreferences? = null
+    private var sharedPrefs: SharedPreferences? = null
     private var mContext: Context? = null
-    private val mLeftPrefKey: String?
-    private val mRightPrefKey: String?
-    private val mJumpPrefKey: String?
-    private val mAttackPrefKey: String?
-    private var mKeyLabels: Array<String>? = null
-    private var mListeningId = 0
-    private var mLeftBorder: View? = null
-    private var mRightBorder: View? = null
-    private var mJumpBorder: View? = null
-    private var mAttackBorder: View? = null
-    private var mUnselectedBorder: Drawable? = null
+    private val leftPrefKey: String?
+    private val rightPrefKey: String?
+    private val jumpPrefKey: String?
+    private val attackPrefKey: String?
+    private var keyLabels: Array<String>? = null
+    private var listeningId = 0
+    private var leftBorder: View? = null
+    private var rightBorder: View? = null
+    private var jumpBorder: View? = null
+    private var attackBorder: View? = null
+    private var unselectedBorder: Drawable? = null
     private var mSelectedBorder: Drawable? = null
-    private var mLeftKeyCode = 0
-    private var mRightKeyCode = 0
-    private var mJumpKeyCode = 0
-    private var mAttackKeyCode = 0
-    private var mLeftText: TextView? = null
-    private var mRightText: TextView? = null
-    private var mJumpText: TextView? = null
-    private var mAttackText: TextView? = null
+    private var leftKeyCode = 0
+    private var rightKeyCode = 0
+    private var jumpKeyCode = 0
+    private var attackKeyCode = 0
+    private var leftText: TextView? = null
+    private var rightText: TextView? = null
+    private var jumpText: TextView? = null
+    private var attackText: TextView? = null
 
     private inner class ConfigClickListener(private val mId: Int) : View.OnClickListener {
         override fun onClick(v: View) {
@@ -62,31 +62,31 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
 
     override fun onBindDialogView(view: View) {
         super.onBindDialogView(view)
-        if (mSharedPrefs != null) {
-            mLeftKeyCode = mSharedPrefs!!.getInt(mLeftPrefKey, KeyEvent.KEYCODE_DPAD_LEFT)
-            mRightKeyCode = mSharedPrefs!!.getInt(mRightPrefKey, KeyEvent.KEYCODE_DPAD_RIGHT)
-            mJumpKeyCode = mSharedPrefs!!.getInt(mJumpPrefKey, KeyEvent.KEYCODE_SPACE)
-            mAttackKeyCode = mSharedPrefs!!.getInt(mAttackPrefKey, KeyEvent.KEYCODE_SHIFT_LEFT)
-            mLeftText = view.findViewById<View>(R.id.key_left) as TextView
-            mLeftText!!.text = getKeyLabel(mLeftKeyCode)
-            mRightText = view.findViewById<View>(R.id.key_right) as TextView
-            mRightText!!.text = getKeyLabel(mRightKeyCode)
-            mJumpText = view.findViewById<View>(R.id.key_jump) as TextView
-            mJumpText!!.text = getKeyLabel(mJumpKeyCode)
-            mAttackText = view.findViewById<View>(R.id.key_attack) as TextView
-            mAttackText!!.text = getKeyLabel(mAttackKeyCode)
-            mLeftBorder = view.findViewById(R.id.left_border)
-            mRightBorder = view.findViewById(R.id.right_border)
-            mJumpBorder = view.findViewById(R.id.jump_border)
-            mAttackBorder = view.findViewById(R.id.attack_border)
-            mLeftBorder!!.setOnClickListener(ConfigClickListener(R.id.key_left))
-            mRightBorder!!.setOnClickListener(ConfigClickListener(R.id.key_right))
-            mJumpBorder!!.setOnClickListener(ConfigClickListener(R.id.key_jump))
-            mAttackBorder!!.setOnClickListener(ConfigClickListener(R.id.key_attack))
-            mUnselectedBorder = mContext!!.resources.getDrawable(R.drawable.key_config_border)
+        if (sharedPrefs != null) {
+            leftKeyCode = sharedPrefs!!.getInt(leftPrefKey, KeyEvent.KEYCODE_DPAD_LEFT)
+            rightKeyCode = sharedPrefs!!.getInt(rightPrefKey, KeyEvent.KEYCODE_DPAD_RIGHT)
+            jumpKeyCode = sharedPrefs!!.getInt(jumpPrefKey, KeyEvent.KEYCODE_SPACE)
+            attackKeyCode = sharedPrefs!!.getInt(attackPrefKey, KeyEvent.KEYCODE_SHIFT_LEFT)
+            leftText = view.findViewById<View>(R.id.key_left) as TextView
+            leftText!!.text = getKeyLabel(leftKeyCode)
+            rightText = view.findViewById<View>(R.id.key_right) as TextView
+            rightText!!.text = getKeyLabel(rightKeyCode)
+            jumpText = view.findViewById<View>(R.id.key_jump) as TextView
+            jumpText!!.text = getKeyLabel(jumpKeyCode)
+            attackText = view.findViewById<View>(R.id.key_attack) as TextView
+            attackText!!.text = getKeyLabel(attackKeyCode)
+            leftBorder = view.findViewById(R.id.left_border)
+            rightBorder = view.findViewById(R.id.right_border)
+            jumpBorder = view.findViewById(R.id.jump_border)
+            attackBorder = view.findViewById(R.id.attack_border)
+            leftBorder!!.setOnClickListener(ConfigClickListener(R.id.key_left))
+            rightBorder!!.setOnClickListener(ConfigClickListener(R.id.key_right))
+            jumpBorder!!.setOnClickListener(ConfigClickListener(R.id.key_jump))
+            attackBorder!!.setOnClickListener(ConfigClickListener(R.id.key_attack))
+            unselectedBorder = mContext!!.resources.getDrawable(R.drawable.key_config_border)
             mSelectedBorder = mContext!!.resources.getDrawable(R.drawable.key_config_border_active)
         }
-        mListeningId = 0
+        listeningId = 0
     }
 
     override fun showDialog(state: Bundle?) {
@@ -101,22 +101,22 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
 
     private fun getKeyLabel(keycode: Int): String {
         var result = "Unknown Key"
-        if (mKeyLabels == null) {
-            mKeyLabels = mContext!!.resources.getStringArray(R.array.keycode_labels)
+        if (keyLabels == null) {
+            keyLabels = mContext!!.resources.getStringArray(R.array.keycode_labels)
         }
-        if (keycode > 0 && keycode < mKeyLabels!!.size) {
-            result = mKeyLabels!![keycode - 1]
+        if (keycode > 0 && keycode < keyLabels!!.size) {
+            result = keyLabels!![keycode - 1]
         }
         return result
     }
 
     fun selectId(id: Int) {
-        if (mListeningId != 0) {
+        if (listeningId != 0) {
             // unselect the current box
-            val border = getConfigViewById(mListeningId)
-            border!!.setBackgroundDrawable(mUnselectedBorder)
+            val border = getConfigViewById(listeningId)
+            border!!.setBackgroundDrawable(unselectedBorder)
         }
-        mListeningId = if (id == mListeningId || id == 0) {
+        listeningId = if (id == listeningId || id == 0) {
             0 // toggle off and end.
         } else {
             // select the new box
@@ -129,10 +129,10 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
     private fun getConfigViewById(id: Int): View? {
         var config: View? = null
         when (id) {
-            R.id.key_left -> config = mLeftBorder
-            R.id.key_right -> config = mRightBorder
-            R.id.key_jump -> config = mJumpBorder
-            R.id.key_attack -> config = mAttackBorder
+            R.id.key_left -> config = leftBorder
+            R.id.key_right -> config = rightBorder
+            R.id.key_jump -> config = jumpBorder
+            R.id.key_attack -> config = attackBorder
         }
         return config
     }
@@ -142,17 +142,17 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
         super.onDialogClosed(positiveResult)
         if (positiveResult) {
             // save changes
-            val editor = mSharedPrefs!!.edit()
-            editor.putInt(mLeftPrefKey, mLeftKeyCode)
-            editor.putInt(mRightPrefKey, mRightKeyCode)
-            editor.putInt(mJumpPrefKey, mJumpKeyCode)
-            editor.putInt(mAttackPrefKey, mAttackKeyCode)
+            val editor = sharedPrefs!!.edit()
+            editor.putInt(leftPrefKey, leftKeyCode)
+            editor.putInt(rightPrefKey, rightKeyCode)
+            editor.putInt(jumpPrefKey, jumpKeyCode)
+            editor.putInt(attackPrefKey, attackKeyCode)
             editor.commit()
         }
     }
 
     fun setPrefs(sharedPreferences: SharedPreferences?) {
-        mSharedPrefs = sharedPreferences
+        sharedPrefs = sharedPreferences
     }
 
     fun setContext(context: Context?) {
@@ -161,24 +161,24 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
 
     override fun onKey(dialog: DialogInterface, keyCode: Int, event: KeyEvent): Boolean {
         var eatKey = false
-        if (mListeningId != 0) {
+        if (listeningId != 0) {
             eatKey = true
-            when (mListeningId) {
+            when (listeningId) {
                 R.id.key_left -> {
-                    mLeftText!!.text = getKeyLabel(keyCode)
-                    mLeftKeyCode = keyCode
+                    leftText!!.text = getKeyLabel(keyCode)
+                    leftKeyCode = keyCode
                 }
                 R.id.key_right -> {
-                    mRightText!!.text = getKeyLabel(keyCode)
-                    mRightKeyCode = keyCode
+                    rightText!!.text = getKeyLabel(keyCode)
+                    rightKeyCode = keyCode
                 }
                 R.id.key_jump -> {
-                    mJumpText!!.text = getKeyLabel(keyCode)
-                    mJumpKeyCode = keyCode
+                    jumpText!!.text = getKeyLabel(keyCode)
+                    jumpKeyCode = keyCode
                 }
                 R.id.key_attack -> {
-                    mAttackText!!.text = getKeyLabel(keyCode)
-                    mAttackKeyCode = keyCode
+                    attackText!!.text = getKeyLabel(keyCode)
+                    attackKeyCode = keyCode
                 }
             }
             selectId(0) // deselect the current config box;
@@ -189,10 +189,10 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
     init {
         val a = context.obtainStyledAttributes(attrs,
                 R.styleable.KeyConfigPreference, defStyle, 0)
-        mLeftPrefKey = a.getString(R.styleable.KeyConfigPreference_leftKey)
-        mRightPrefKey = a.getString(R.styleable.KeyConfigPreference_rightKey)
-        mJumpPrefKey = a.getString(R.styleable.KeyConfigPreference_jumpKey)
-        mAttackPrefKey = a.getString(R.styleable.KeyConfigPreference_attackKey)
+        leftPrefKey = a.getString(R.styleable.KeyConfigPreference_leftKey)
+        rightPrefKey = a.getString(R.styleable.KeyConfigPreference_rightKey)
+        jumpPrefKey = a.getString(R.styleable.KeyConfigPreference_jumpKey)
+        attackPrefKey = a.getString(R.styleable.KeyConfigPreference_attackKey)
         a.recycle()
     }
 }

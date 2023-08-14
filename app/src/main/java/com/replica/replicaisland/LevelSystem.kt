@@ -25,54 +25,54 @@ import java.io.InputStream
  * Manages information about the current level, including setup, deserialization, and tear-down.
  */
 class LevelSystem : BaseObject() {
-    private var mWidthInTiles = 0
-    private var mHeightInTiles = 0
-    private var mTileWidth = 0
-    private var mTileHeight = 0
-    private var mBackgroundObject: GameObject? = null
+    private var widthInTiles = 0
+    private var heightInTiles = 0
+    private var tileWidth = 0
+    private var tileHeight = 0
+    private var backgroundObject: GameObject? = null
     private var mRoot: ObjectManager? = null
-    private val mWorkspaceBytes: ByteArray = ByteArray(4)
-    private var mSpawnLocations: TiledWorld? = null
-    private val mGameFlowEvent: GameFlowEvent = GameFlowEvent()
+    private val workspaceBytes: ByteArray = ByteArray(4)
+    private var spawnLocations: TiledWorld? = null
+    private val gameFlowEvent: GameFlowEvent = GameFlowEvent()
     var attemptsCount = 0
         private set
     var currentLevel: LevelTree.Level? = null
         private set
 
     override fun reset() {
-        if (mBackgroundObject != null && mRoot != null) {
-            mBackgroundObject!!.removeAll()
-            mBackgroundObject!!.commitUpdates()
-            mRoot!!.remove(mBackgroundObject)
-            mBackgroundObject = null
+        if (backgroundObject != null && mRoot != null) {
+            backgroundObject!!.removeAll()
+            backgroundObject!!.commitUpdates()
+            mRoot!!.remove(backgroundObject)
+            backgroundObject = null
             mRoot = null
         }
-        mSpawnLocations = null
+        spawnLocations = null
         attemptsCount = 0
         currentLevel = null
     }
 
     val levelWidth: Float
-        get() = (mWidthInTiles * mTileWidth).toFloat()
+        get() = (widthInTiles * tileWidth).toFloat()
     val levelHeight: Float
-        get() = (mHeightInTiles * mTileHeight).toFloat()
+        get() = (heightInTiles * tileHeight).toFloat()
 
     fun sendRestartEvent() {
-        mGameFlowEvent.post(GameFlowEvent.EVENT_RESTART_LEVEL, 0,
+        gameFlowEvent.post(GameFlowEvent.EVENT_RESTART_LEVEL, 0,
                 sSystemRegistry.contextParameters!!.context)
     }
 
     fun sendNextLevelEvent() {
-        mGameFlowEvent.post(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0,
+        gameFlowEvent.post(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0,
                 sSystemRegistry.contextParameters!!.context)
     }
 
     fun sendGameEvent(type: Int, index: Int, immediate: Boolean) {
         if (immediate) {
-            mGameFlowEvent.postImmediate(type, index,
+            gameFlowEvent.postImmediate(type, index,
                     sSystemRegistry.contextParameters!!.context)
         } else {
-            mGameFlowEvent.post(type, index,
+            gameFlowEvent.post(type, index,
                     sSystemRegistry.contextParameters!!.context)
         }
     }
@@ -95,47 +95,47 @@ class LevelSystem : BaseObject() {
                 val layerCount: Int = byteStream.read()
                 val backgroundIndex: Int = byteStream.read()
                 mRoot = root
-                mTileWidth = 32
-                mTileHeight = 32
+                tileWidth = 32
+                tileHeight = 32
                 val params = sSystemRegistry.contextParameters
                 var currentPriority = SortConstants.BACKGROUND_START + 1
                 for (x in 0 until layerCount) {
                     val type: Int = byteStream.read()
                     val tileIndex: Int = byteStream.read()
-                    byteStream.read(mWorkspaceBytes, 0, 4)
-                    val scrollSpeed = Utils.byteArrayToFloat(mWorkspaceBytes)
+                    byteStream.read(workspaceBytes, 0, 4)
+                    val scrollSpeed = Utils.byteArrayToFloat(workspaceBytes)
 
                     // TODO: use a pool here?  Seems pointless.
                     val world = TiledWorld(byteStream)
                     if (type == 0) { // it's a background layer
-                        //TODO 2 - fix assert(mWidthInTiles != 0)
-                        //TODO 2 - fix assert(mTileWidth != 0)
+                        //TODO 2 - fix assert(widthInTiles != 0)
+                        //TODO 2 - fix assert(tileWidth != 0)
 
                         // We require a collision layer to set up the tile sizes before we load.
                         // TODO: this really sucks.  there's no reason each layer can't have its
                         // own tile widths and heights.  Refactor this crap.
-                        if (mWidthInTiles > 0 && mTileWidth > 0) {
+                        if (widthInTiles > 0 && tileWidth > 0) {
                             val builder = sSystemRegistry.levelBuilder
-                            if (mBackgroundObject == null) {
-                                mBackgroundObject = builder!!.buildBackground(
+                            if (backgroundObject == null) {
+                                backgroundObject = builder!!.buildBackground(
                                         backgroundIndex,
-                                        mWidthInTiles * mTileWidth,
-                                        mHeightInTiles * mTileHeight)
-                                root.add(mBackgroundObject!!)
+                                        widthInTiles * tileWidth,
+                                        heightInTiles * tileHeight)
+                                root.add(backgroundObject!!)
                             }
-                            builder!!.addTileMapLayer(mBackgroundObject!!, currentPriority,
+                            builder!!.addTileMapLayer(backgroundObject!!, currentPriority,
                                     scrollSpeed, params!!.gameWidth, params.gameHeight,
-                                    mTileWidth, mTileHeight, world, tileIndex)
+                                    tileWidth, tileHeight, world, tileIndex)
                             currentPriority++
                         }
                     } else if (type == 1) { // collision
                         // Collision always defines the world boundaries.
-                        mWidthInTiles = world.fetchWidth()
-                        mHeightInTiles = world.fetchHeight()
+                        widthInTiles = world.fetchWidth()
+                        heightInTiles = world.fetchHeight()
                         val collision = sSystemRegistry.collisionSystem
-                        collision?.initialize(world, mTileWidth, mTileHeight)
+                        collision?.initialize(world, tileWidth, tileHeight)
                     } else if (type == 2) { // objects
-                        mSpawnLocations = world
+                        spawnLocations = world
                         spawnObjects()
                     } else if (type == 3) { // hot spots
                         val hotSpots = sSystemRegistry.hotSpotSystem
@@ -144,7 +144,7 @@ class LevelSystem : BaseObject() {
                 }
 
                 // hack!
-                sSystemRegistry.levelBuilder!!.promoteForegroundLayer(mBackgroundObject!!)
+                sSystemRegistry.levelBuilder!!.promoteForegroundLayer(backgroundObject!!)
             }
         } catch (e: IOException) {
             //TODO: figure out the best way to deal with this.  Assert?
@@ -154,9 +154,9 @@ class LevelSystem : BaseObject() {
 
     fun spawnObjects() {
         val factory = sSystemRegistry.gameObjectFactory
-        if (factory != null && mSpawnLocations != null) {
+        if (factory != null && spawnLocations != null) {
             DebugLog.d("LevelSystem", "Spawning Objects!")
-            factory.spawnFromWorld(mSpawnLocations!!, mTileWidth, mTileHeight)
+            factory.spawnFromWorld(spawnLocations!!, tileWidth, tileHeight)
         }
     }
 

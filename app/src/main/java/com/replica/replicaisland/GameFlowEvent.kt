@@ -18,34 +18,34 @@ package com.replica.replicaisland
 import android.content.Context
 
 class GameFlowEvent : Runnable {
-    private var mEventCode = 0
-    private var mDataIndex = 0
-    private var mMainActivity: AndouKun? = null
+    private var eventCode = 0
+    private var dataIndex = 0
+    private var mainActivity: AndouKun? = null
     fun post(event: Int, index: Int, context: Context?) {
         if (context is AndouKun) {
             DebugLog.d("GameFlowEvent", "Post Game Flow Event: $event, $index")
-            mEventCode = event
-            mDataIndex = index
-            mMainActivity = context
-            mMainActivity!!.runOnUiThread(this)
+            eventCode = event
+            dataIndex = index
+            mainActivity = context
+            mainActivity!!.runOnUiThread(this)
         }
     }
 
     fun postImmediate(event: Int, index: Int, context: Context?) {
         if (context is AndouKun) {
             DebugLog.d("GameFlowEvent", "Execute Immediate Game Flow Event: $event, $index")
-            mEventCode = event
-            mDataIndex = index
-            mMainActivity = context
-            mMainActivity!!.onGameFlowEvent(mEventCode, mDataIndex)
+            eventCode = event
+            dataIndex = index
+            mainActivity = context
+            mainActivity!!.onGameFlowEvent(eventCode, dataIndex)
         }
     }
 
     override fun run() {
-        if (mMainActivity != null) {
-            DebugLog.d("GameFlowEvent", "Execute Game Flow Event: $mEventCode, $mDataIndex")
-            mMainActivity!!.onGameFlowEvent(mEventCode, mDataIndex)
-            mMainActivity = null
+        if (mainActivity != null) {
+            DebugLog.d("GameFlowEvent", "Execute Game Flow Event: $eventCode, $dataIndex")
+            mainActivity!!.onGameFlowEvent(eventCode, dataIndex)
+            mainActivity = null
         }
     }
 

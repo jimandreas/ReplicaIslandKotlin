@@ -16,16 +16,16 @@
 package com.replica.replicaisland
 
 class AttackAtDistanceComponent : GameComponent() {
-    private var mAttackDistance = 0f
-    private var mAttackDelay = 0f
-    private var mAttackLength = 0f
-    private var mAttackStartTime = 0f
+    private var attackDistance = 0f
+    private var attackDelay = 0f
+    private var attackLength = 0f
+    private var attackStartTime = 0f
     private var mRequireFacing = false
     private val mDistance: Vector2
     override fun reset() {
-        mAttackDelay = 0f
-        mAttackLength = 0f
-        mAttackDistance = DEFAULT_ATTACK_DISTANCE.toFloat()
+        attackDelay = 0f
+        attackLength = 0f
+        attackDistance = DEFAULT_ATTACK_DISTANCE.toFloat()
         mRequireFacing = false
     }
 
@@ -44,13 +44,13 @@ class AttackAtDistanceComponent : GameComponent() {
                 val facingDirectionCorrect = (mRequireFacing && facingPlayer
                         || !mRequireFacing)
                 if (parentObject.currentAction == GameObject.ActionType.ATTACK) {
-                    if (currentTime > mAttackStartTime + mAttackLength) {
+                    if (currentTime > attackStartTime + attackLength) {
                         parentObject.currentAction = GameObject.ActionType.IDLE
                     }
-                } else if (mDistance.length2() < mAttackDistance * mAttackDistance
-                        && currentTime > mAttackStartTime + mAttackLength + mAttackDelay
+                } else if (mDistance.length2() < attackDistance * attackDistance
+                        && currentTime > attackStartTime + attackLength + attackDelay
                         && facingDirectionCorrect) {
-                    mAttackStartTime = currentTime
+                    attackStartTime = currentTime
                     parentObject.currentAction = GameObject.ActionType.ATTACK
                 } else {
                     parentObject.currentAction = GameObject.ActionType.IDLE
@@ -60,9 +60,9 @@ class AttackAtDistanceComponent : GameComponent() {
     }
 
     fun setupAttack(distance: Float, delay: Float, duration: Float, requireFacing: Boolean) {
-        mAttackDistance = distance
-        mAttackDelay = delay
-        mAttackLength = duration
+        attackDistance = distance
+        attackDelay = delay
+        attackLength = duration
         mRequireFacing = requireFacing
     }
 

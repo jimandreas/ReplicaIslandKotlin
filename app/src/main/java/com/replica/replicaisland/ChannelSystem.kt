@@ -19,26 +19,26 @@ import java.util.*
 
 class ChannelSystem : BaseObject() {
     private val mChannels: FixedSizeArray<Channel>
-    private val mSearchDummy: Channel
-    private var mRegisteredChannelCount: Int
+    private val searchDummy: Channel
+    private var registeredChannelCount: Int
     override fun reset() {
         for (x in 0 until CHANNEL_COUNT) {
             mChannels[x]!!.name = null
             mChannels[x]!!.value = null
         }
-        mRegisteredChannelCount = 0
+        registeredChannelCount = 0
     }
 
     fun registerChannel(name: String?): Channel? {
         var result: Channel? = null
-        mSearchDummy.name = name
-        val index = mChannels.find(mSearchDummy, false)
+        searchDummy.name = name
+        val index = mChannels.find(searchDummy, false)
         if (index == -1) {
             // Add a new channel.
-            // TODO: assert(mRegisteredChannelCount < CHANNEL_COUNT) { "Channel pool exhausted!" }
-            if (mRegisteredChannelCount < CHANNEL_COUNT) {
-                result = mChannels[mRegisteredChannelCount]
-                mRegisteredChannelCount++
+            // TODO: assert(registeredChannelCount < CHANNEL_COUNT) { "Channel pool exhausted!" }
+            if (registeredChannelCount < CHANNEL_COUNT) {
+                result = mChannels[registeredChannelCount]
+                registeredChannelCount++
                 result!!.name = name
                 mChannels.sort(true)
             }
@@ -93,10 +93,10 @@ class ChannelSystem : BaseObject() {
     init {
         mChannels = FixedSizeArray(CHANNEL_COUNT)
         mChannels.setComparator(sChannelComparator)
-        mSearchDummy = Channel()
+        searchDummy = Channel()
         for (x in 0 until CHANNEL_COUNT) {
             mChannels.add(Channel())
         }
-        mRegisteredChannelCount = 0
+        registeredChannelCount = 0
     }
 }

@@ -3,36 +3,36 @@
 package com.replica.replicaisland
 
 class InputTouchScreen : BaseObject() {
-    private val mTouchPoints: Array<InputXY?>
+    private val touchPoints: Array<InputXY?>
     override fun reset() {
         for (x in 0 until MAX_TOUCH_POINTS) {
-            mTouchPoints[x]!!.reset()
+            touchPoints[x]!!.reset()
         }
     }
 
     fun press(index: Int, currentTime: Float, x: Float, y: Float) {
         // TODO: assert(index >= 0 && index < MAX_TOUCH_POINTS)
         if (index < MAX_TOUCH_POINTS) {
-            mTouchPoints[index]!!.press(currentTime, x, y)
+            touchPoints[index]!!.press(currentTime, x, y)
         }
     }
 
     fun release(index: Int) {
         if (index < MAX_TOUCH_POINTS) {
-            mTouchPoints[index]!!.release()
+            touchPoints[index]!!.release()
         }
     }
 
     fun resetAll() {
         for (x in 0 until MAX_TOUCH_POINTS) {
-            mTouchPoints[x]!!.reset()
+            touchPoints[x]!!.reset()
         }
     }
 
     fun getTriggered(index: Int, time: Float): Boolean {
         var triggered = false
         if (index < MAX_TOUCH_POINTS) {
-            triggered = mTouchPoints[index]!!.getTriggered(time)
+            triggered = touchPoints[index]!!.getTriggered(time)
         }
         return triggered
     }
@@ -40,21 +40,21 @@ class InputTouchScreen : BaseObject() {
     fun getPressed(index: Int): Boolean {
         var pressed = false
         if (index < MAX_TOUCH_POINTS) {
-            pressed = mTouchPoints[index]!!.pressed
+            pressed = touchPoints[index]!!.pressed
         }
         return pressed
     }
 
     fun setVector(index: Int, vector: Vector2?) {
         if (index < MAX_TOUCH_POINTS) {
-            mTouchPoints[index]!!.setVector(vector!!)
+            touchPoints[index]!!.setVector(vector!!)
         }
     }
 
     fun getX(index: Int): Float {
         var magnitude = 0.0f
         if (index < MAX_TOUCH_POINTS) {
-            magnitude = mTouchPoints[index]!!.retreiveXaxisMagnitude()
+            magnitude = touchPoints[index]!!.retreiveXaxisMagnitude()
         }
         return magnitude
     }
@@ -62,7 +62,7 @@ class InputTouchScreen : BaseObject() {
     fun getY(index: Int): Float {
         var magnitude = 0.0f
         if (index < MAX_TOUCH_POINTS) {
-            magnitude = mTouchPoints[index]!!.retreiveYaxisMagnitude()
+            magnitude = touchPoints[index]!!.retreiveYaxisMagnitude()
         }
         return magnitude
     }
@@ -70,7 +70,7 @@ class InputTouchScreen : BaseObject() {
     fun getLastPressedTime(index: Int): Float {
         var time = 0.0f
         if (index < MAX_TOUCH_POINTS) {
-            time = mTouchPoints[index]!!.lastPressedTime
+            time = touchPoints[index]!!.lastPressedTime
         }
         return time
     }
@@ -78,7 +78,7 @@ class InputTouchScreen : BaseObject() {
     fun findPointerInRegion(regionX: Float, regionY: Float, regionWidth: Float, regionHeight: Float): InputXY? {
         var touch: InputXY? = null
         for (x in 0 until MAX_TOUCH_POINTS) {
-            val pointer = mTouchPoints[x]
+            val pointer = touchPoints[x]
             if (pointer!!.pressed &&
                     getTouchedWithinRegion(pointer.retreiveXaxisMagnitude(), pointer.retreiveYaxisMagnitude(), regionX, regionY, regionWidth, regionHeight)) {
                 touch = pointer
@@ -96,16 +96,16 @@ class InputTouchScreen : BaseObject() {
         var triggered = false
         var x = 0
         while (x < MAX_TOUCH_POINTS && !triggered) {
-            triggered = mTouchPoints[x]!!.getTriggered(gameTime)
+            triggered = touchPoints[x]!!.getTriggered(gameTime)
             x++
         }
         return triggered
     }
 
     init {
-        mTouchPoints = arrayOfNulls(MAX_TOUCH_POINTS)
+        touchPoints = arrayOfNulls(MAX_TOUCH_POINTS)
         for (x in 0 until MAX_TOUCH_POINTS) {
-            mTouchPoints[x] = InputXY()
+            touchPoints[x] = InputXY()
         }
     }
 

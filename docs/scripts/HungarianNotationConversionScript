@@ -1,0 +1,92 @@
+#!/bin/bash
+
+for i in *.kt
+do
+ echo $i
+ egrep "\<m[A-Z].*\>" $i > $i.susp
+
+done
+
+
+#
+#  now go through the kt files and determine
+#   the "safe" m variables to convert
+#  Safe here means there is no equivalent name
+#   already (mSomething and no existing something variable)
+
+# notes on sed line:
+#   looks for a m followed by an upper case letter in a word.
+#      converts only the following upper case letter to lower case
+#      leaves the rest of the word alone.
+
+#  this is written to a tst file.
+#  The original kt file is scanned for the test word.
+#     If found, the word is NOT converted.
+
+for i in *.kt
+do
+
+    echo $i "looking for safe vars"
+    cat $i.susp | sed 's/.*\<m\([A-Z]\)\([[:alnum:]]*\>\).*/\L\1\E\2/g' > $i.tst
+    for j in `cat $i.tst`
+    do
+	echo $j
+	grep  $j $i > /dev/null
+	    if [ $? -eq 0 ]; then
+	       echo DANGER
+	    else
+	       echo OK to convert $j
+	       echo $j >> $i.VarsOkToConvert
+	    fi
+    done;
+			
+done
+
+#
+# convert the OK to convert files into uniq and sorted
+#
+
+for i in *.kt
+do 
+    if [ -f $i.VarsOkToConvert ]; then
+	echo $i.VarsOkToConvert
+	sort $i.VarsOkToConvert | uniq > $i.sorted
+    fi
+done
+
+
+#
+# transform the "sorted" set of names into a mega-sed script
+#
+
+
+for i in *.kt
+do 
+    if [ -f $i.sorted ]; then
+	echo $i
+	rm $i.sed
+	echo "{" >> $i.sed
+	for j in `cat $i.sorted`
+	do
+	    echo $j | sed 's/\([a-z]\)\(.*\)/s\/m\U\1\E\2\/\1\2\/g/g' >> $i.sed
+	done;
+	echo "}" >> $i.sed
+    fi
+done
+
+#
+# edit the kt files using the sed files
+#  and write them to kt.converted
+#
+
+for i in *.kt
+do 
+    echo $i
+    if [ -f $i.sed ]; then
+	    sed -f $i.sed $i > $i.converted
+    
+	    mv $i $i.orig
+	    mv $i.converted $i
+    fi
+done
+

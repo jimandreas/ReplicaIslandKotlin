@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.MotionEvent
 
 class MultiTouchFilter : SingleTouchFilter() {
-    private var mCheckedForMultitouch = false
+    private var checkedForMultitouch = false
     private var mSupportsMultitouch = false
     override fun updateTouch(event: MotionEvent?) {
         val params = sSystemRegistry.contextParameters
@@ -26,10 +26,10 @@ class MultiTouchFilter : SingleTouchFilter() {
     }
 
     override fun supportsMultitouch(context: Context?): Boolean {
-        if (!mCheckedForMultitouch) {
+        if (!checkedForMultitouch) {
             val packageManager = context!!.packageManager
             mSupportsMultitouch = packageManager.hasSystemFeature("android.hardware.touchscreen.multitouch")
-            mCheckedForMultitouch = true
+            checkedForMultitouch = true
         }
         return mSupportsMultitouch
     }

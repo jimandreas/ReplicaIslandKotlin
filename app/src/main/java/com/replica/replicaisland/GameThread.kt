@@ -32,30 +32,30 @@ fun Any.notify() = (this as Object).notify()
 fun Any.notifyAll() = (this as Object).notifyAll()
 
 class GameThread(renderer: GameRenderer) : Runnable {
-    private var mLastTime: Long
+    private var lastTime: Long
     private var mGameRoot: ObjectManager? = null
     private val mRenderer: GameRenderer
-    private val mPauseLock: Any
-    private var mFinished: Boolean
+    private val pauseLock: Any
+    private var finished: Boolean
     var paused = false
         private set
-    private var mProfileFrames = 0
-    private var mProfileTime: Long = 0
+    private var profileFrames = 0
+    private var profileTime: Long = 0
     override fun run() {
-        mLastTime = SystemClock.uptimeMillis()
-        mFinished = false
-        while (!mFinished) {
+        lastTime = SystemClock.uptimeMillis()
+        finished = false
+        while (!finished) {
             if (mGameRoot != null) {
                 mRenderer.waitDrawingComplete()
                 val time = SystemClock.uptimeMillis()
-                val timeDelta = time - mLastTime
+                val timeDelta = time - lastTime
                 var finalDelta = timeDelta
                 if (timeDelta > 12) {
-                    var secondsDelta = (time - mLastTime) * 0.001f
+                    var secondsDelta = (time - lastTime) * 0.001f
                     if (secondsDelta > 0.1f) {
                         secondsDelta = 0.1f
                     }
-                    mLastTime = time
+                    lastTime = time
                     mGameRoot!!.update(secondsDelta, null)
                     val camera = BaseObject.sSystemRegistry.cameraSystem
                     var x = 0.0f
@@ -67,13 +67,13 @@ class GameThread(renderer: GameRenderer) : Runnable {
                     BaseObject.sSystemRegistry.renderSystem!!.swap(mRenderer, x, y)
                     val endTime = SystemClock.uptimeMillis()
                     finalDelta = endTime - time
-                    mProfileTime += finalDelta
-                    mProfileFrames++
-                    if (mProfileTime > PROFILE_REPORT_DELAY * 1000) {
-                        var averageFrameTime = mProfileTime / mProfileFrames
+                    profileTime += finalDelta
+                    profileFrames++
+                    if (profileTime > PROFILE_REPORT_DELAY * 1000) {
+                        var averageFrameTime = profileTime / profileFrames
                         DebugLog.d("Game Profile", "Average: $averageFrameTime")
-                        mProfileTime = 0
-                        mProfileFrames = 0
+                        profileTime = 0
+                        profileFrames = 0
                         if (averageFrameTime < 2) averageFrameTime = 1
                         BaseObject.sSystemRegistry.hudSystem!!.setFPS(1000 / averageFrameTime.toInt())
                     }
@@ -88,7 +88,7 @@ class GameThread(renderer: GameRenderer) : Runnable {
                         // Interruptions here are no big deal.
                     }
                 }
-                synchronized(mPauseLock) {
+                synchronized(pauseLock) {
                     if (paused) {
                         val sound = BaseObject.sSystemRegistry.soundSystem
                         if (sound != null) {
@@ -97,7 +97,7 @@ class GameThread(renderer: GameRenderer) : Runnable {
                         }
                         while (paused) {
                             try {
-                                mPauseLock.wait()
+                                pauseLock.wait()
                             } catch (e: InterruptedException) {
                                 // No big deal if this wait is interrupted.
                             }
@@ -111,21 +111,21 @@ class GameThread(renderer: GameRenderer) : Runnable {
     }
 
     fun stopGame() {
-        synchronized(mPauseLock) {
+        synchronized(pauseLock) {
             paused = false
-            mFinished = true
-            mPauseLock.notifyAll()
+            finished = true
+            pauseLock.notifyAll()
         }
     }
 
     fun pauseGame() {
-        synchronized(mPauseLock) { paused = true }
+        synchronized(pauseLock) { paused = true }
     }
 
     fun resumeGame() {
-        synchronized(mPauseLock) {
+        synchronized(pauseLock) {
             paused = false
-            mPauseLock.notifyAll()
+            pauseLock.notifyAll()
         }
     }
 
@@ -138,10 +138,10 @@ class GameThread(renderer: GameRenderer) : Runnable {
     }
 
     init {
-        mLastTime = SystemClock.uptimeMillis()
+        lastTime = SystemClock.uptimeMillis()
         mRenderer = renderer
-        mPauseLock = Any()
-        mFinished = false
+        pauseLock = Any()
+        finished = false
         paused = false
     }
 }

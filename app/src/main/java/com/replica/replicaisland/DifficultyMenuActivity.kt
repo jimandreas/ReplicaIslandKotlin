@@ -15,51 +15,51 @@ class DifficultyMenuActivity : Activity() {
     private var mBabyButton: View? = null
     private var mKidsButton: View? = null
     private var mAdultsButton: View? = null
-    private var mBackground: View? = null
+    private var background: View? = null
     private var mBabyText: View? = null
     private var mKidsText: View? = null
     private var mAdultsText: View? = null
-    private var mButtonFlickerAnimation: Animation? = null
-    private var mFadeOutAnimation: Animation? = null
-    private var mAlternateFadeOutAnimation: Animation? = null
+    private var buttonFlickerAnimation: Animation? = null
+    private var fadeOutAnimation: Animation? = null
+    private var alternateFadeOutAnimation: Animation? = null
     private val sBabyButtonListener = View.OnClickListener { v ->
         val i = Intent(baseContext, AndouKun::class.java)
         i.putExtras(intent)
         i.putExtra("difficulty", 0)
-        v.startAnimation(mButtonFlickerAnimation)
-        mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-        mBackground!!.startAnimation(mFadeOutAnimation)
-        mKidsButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mAdultsButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mBabyText!!.startAnimation(mAlternateFadeOutAnimation)
-        mKidsText!!.startAnimation(mAlternateFadeOutAnimation)
-        mAdultsText!!.startAnimation(mAlternateFadeOutAnimation)
+        v.startAnimation(buttonFlickerAnimation)
+        fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+        background!!.startAnimation(fadeOutAnimation)
+        mKidsButton!!.startAnimation(alternateFadeOutAnimation)
+        mAdultsButton!!.startAnimation(alternateFadeOutAnimation)
+        mBabyText!!.startAnimation(alternateFadeOutAnimation)
+        mKidsText!!.startAnimation(alternateFadeOutAnimation)
+        mAdultsText!!.startAnimation(alternateFadeOutAnimation)
     }
     private val sKidsButtonListener = View.OnClickListener { v ->
         val i = Intent(baseContext, AndouKun::class.java)
         i.putExtras(intent)
         i.putExtra("difficulty", 1)
-        v.startAnimation(mButtonFlickerAnimation)
-        mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-        mBackground!!.startAnimation(mFadeOutAnimation)
-        mBabyButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mAdultsButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mBabyText!!.startAnimation(mAlternateFadeOutAnimation)
-        mKidsText!!.startAnimation(mAlternateFadeOutAnimation)
-        mAdultsText!!.startAnimation(mAlternateFadeOutAnimation)
+        v.startAnimation(buttonFlickerAnimation)
+        fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+        background!!.startAnimation(fadeOutAnimation)
+        mBabyButton!!.startAnimation(alternateFadeOutAnimation)
+        mAdultsButton!!.startAnimation(alternateFadeOutAnimation)
+        mBabyText!!.startAnimation(alternateFadeOutAnimation)
+        mKidsText!!.startAnimation(alternateFadeOutAnimation)
+        mAdultsText!!.startAnimation(alternateFadeOutAnimation)
     }
     private val sAdultsButtonListener = View.OnClickListener { v ->
         val i = Intent(baseContext, AndouKun::class.java)
         i.putExtras(intent)
         i.putExtra("difficulty", 2)
-        v.startAnimation(mButtonFlickerAnimation)
-        mFadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
-        mBackground!!.startAnimation(mFadeOutAnimation)
-        mBabyButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mKidsButton!!.startAnimation(mAlternateFadeOutAnimation)
-        mBabyText!!.startAnimation(mAlternateFadeOutAnimation)
-        mKidsText!!.startAnimation(mAlternateFadeOutAnimation)
-        mAdultsText!!.startAnimation(mAlternateFadeOutAnimation)
+        v.startAnimation(buttonFlickerAnimation)
+        fadeOutAnimation!!.setAnimationListener(StartActivityAfterAnimation(i))
+        background!!.startAnimation(fadeOutAnimation)
+        mBabyButton!!.startAnimation(alternateFadeOutAnimation)
+        mKidsButton!!.startAnimation(alternateFadeOutAnimation)
+        mBabyText!!.startAnimation(alternateFadeOutAnimation)
+        mKidsText!!.startAnimation(alternateFadeOutAnimation)
+        mAdultsText!!.startAnimation(alternateFadeOutAnimation)
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,13 +75,13 @@ class DifficultyMenuActivity : Activity() {
         mBabyText = findViewById(R.id.babyText)
         mKidsText = findViewById(R.id.kidsText)
         mAdultsText = findViewById(R.id.adultsText)
-        mBackground = findViewById(R.id.mainMenuBackground)
+        background = findViewById(R.id.mainMenuBackground)
         mBabyButton!!.setOnClickListener(sBabyButtonListener)
         mKidsButton!!.setOnClickListener(sKidsButtonListener)
         mAdultsButton!!.setOnClickListener(sAdultsButtonListener)
-        mButtonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
-        mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
-        mAlternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        buttonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
+        fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        alternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
 
         // Keep the volume control type consistent across all activities.
         volumeControlStream = AudioManager.STREAM_MUSIC

@@ -24,28 +24,28 @@ class GhostComponent : GameComponent() {
     private var mMovementSpeed = 0f
     private var mJumpImpulse = 0f
     private var mAcceleration = 0f
-    private var mUseOrientationSensor = false
+    private var useOrientationSensor = false
     private var mDelayOnRelease = 0f
     private var mKillOnRelease = false
-    private var mTargetAction: ActionType? = null
+    private var targetAction: ActionType? = null
     private var mLifeTime = 0f
     private var mChangeActionOnButton = false
-    private var mButtonPressedAction: ActionType? = null
-    private var mAmbientSound: Sound? = null
-    private var mAmbientSoundStream = 0
+    private var buttonPressedAction: ActionType? = null
+    private var ambientSound: Sound? = null
+    private var ambientSoundStream = 0
     override fun reset() {
         mMovementSpeed = 0.0f
         mJumpImpulse = 0.0f
         mAcceleration = 0.0f
-        mUseOrientationSensor = false
+        useOrientationSensor = false
         mDelayOnRelease = 0.0f
         mKillOnRelease = false
-        mTargetAction = ActionType.MOVE
+        targetAction = ActionType.MOVE
         mLifeTime = 0.0f
         mChangeActionOnButton = false
-        mButtonPressedAction = ActionType.INVALID
-        mAmbientSound = null
-        mAmbientSoundStream = -1
+        buttonPressedAction = ActionType.INVALID
+        ambientSound = null
+        ambientSoundStream = -1
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -71,12 +71,12 @@ class GhostComponent : GameComponent() {
                 parentObject.life = 0
                 timeToRelease = true
             }
-            parentObject.currentAction = mTargetAction
+            parentObject.currentAction = targetAction
             if (camera != null) {
                 camera.target = parentObject
             }
             if (input != null) {
-                if (mUseOrientationSensor) {
+                if (useOrientationSensor) {
                     val tilt = input.tilt
                     parentObject.targetVelocity.x = tilt.retreiveXaxisMagnitude() * mMovementSpeed
                     parentObject.targetVelocity.y = tilt.retreiveYaxisMagnitude() * mMovementSpeed
@@ -95,26 +95,26 @@ class GhostComponent : GameComponent() {
                         && parentObject.velocity.y <= 0.0f && !mChangeActionOnButton) {
                     parentObject.impulse.y += mJumpImpulse
                 } else if (mChangeActionOnButton && jumpButton.pressed) {
-                    parentObject.currentAction = mButtonPressedAction
+                    parentObject.currentAction = buttonPressedAction
                 }
                 val attackButton = input.attackButton
                 if (attackButton.getTriggered(gameTime)) {
                     timeToRelease = true
                 }
             }
-            if (!timeToRelease && mAmbientSound != null && mAmbientSoundStream == -1) {
+            if (!timeToRelease && ambientSound != null && ambientSoundStream == -1) {
                 val sound = sSystemRegistry.soundSystem
                 if (sound != null) {
-                    mAmbientSoundStream = sound.play(mAmbientSound!!, true, SoundSystem.PRIORITY_NORMAL)
+                    ambientSoundStream = sound.play(ambientSound!!, true, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }
         if (parentObject.life == 0) {
-            if (mAmbientSoundStream > -1) {
+            if (ambientSoundStream > -1) {
                 val sound = sSystemRegistry.soundSystem
                 if (sound != null) {
-                    sound.stop(mAmbientSoundStream)
-                    mAmbientSoundStream = -1
+                    sound.stop(ambientSoundStream)
+                    ambientSoundStream = -1
                 }
             }
         }
@@ -155,11 +155,11 @@ class GhostComponent : GameComponent() {
                 input.clearClickTriggered();
             }*/
         }
-        if (mAmbientSoundStream > -1) {
+        if (ambientSoundStream > -1) {
             val sound = sSystemRegistry.soundSystem
             if (sound != null) {
-                sound.stop(mAmbientSoundStream)
-                mAmbientSoundStream = -1
+                sound.stop(ambientSoundStream)
+                ambientSoundStream = -1
             }
         }
     }
@@ -177,7 +177,7 @@ class GhostComponent : GameComponent() {
     }
 
     fun setUseOrientationSensor(useSensor: Boolean) {
-        mUseOrientationSensor = useSensor
+        useOrientationSensor = useSensor
     }
 
     fun setDelayOnRelease(delayOnRelease: Float) {
@@ -189,7 +189,7 @@ class GhostComponent : GameComponent() {
     }
 
     fun setTargetAction(action: ActionType?) {
-        mTargetAction = action
+        targetAction = action
     }
 
     fun setLifeTime(lifeTime: Float) {
@@ -197,12 +197,12 @@ class GhostComponent : GameComponent() {
     }
 
     fun changeActionOnButton(pressedAction: ActionType?) {
-        mButtonPressedAction = pressedAction
+        buttonPressedAction = pressedAction
         mChangeActionOnButton = true
     }
 
     fun setAmbientSound(sound: Sound?) {
-        mAmbientSound = sound
+        ambientSound = sound
     }
 
     init {

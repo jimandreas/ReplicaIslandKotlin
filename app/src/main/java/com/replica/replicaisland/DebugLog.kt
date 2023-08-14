@@ -22,15 +22,15 @@ class DebugLog {
 
     companion object {
 
-        private var mLoggingEnabled = true
+        private var loggingEnabled = true
 
         fun setDebugLogging(enabled: Boolean) {
-            mLoggingEnabled = enabled
+            loggingEnabled = enabled
         }
 
         fun v(tag: String, msg: String): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.v(tag, msg)
             }
             return result
@@ -38,7 +38,7 @@ class DebugLog {
 
         fun v(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.v(tag, msg, tr)
             }
             return result
@@ -46,7 +46,7 @@ class DebugLog {
 
         fun d(tag: String, msg: String): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.d(tag, msg)
             }
             return result
@@ -54,7 +54,7 @@ class DebugLog {
 
         fun d(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.d(tag, msg, tr)
             }
             return result
@@ -62,7 +62,7 @@ class DebugLog {
 
         fun i(tag: String, msg: String): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.i(tag, msg)
             }
             return result
@@ -70,7 +70,7 @@ class DebugLog {
 
         fun i(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.i(tag, msg, tr)
             }
             return result
@@ -78,7 +78,7 @@ class DebugLog {
 
         fun w(tag: String, msg: String): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.w(tag, msg)
             }
             return result
@@ -86,7 +86,7 @@ class DebugLog {
 
         fun w(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.w(tag, msg, tr)
             }
             return result
@@ -94,7 +94,7 @@ class DebugLog {
 
         fun w(tag: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.w(tag, tr)
             }
             return result
@@ -102,7 +102,7 @@ class DebugLog {
 
         fun e(tag: String, msg: String): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.e(tag, msg)
             }
             return result
@@ -110,7 +110,7 @@ class DebugLog {
 
         fun e(tag: String, msg: String, tr: Throwable?): Int {
             var result = 0
-            if (mLoggingEnabled) {
+            if (loggingEnabled) {
                 result = Log.e(tag, msg, tr)
             }
             return result
