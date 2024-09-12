@@ -99,3 +99,5 @@ not include the left-right slider:<br>
 You can fix this by checking the box `On-Screen Controls` in the `Configure` menu:<br>
 
 ![Config box](docs/img/README-usage-02.PNG)
+
+## updating further in 2024... Stay tuned.
