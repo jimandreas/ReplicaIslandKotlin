@@ -51,7 +51,14 @@ class Game : AllocationGuard() {
      * Also note that textures are not loaded from the resource pack by this function, as OpenGl
      * isn't yet available.
      */
-    fun bootstrap(context: Context, viewWidth: Int, viewHeight: Int, gameWidth: Int, gameHeight: Int, difficulty: Int) {
+    fun bootstrap(
+        context: Context,
+        viewWidth: Int,
+        viewHeight: Int,
+        gameWidth: Int,
+        gameHeight: Int,
+        difficulty: Int) {
+
         if (!bootstrapComplete) {
             renderer = GameRenderer(context, this, gameWidth, gameHeight)
 

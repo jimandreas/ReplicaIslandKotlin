@@ -43,7 +43,12 @@ import javax.microedition.khronos.opengles.GL10
  * frame, the same scene will be redrawn every frame.
  * The GameRenderer also invokes texture loads when it is activated.
  */
-class GameRenderer(private var mContext: Context, private val mGame: Game, private val mWidth: Int, private val mHeight: Int) : GLSurfaceView.Renderer {
+class GameRenderer(
+    private var mContext: Context,
+    private val mGame: Game,
+    private val mWidth: Int,
+    private val mHeight: Int) : GLSurfaceView.Renderer {
+
     private val mHalfWidth: Int = mWidth / 2
     private val mHalfHeight: Int = mHeight / 2
     private var mScaleX: Float
@@ -60,6 +65,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     private var mCameraX: Float
     private var mCameraY: Float
     private var callbackRequested: Boolean
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         /*
          * Some one-time OpenGL initialization can be made here probably based

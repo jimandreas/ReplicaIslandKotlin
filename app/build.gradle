@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.replica.replicaisland'
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.replica.replicaisland"
-        minSdk 26
-        targetSdk 33
+        minSdk 30
+        targetSdk 35
         versionCode 1
         versionName "1.0"
     }
@@ -39,6 +39,7 @@ android {
         abortOnError false
         disable 'UnusedResources', 'IconDuplicates', 'IconLocation'
     }
+    buildToolsVersion '35.0.0'
 }
 
 dependencies {
