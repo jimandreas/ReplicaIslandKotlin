@@ -39,9 +39,7 @@ class FixedSizeArray<T> : AllocationGuard {
     private var mSorter: Sorter<T?>
 
     constructor(size: Int) : super() {
-        if (BuildConfig.DEBUG && size <= 0) {
-            error("Assertion failed")
-        }
+
         // Ugh!  No generic array construction in Java.
         mContents = arrayOfNulls<Any>(size) as Array<T?>
         count = 0

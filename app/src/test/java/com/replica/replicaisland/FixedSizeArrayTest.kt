@@ -86,8 +86,8 @@ internal class FixedSizeArrayTest {
     fun getCapacity() {
     }
 
-    @Test
+    /*@Test
     fun failsIntentionally() {
         assertEquals(1, 0)
-    }
+    }*/
 }

@@ -44,4 +44,4 @@ _sandbox
 *.swp
 
 # overrides
-/gradle.properties
+#/gradle.properties
