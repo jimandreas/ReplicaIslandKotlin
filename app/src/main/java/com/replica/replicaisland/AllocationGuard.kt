@@ -17,18 +17,17 @@ package com.replica.replicaisland
 
 /**
  * AllocationGuard is a utility class for tracking down memory leaks.  It implements a
- * "checkpoint" memory scheme.  After the static sGuardActive flag has been set, any further
+ * "checkpoint" memory scheme.  After the static guardActive flag has been set, any further
  * allocation of AllocationGuard or its derivatives will cause an error log entry.  Note
  * that AllocationGuard requires all of its derivatives to call super() in their constructor.
  */
 open class AllocationGuard {
     companion object {
-        @JvmField
-        var sGuardActive = false
+        var guardActive = false
     }
 
     init {
-        if (sGuardActive) {
+        if (guardActive) {
             // An allocation has occurred while the guard is active!  Report it.
             DebugLog.e("AllocGuard", "An allocation of type " + this.javaClass.name
                     + " occurred while the AllocGuard is active.")

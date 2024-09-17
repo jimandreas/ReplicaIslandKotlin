@@ -34,26 +34,25 @@ class FixedSizeArray<T> : AllocationGuard {
     /** Returns the number of objects in the array.  */
     var count: Int
         private set
-    private var mComparator: Comparator<T?>? = null
-    private var mSorted: Boolean
-    private var mSorter: Sorter<T?>
+    private var comparator: Comparator<T?>? = null
+    private var sorted: Boolean
+    private var sorter: Sorter<T?>
 
     constructor(size: Int) : super() {
-
         // Ugh!  No generic array construction in Java.
         mContents = arrayOfNulls<Any>(size) as Array<T?>
         count = 0
-        mSorted = false
-        mSorter = StandardSorter()
+        sorted = false
+        sorter = StandardSorter()
     }
 
     constructor(size: Int, comparator: Comparator<T?>?) : super() {
         //assert(size > 0)
         mContents = arrayOfNulls<Any>(size) as Array<T?>
         count = 0
-        mComparator = comparator
-        mSorted = false
-        mSorter = StandardSorter()
+        this.comparator = comparator
+        sorted = false
+        sorter = StandardSorter()
     }
 
     /**
@@ -64,7 +63,7 @@ class FixedSizeArray<T> : AllocationGuard {
         //assert(count < mContents.size) { "Array exhausted!" }
         if (count < mContents.size) {
             mContents[count] = `object`
-            mSorted = false
+            sorted = false
             count++
         }
     }
@@ -125,7 +124,7 @@ class FixedSizeArray<T> : AllocationGuard {
             val `object` = mContents[count - 1]
             mContents[count - 1] = mContents[index]
             mContents[index] = `object`
-            mSorted = false
+            sorted = false
         }
     }
 
@@ -149,7 +148,7 @@ class FixedSizeArray<T> : AllocationGuard {
             mContents[x] = null
         }
         count = 0
-        mSorted = false
+        sorted = false
     }
 
     /**
@@ -189,8 +188,8 @@ class FixedSizeArray<T> : AllocationGuard {
     fun find(`object`: T, ignoreComparator: Boolean): Int {
         var index = -1
         val count = count
-        val sorted = mSorted
-        val comparator: Comparator<T?>? = mComparator
+        val sorted = sorted
+        val comparator: Comparator<T?>? = comparator
         val contents = mContents
         if (sorted && !ignoreComparator && count > LINEAR_SEARCH_CUTOFF) {
             index = if (comparator != null) {
@@ -237,14 +236,14 @@ class FixedSizeArray<T> : AllocationGuard {
      * objects in the array has not changed since the last sort.
      */
     fun sort(forceResort: Boolean) {
-        if (!mSorted || forceResort) {
-            if (mComparator != null) {
-                mSorter.sort(mContents, count, mComparator!!)
+        if (!sorted || forceResort) {
+            if (comparator != null) {
+                sorter.sort(mContents, count, comparator!!)
             } else {
                 DebugLog.d("FixedSizeArray", "No comparator specified for this type, using Arrays.sort().")
                 Arrays.sort(mContents, 0, count)
             }
-            mSorted = true
+            sorted = true
         }
     }
 
@@ -255,12 +254,12 @@ class FixedSizeArray<T> : AllocationGuard {
 
     /** Sets a comparator to use for sorting and searching.  */
     fun setComparator(comparator: Comparator<T?>?) {
-        mComparator = comparator
-        mSorted = false
+        this.comparator = comparator
+        sorted = false
     }
 
     fun setSorter(sorter: Sorter<T?>) {
-        mSorter = sorter
+        this.sorter = sorter
     }
 
     companion object {

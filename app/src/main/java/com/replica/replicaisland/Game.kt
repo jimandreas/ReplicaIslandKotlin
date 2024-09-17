@@ -324,7 +324,7 @@ class Game : AllocationGuard() {
             mGame!!.name = "Game"
             mGame!!.start()
             mRunning = true
-            sGuardActive = false
+            guardActive = false
         } else {
             gameThread!!.resumeGame()
         }
@@ -345,7 +345,7 @@ class Game : AllocationGuard() {
             mGame = null
             mRunning = false
             currentLevel = null
-            sGuardActive = false
+            guardActive = false
         }
     }
 
