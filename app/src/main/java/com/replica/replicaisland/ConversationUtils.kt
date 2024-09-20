@@ -18,26 +18,24 @@ package com.replica.replicaisland
 
 import android.content.Context
 import org.xmlpull.v1.XmlPullParser
-import java.util.*
 
 object ConversationUtils {
     //private const val MAX_CHARACTERS_PER_PAGE = 250
-    @JvmStatic
     fun loadDialog(resource: Int, context: Context): ArrayList<Conversation?>? {
         val parser = context.resources.getXml(resource)
-        var dialog: ArrayList<Conversation?>? = null
+        var dialogArray: ArrayList<Conversation?>? = null
         var currentConversation: Conversation? = null
         try {
             var eventType = parser.eventType
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.name == "conversation") {
-                        if (dialog == null) {
-                            dialog = ArrayList()
+                        if (dialogArray == null) {
+                            dialogArray = ArrayList()
                         }
                         currentConversation = Conversation()
                         currentConversation.splittingComplete = false
-                        dialog.add(currentConversation)
+                        dialogArray.add(currentConversation)
                     } else if (parser.name == "page") {
                         val page = ConversationPage()
                         for (i in 0 until parser.attributeCount) {
@@ -64,7 +62,7 @@ object ConversationUtils {
         } finally {
             parser.close()
         }
-        return dialog
+        return dialogArray
     }
 
     class ConversationPage {

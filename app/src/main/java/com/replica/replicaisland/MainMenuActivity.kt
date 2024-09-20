@@ -14,11 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("DEPRECATION", "SENSELESS_COMPARISON", "UNUSED_ANONYMOUS_PARAMETER", "ConvertTwoComparisonsToRangeCheck", "CascadeIf")
+@file:Suppress(
+    "unused", "RedundantSuppression",
+    "UNUSED_ANONYMOUS_PARAMETER",
+    "DEPRECATION", "SimplifyBooleanWith",
+    "Constants", "ConstantConditionIf",
+    "ApplySharedPref", "CommitPrefEdits",
+    "SENSELESS_COMPARISON", "UNUSED_VARIABLE"
+)
 
 package com.replica.replicaisland
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -149,7 +155,6 @@ class MainMenuActivity : Activity() {
         paused = true
     }
 
-    @SuppressLint("ApplySharedPref")
     override fun onResume() {
         super.onResume()
         paused = false
@@ -213,12 +218,13 @@ class MainMenuActivity : Activity() {
                 // Check the safe mode option.
                 // Useful reference: http://en.wikipedia.org/wiki/List_of_Android_devices
                 if (Build.PRODUCT.contains("morrison") ||  // Motorola Cliq/Dext
-                        Build.MODEL.contains("Pulse") ||  // Huawei Pulse
-                        Build.MODEL.contains("U8220") ||  // Huawei Pulse
-                        Build.MODEL.contains("U8230") ||  // Huawei U8230
-                        Build.MODEL.contains("MB300") ||  // Motorola Backflip
-                        Build.MODEL.contains("MB501") ||  // Motorola Quench / Cliq XT
-                        Build.MODEL.contains("Behold+II")) {    // Samsung Behold II
+                    Build.MODEL.contains("Pulse") ||  // Huawei Pulse
+                    Build.MODEL.contains("U8220") ||  // Huawei Pulse
+                    Build.MODEL.contains("U8230") ||  // Huawei U8230
+                    Build.MODEL.contains("MB300") ||  // Motorola Backflip
+                    Build.MODEL.contains("MB501") ||  // Motorola Quench / Cliq XT
+                    Build.MODEL.contains("Behold+II")
+                ) {    // Samsung Behold II
                     // These are all models that users have complained about.  They likely use
                     // the same buggy QTC graphics driver.  Turn on Safe Mode by default
                     // for these devices.
@@ -241,7 +247,8 @@ class MainMenuActivity : Activity() {
 
                 // screen controls were added in version 14
                 if (lastVersion > 0 && lastVersion < 14 &&
-                        prefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)) {
+                    prefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)
+                ) {
                     if (touch.supportsMultitouch(this)) {
                         // show message about switching from tilt to screen controls
                         showDialog(TILT_TO_SCREEN_CONTROLS_DIALOG)
@@ -261,7 +268,12 @@ class MainMenuActivity : Activity() {
         }
         if (justCreated) {
             if (mStartButton != null) {
-                mStartButton!!.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_slide))
+                mStartButton!!.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        this,
+                        R.anim.button_slide
+                    )
+                )
             }
             if (mExtrasButton != null) {
                 val anim = AnimationUtils.loadAnimation(this, R.anim.button_slide)
@@ -281,53 +293,58 @@ class MainMenuActivity : Activity() {
         }
     }
 
-    @SuppressLint("ApplySharedPref")
     override fun onCreateDialog(id: Int): Dialog {
         val dialog: Dialog
         dialog = if (id == WHATS_NEW_DIALOG) {
             AlertDialog.Builder(this)
-                    .setTitle(R.string.whats_new_dialog_title)
-                    .setPositiveButton(R.string.whats_new_dialog_ok, null)
-                    .setMessage(R.string.whats_new_dialog_message)
-                    .create()
+                .setTitle(R.string.whats_new_dialog_title)
+                .setPositiveButton(R.string.whats_new_dialog_ok, null)
+                .setMessage(R.string.whats_new_dialog_message)
+                .create()
         } else if (id == TILT_TO_SCREEN_CONTROLS_DIALOG) {
             AlertDialog.Builder(this)
-                    .setTitle(R.string.onscreen_tilt_dialog_title)
-                    .setPositiveButton(R.string.onscreen_tilt_dialog_ok) { thisDialog, whichButton ->
-                        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-                        val editor = prefs.edit()
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
-                        editor.commit()
-                    }
-                    .setNegativeButton(R.string.onscreen_tilt_dialog_cancel, null)
-                    .setMessage(R.string.onscreen_tilt_dialog_message)
-                    .create()
+                .setTitle(R.string.onscreen_tilt_dialog_title)
+                .setPositiveButton(R.string.onscreen_tilt_dialog_ok) { thisDialog, whichButton ->
+                    val prefs =
+                        getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
+                    val editor = prefs.edit()
+                    editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
+                    editor.commit()
+                }
+                .setNegativeButton(R.string.onscreen_tilt_dialog_cancel, null)
+                .setMessage(R.string.onscreen_tilt_dialog_message)
+                .create()
         } else if (id == CONTROL_SETUP_DIALOG) {
             val messageFormat = resources.getString(R.string.control_setup_dialog_message)
             val message = String.format(messageFormat, selectedControlsString)
             val sytledMessage: CharSequence = Html.fromHtml(message) // lame.
             AlertDialog.Builder(this)
-                    .setTitle(R.string.control_setup_dialog_title)
-                    .setPositiveButton(R.string.control_setup_dialog_ok, null)
-                    .setNegativeButton(R.string.control_setup_dialog_change) { thisDialog, whichButton ->
-                        val i = Intent(baseContext, SetPreferencesActivity::class.java)
-                        i.putExtra("controlConfig", true)
-                        startActivity(i)
-                    }
-                    .setMessage(sytledMessage)
-                    .create()
+                .setTitle(R.string.control_setup_dialog_title)
+                .setPositiveButton(R.string.control_setup_dialog_ok, null)
+                .setNegativeButton(R.string.control_setup_dialog_change) { thisDialog, whichButton ->
+                    val i = Intent(baseContext, SetPreferencesActivity::class.java)
+                    i.putExtra("controlConfig", true)
+                    startActivity(i)
+                }
+                .setMessage(sytledMessage)
+                .create()
         } else {
             super.onCreateDialog(id)
         }
         return dialog
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) :
+        AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             startActivity(intent)
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
-                    UIConstants.mOverridePendingTransition!!.invoke(this@MainMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
+                    UIConstants.mOverridePendingTransition!!.invoke(
+                        this@MainMenuActivity,
+                        R.anim.activity_fade_in,
+                        R.anim.activity_fade_out
+                    )
                 } catch (ite: InvocationTargetException) {
                     DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
@@ -337,11 +354,11 @@ class MainMenuActivity : Activity() {
         }
 
         override fun onAnimationRepeat(animation: Animation) {
-            // TODO Auto-generated method stub
+
         }
 
         override fun onAnimationStart(animation: Animation) {
-            // TODO Auto-generated method stub
+
         }
     }
 

@@ -64,8 +64,10 @@ tasks.withType<Test> {
 }
 
 dependencies {
+    implementation(libs.androidx.fragment)
+    debugImplementation(libs.androidx.fragment.testing)
     testImplementation(libs.junit)
     testImplementation(libs.jupiter)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.espresso.core)
 }
