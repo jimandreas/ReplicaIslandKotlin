@@ -17,24 +17,33 @@
 
 package com.replica.replicaisland
 
-import android.app.AlertDialog
-import android.app.Dialog
-import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.DialogFragment
+import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.rules.TestName
 
-class MainDialogFragment: DialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.i("MainDialogFragment", "onCreateDialog")
-        return AlertDialog.Builder(requireContext())
-            .setTitle("My Dialog")
-            .setMessage("This is my dialog.")
-            .setPositiveButton("OK", null)
-            .create()
+
+
+@LargeTest
+@RunWith(AndroidJUnit4::class)
+class TestExecutorList {
+
+    @Rule
+    @JvmField
+    var activityTestRule = ActivityScenarioRule(MainMenuActivity::class.java)
+
+    @get:Rule
+    var nameRule = TestName()
+
+    @Test
+    fun basicDialogTest() {
+        pause(1000)
+        BasicDialogTest01().run()
+        pause(1000)
     }
 
-    override fun onStart() {
-        super.onStart()
-//        this.show(parentFragmentManager, tag)
-    }
 }

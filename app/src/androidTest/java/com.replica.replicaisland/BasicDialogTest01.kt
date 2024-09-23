@@ -17,24 +17,27 @@
 
 package com.replica.replicaisland
 
-import android.app.AlertDialog
-import android.app.Dialog
-import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.testing.launchFragment
+import org.junit.Assert.assertEquals
 
-class MainDialogFragment: DialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.i("MainDialogFragment", "onCreateDialog")
-        return AlertDialog.Builder(requireContext())
-            .setTitle("My Dialog")
-            .setMessage("This is my dialog.")
-            .setPositiveButton("OK", null)
-            .create()
+
+internal class BasicDialogTest01: Runnable {
+    override fun run() {
+        tryPostingDialog01()
     }
 
-    override fun onStart() {
-        super.onStart()
-//        this.show(parentFragmentManager, tag)
+    private fun tryPostingDialog01() {
+        with(launchFragment<MainDialogFragment>()) {
+            onFragment { fragment ->
+                assertEquals(1, 1)
+                //fragment.dismiss()
+                //fragment.parentFragmentManager.executePendingTransactions()
+
+            }
+        }
+        Log.d("test01", "here now")
+        pause(10000)
     }
+
 }
