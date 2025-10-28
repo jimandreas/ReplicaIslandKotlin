@@ -80,12 +80,10 @@ and to the Android team for continued support.
 
 Jim Andreas converted the project to Kotlin, which is also another island.  "The game is afoot!"
 
-IMPORTANT NOTE: the conversion is Komplete.  Linting runs clean and the game is playable.  All
-further changes will take place in the branch "kylica" and irregular updates of the *kylica* branch
-will be noted in the *CHANGELOG.md* on the *master* branch.
+IMPORTANT NOTE: the conversion is Komplete.  Linting runs clean and the game is playable.
 
 This code was derived from the original code posted to the following link - still working
-as of Sept 2020:
+as of Sept 2025:
 
 https://code.google.com/archive/p/replicaisland/
 
@@ -100,4 +98,8 @@ You can fix this by checking the box `On-Screen Controls` in the `Configure` men
 
 ![Config box](docs/img/README-usage-02.PNG)
 
-## updating further in 2024... Stay tuned.
+## updating further in 2025... Stay tuned.
+
+Currently set up for:
+
+<b>Android Studio Narwhal 4 Feature Drop | 2025.1.4</b>
