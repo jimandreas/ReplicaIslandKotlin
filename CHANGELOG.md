@@ -1,5 +1,8 @@
 ReplicaIslandKotlin Change Log
 ===============================
+Version K.0.2 *(2025-10-28)
+---------------------------------
+* conver to KTS build files, update versions
 
 Version K.0.1 *(2021-05-17)
 ---------------------------------
