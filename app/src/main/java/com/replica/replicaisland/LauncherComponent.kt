@@ -17,7 +17,8 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.GameObject.ActionType
 import com.replica.replicaisland.GameObjectFactory.GameObjectType
-import com.replica.replicaisland.SoundSystem.Sound
+import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.sound.SoundSystem.Sound
 import kotlin.math.cos
 import kotlin.math.sin
 

@@ -22,7 +22,8 @@ import com.replica.replicaisland.GameObject.ActionType
 import com.replica.replicaisland.GameObject.Team
 import com.replica.replicaisland.GameObjectFactory.GameObjectType
 import com.replica.replicaisland.InventoryComponent.UpdateRecord
-import com.replica.replicaisland.SoundSystem.Sound
+import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.sound.SoundSystem.Sound
 
 /**
  * A general-purpose component that responds to dynamic collision notifications.  This component

@@ -23,6 +23,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.Toast
+import com.replica.replicaisland.sound.SoundSystem
 
 /**
  * High-level setup object for the AndouKun game engine.

@@ -1,29 +1,14 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused")
+package com.replica.replicaisland.sound
 
-package com.replica.replicaisland
-
-import android.media.AudioManager
+import android.media.AudioAttributes
 import android.media.SoundPool
-import java.util.*
+import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.FixedSizeArray
 
 class SoundSystem : BaseObject() {
     private val soundPool: SoundPool
-    private val mSounds: FixedSizeArray<Sound>
+    private val soundsArray: FixedSizeArray<Sound>
     private val searchDummy: Sound
 
     @set:Synchronized
@@ -31,7 +16,7 @@ class SoundSystem : BaseObject() {
     private val loopingStreams: IntArray
     override fun reset() {
         soundPool.release()
-        mSounds.clear()
+        soundsArray.clear()
         soundEnabled = true
         for (x in loopingStreams.indices) {
             loopingStreams[x] = -1
@@ -48,11 +33,11 @@ class SoundSystem : BaseObject() {
                 result = Sound()
                 result.resource = resource
                 result.soundId = soundPool.load(context, resource, 1)
-                mSounds.add(result)
-                mSounds.sort(false)
+                soundsArray.add(result)
+                soundsArray.sort(false)
             }
         } else {
-            result = mSounds[index]
+            result = soundsArray[index]
         }
         return result
     }
@@ -139,7 +124,7 @@ class SoundSystem : BaseObject() {
 
     private fun findSound(resource: Int): Int {
         searchDummy.resource = resource
-        return mSounds.find(searchDummy, false)
+        return soundsArray.find(searchDummy, false)
     }
 
     class Sound : AllocationGuard() {
@@ -165,21 +150,37 @@ class SoundSystem : BaseObject() {
     companion object {
         private const val MAX_STREAMS = 8
         private const val MAX_SOUNDS = 32
-        private val sSoundComparator = SoundComparator()
-        const val PRIORITY_LOW = 0
+//        const val PRIORITY_LOW = 0
         const val PRIORITY_NORMAL = 1
         const val PRIORITY_HIGH = 2
-        const val PRIORITY_MUSIC = 3
+//        const val PRIORITY_MUSIC = 3
     }
 
     init {
-        @Suppress("DEPRECATION")
-        soundPool = SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0)
-        mSounds = FixedSizeArray(MAX_SOUNDS, sSoundComparator)
+        //soundPool = SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0)
+        soundsArray = FixedSizeArray(MAX_SOUNDS, SoundComparator())
         searchDummy = Sound()
+
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(MAX_STREAMS)
+            .setAudioAttributes(audioAttributes)
+            .build()
+
         loopingStreams = IntArray(MAX_STREAMS)
         for (x in loopingStreams.indices) {
             loopingStreams[x] = -1
+        }
+        soundPool.setOnLoadCompleteListener { soundPool, sampleId, status ->
+            if (status == 0) {
+                // Play each sound with zero volume to warm up the pipeline.
+                // This reduces sound latency in the game by a lot!
+                soundPool.play(sampleId, 0f, 0f, 0, 0, 1f)
+            }
         }
     }
 }

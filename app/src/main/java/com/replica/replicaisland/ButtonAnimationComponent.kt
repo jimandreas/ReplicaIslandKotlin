@@ -16,7 +16,8 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.ChannelSystem.ChannelFloatValue
-import com.replica.replicaisland.SoundSystem.Sound
+import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.sound.SoundSystem.Sound
 
 class ButtonAnimationComponent : GameComponent() {
     object Animation {

@@ -298,6 +298,7 @@ class AndouKun : Activity(), SensorEventListener {
         return true
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         var result = true
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -335,6 +336,7 @@ class AndouKun : Activity(), SensorEventListener {
         return result
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         var result = false
         if (keyCode == KeyEvent.KEYCODE_BACK) {

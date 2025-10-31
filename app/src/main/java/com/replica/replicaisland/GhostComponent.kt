@@ -18,7 +18,8 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.GameObject.ActionType
-import com.replica.replicaisland.SoundSystem.Sound
+import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.sound.SoundSystem.Sound
 
 class GhostComponent : GameComponent() {
     private var mMovementSpeed = 0f
