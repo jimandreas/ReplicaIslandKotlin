@@ -2,6 +2,7 @@ package com.replica.replicaisland
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,6 +10,9 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 
 class DifficultyMenuActivity : Activity() {
@@ -68,6 +72,14 @@ class DifficultyMenuActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.difficulty_menu)
         mBabyButton = findViewById(R.id.babyButton)
         mKidsButton = findViewById(R.id.kidsButton)

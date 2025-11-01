@@ -17,6 +17,7 @@
 package com.replica.replicaisland
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -28,6 +29,9 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 
 class AnimationPlayerActivity : Activity() {
@@ -65,6 +69,14 @@ class AnimationPlayerActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         val callingIntent = intent
         animationType = callingIntent.getIntExtra("animation", KYLE_DEATH)
         if (animationType == KYLE_DEATH) {

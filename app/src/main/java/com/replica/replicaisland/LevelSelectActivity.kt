@@ -20,6 +20,7 @@ package com.replica.replicaisland
 import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Bundle
 import android.view.*
@@ -29,6 +30,9 @@ import android.view.animation.AnimationUtils
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
@@ -137,6 +141,14 @@ class LevelSelectActivity : ListActivity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.level_select)
         levelData = ArrayList()
         if (intent.getBooleanExtra("unlockAll", false)) {

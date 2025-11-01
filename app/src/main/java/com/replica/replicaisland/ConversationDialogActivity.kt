@@ -19,6 +19,7 @@ package com.replica.replicaisland
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.AnimationDrawable
@@ -31,6 +32,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.ConversationUtils.ConversationPage
 import java.util.*
 
@@ -46,6 +50,14 @@ class ConversationDialogActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.conversation_dialog)
         okArrow = findViewById<View>(R.id.ok) as ImageView
         okArrow!!.setBackgroundResource(R.drawable.ui_button)
@@ -150,7 +162,7 @@ class ConversationDialogActivity : Activity() {
         // Sleep so that the main thread doesn't get flooded with UI events.
         try {
             Thread.sleep(32)
-        } catch (e: InterruptedException) {
+        } catch (_: InterruptedException) {
             // No big deal if this sleep is interrupted.
         }
         return true
@@ -191,7 +203,7 @@ class ConversationDialogActivity : Activity() {
         }
     }
 
-    class TypewriterTextView : TextView {
+    class TypewriterTextView : androidx.appcompat.widget.AppCompatTextView {
         private var currentCharacter = 0
         private var lastTime: Long = 0
         private var mText: CharSequence? = null
@@ -199,9 +211,9 @@ class ConversationDialogActivity : Activity() {
         private var parentActivity // This really sucks.
                 : ConversationDialogActivity? = null
 
-        constructor(context: Context?) : super(context) {}
-        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-        constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {}
+        constructor(context: Context) : super(context) {}
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {}
 
         fun setParentActivity(parent: ConversationDialogActivity?) {
             parentActivity = parent

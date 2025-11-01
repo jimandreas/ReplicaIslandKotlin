@@ -22,6 +22,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -31,6 +32,9 @@ import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.LevelTree.isLoaded
 import com.replica.replicaisland.LevelTree.loadAllDialog
 import com.replica.replicaisland.LevelTree.loadLevelTree
@@ -100,6 +104,14 @@ class MainMenuActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.mainmenu)
         paused = true
         mStartButton = findViewById(R.id.startButton)

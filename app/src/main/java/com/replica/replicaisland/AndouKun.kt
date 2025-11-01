@@ -23,6 +23,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences.Editor
+import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -35,6 +36,9 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 
 /**
@@ -77,6 +81,14 @@ class AndouKun : Activity(), SensorEventListener {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
         val debugLogs = prefs.getBoolean(PreferenceConstants.PREFERENCE_ENABLE_DEBUG, false)
         if (VERSION < 0 || debugLogs) {

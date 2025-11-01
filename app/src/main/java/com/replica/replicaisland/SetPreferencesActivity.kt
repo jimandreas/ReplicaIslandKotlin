@@ -17,10 +17,14 @@
 
 package com.replica.replicaisland
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.preference.PreferenceScreen
 import android.widget.Toast
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.YesNoDialogPreference.YesNoDialogListener
 
 class SetPreferencesActivity : PreferenceActivity(), YesNoDialogListener {
@@ -30,6 +34,14 @@ class SetPreferencesActivity : PreferenceActivity(), YesNoDialogListener {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         preferenceManager.sharedPreferencesMode = MODE_PRIVATE
         preferenceManager.sharedPreferencesName = PreferenceConstants.PREFERENCE_NAME
 

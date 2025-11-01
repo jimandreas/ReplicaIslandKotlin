@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Bundle
 import android.view.KeyEvent
@@ -13,6 +14,9 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 
 class ExtrasMenuActivity : Activity() {
@@ -66,6 +70,14 @@ class ExtrasMenuActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.extras_menu)
         val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
         val extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)

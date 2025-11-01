@@ -16,6 +16,7 @@
 package com.replica.replicaisland
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.View
@@ -23,6 +24,9 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 
 class DiaryActivity : Activity() {
@@ -45,6 +49,14 @@ class DiaryActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.diary)
         val text = findViewById<View>(R.id.diarytext) as TextView
         val image = findViewById<View>(R.id.diarybackground) as ImageView

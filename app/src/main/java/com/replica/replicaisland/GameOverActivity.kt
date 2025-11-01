@@ -19,6 +19,7 @@ package com.replica.replicaisland
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Canvas
 import android.os.Bundle
 import android.os.SystemClock
@@ -26,6 +27,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.floor
 import kotlin.math.min
@@ -122,6 +126,14 @@ class GameOverActivity : Activity() {
         } else {
             super.onCreate(null)
         }
+
+        // New method of landscape orientation.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        // end of new method of landscape orientation
+
         setContentView(R.layout.game_over)
         pearlView = findViewById<View>(R.id.pearl_percent) as IncrementingTextView
         enemiesDestroyedView = findViewById<View>(R.id.enemy_percent) as IncrementingTextView
