@@ -9,9 +9,10 @@ msg = "attributionTag " + attributionTag + " not declared in manifest of "
 So, it is easy to see that in case of @de11833 like in my case, the attributionTag searched was actually an empty string.
 
 Finally, after one full day of fighting I've added both tags to the manifest (under the <manifest> tag, not <application> or <activity>)
-
+```
 <attribution android:tag="@string/empty" android:label="@string/description" />
 <attribution android:tag="audioPlayback" android:label="@string/description" />
+```
 
 The trick is that simple empty tag "" or "@null" or omitted tag are not accepted during compile time or after run, so it is tricky to provide @string/empty as empty string using string resources.
 
@@ -33,7 +34,10 @@ manifest:
 
 ```
 <attribution android:tag="@string/space" android:label="@string/description" />
+```
+
 strings.xml:
+```
 <!-- bug fixes -->
 <string name="description" translatable="false">logcat workaround, see defects/logcatAttributionTag.md</string>
 <string name="space" translatable="false"> </string>
