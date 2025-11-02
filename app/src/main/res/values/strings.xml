@@ -413,4 +413,8 @@ If I am honest with myself, there is another reason the adventurers had to die. 
 
 <string name="KyleDeadNote" translatable="false">It’s Kyle.  He’s not moving.</string>
 
+<!-- bug fixes -->
+<string name="description" translatable="false">logcat workaround, see defects/logcatAttributionTag.md</string>
+<string name="space" translatable="false"> </string>
+
 </resources>

@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <attribution android:tag="@string/space" android:label="@string/description" />
+
     <!-- Actually, this game works fine on small screens, but the only one out
 right now has no 3D acceleration, so it's slow and unplayable. -->
     <supports-screens
