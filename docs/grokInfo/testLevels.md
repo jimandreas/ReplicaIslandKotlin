@@ -1,6 +1,28 @@
 # test levels in the game
 
-## Grok advice
+## NOTES
+
+### Turn on DEBUG in AndoKun.kt
+
+```
+// If the version is a negative number, debug features (logging and a debug menu)
+        // are enabled.
+//        const val VERSION = 14
+        const val VERSION = -1 /* TEST TEST debug */
+```
+
+### Keyboard notes
+
+using keyboard in the Android emulator:
+
+* F1 - brings up the basic debug menu
+* F10 - allows unlock of all levels
+
+* F4 - kills the emulator? (Pixel 3 XL API 28) (hangup button or powers off the emulator)
+
+See also: https://minimum-viable-product.github.io/marshmallow-docs/tools/help/emulator.html
+
+## Grok summary of test levels
 
 ### Test Level in Replica Island
 
