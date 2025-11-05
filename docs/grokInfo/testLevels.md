@@ -35,45 +35,45 @@ This level is ideal for automated bot testing because:
 
 The levels occur in this play order (non-chronological numbering reflects the story's memory-flashback structure):
 
-| Play Order | Level Name     | Key Metrics (Deaths/Player, Avg. Time) | Notes |
-|------------|----------------|----------------------------------------|-------|
-| 1         | Memory #001   | 0.11, 2.37 min                        | Tutorial; low difficulty; post-build test level. |
-| 2         | Memory #025   | 0.19, 2.47 min                        | Early present-day level. |
-| 3         | Memory #002   | 1.41, 5.89 min                        | Introduces basic enemies. |
-| 4         | Memory #026   | 0.53, 2.85 min                        | - |
-| 5         | Memory #003   | 0.40, 2.43 min                        | - |
-| 6         | Memory #004   | 0.50, 3.11 min                        | - |
-| 7         | Memory #005   | 1.30, 4.72 min                        | Higher deaths introduce challenge. |
-| 8         | Memory #027   | 1.50, 2.98 min                        | Death spike (63.65% from falls). |
-| 9         | Memory #012   | 3.04, 5.34 min                        | Frustration point (30.12% falls). |
-| 10        | Memory #028   | 3.80, 7.71 min                        | Puzzle-heavy. |
-| 11        | Memory #007   | 1.89, 5.88 min                        | - |
-| 12        | Memory #013   | 1.92, 4.58 min                        | - |
-| 13        | Memory #014   | 1.31, 2.55 min                        | - |
-| 14        | Memory #029   | 1.30, 4.66 min                        | - |
-| 15        | Memory #024   | 1.09, 4.20 min                        | - |
-| 16        | Memory #030   | 3.03, 6.94 min                        | - |
-| 17        | Memory #030.5 | 1.59, 2.17 min                        | Bonus level. |
-| 18        | Memory #031   | 1.17, 4.70 min                        | - |
-| 19        | Memory #008   | 4.12, 4.89 min                        | High deaths. |
-| 20        | Memory #015   | 2.12, 9.87 min                        | Longer puzzle. |
-| 21        | Memory #021   | 7.73, 7.86 min                        | Extreme difficulty (97.6% falls). |
-| 22        | Memory #032   | 1.19, 6.12 min                        | - |
-| 23        | Memory #033   | 2.96, 3.30 min                        | - |
-| 24        | Memory #017   | 0.08, 1.30 min                        | Very easy. |
-| 25        | Memory #022   | 0.14, 4.21 min                        | - |
-| 26        | Memory #034   | 9.93, 17.44 min                       | Hardest (concentrated deaths). |
-| 27        | Memory #010   | 1.01, 6.21 min                        | - |
-| 28        | Memory #018   | 2.49, 4.01 min                        | - |
-| 29        | Memory #035   | 3.29, 5.75 min                        | - |
-| 30        | Memory #019   | 5.46, 6.19 min                        | - |
-| 31        | Memory #023   | 7.35, 16.98 min                       | Long and deadly. |
-| 32        | Memory #037   | 6.56, 15.11 min                       | - |
-| 33        | Memory #038   | 0.46, 2.53 min                        | Easy late-game. |
-| 34        | Memory #011   | 4.86, 12.32 min                       | - |
-| 35        | Memory #020   | 9.79, 9.85 min                        | High deaths (64% falls). |
-| 36        | Memory #039   | 0.42, 2.83 min                        | - |
-| 37        | Memory #040   | 2.15, 2.98 min                        | Finale. |
+| Play Order | Level Name    | Key Metrics (Deaths/Player, Avg. Time) | Notes                                            |
+|------------|---------------|----------------------------------------|--------------------------------------------------|
+| 1          | Memory #001   | 0.11, 2.37 min                         | Tutorial; low difficulty; post-build test level. |
+| 2          | Memory #025   | 0.19, 2.47 min                         | Early present-day level.                         |
+| 3          | Memory #002   | 1.41, 5.89 min                         | Introduces basic enemies.                        |
+| 4          | Memory #026   | 0.53, 2.85 min                         | -                                                |
+| 5          | Memory #003   | 0.40, 2.43 min                         | -                                                |
+| 6          | Memory #004   | 0.50, 3.11 min                         | -                                                |
+| 7          | Memory #005   | 1.30, 4.72 min                         | Higher deaths introduce challenge.               |
+| 8          | Memory #027   | 1.50, 2.98 min                         | Death spike (63.65% from falls).                 |
+| 9          | Memory #012   | 3.04, 5.34 min                         | Frustration point (30.12% falls).                |
+| 10         | Memory #028   | 3.80, 7.71 min                         | Puzzle-heavy.                                    |
+| 11         | Memory #007   | 1.89, 5.88 min                         | -                                                |
+| 12         | Memory #013   | 1.92, 4.58 min                         | -                                                |
+| 13         | Memory #014   | 1.31, 2.55 min                         | -                                                |
+| 14         | Memory #029   | 1.30, 4.66 min                         | -                                                |
+| 15         | Memory #024   | 1.09, 4.20 min                         | -                                                |
+| 16         | Memory #030   | 3.03, 6.94 min                         | -                                                |
+| 17         | Memory #030.5 | 1.59, 2.17 min                         | Bonus level.                                     |
+| 18         | Memory #031   | 1.17, 4.70 min                         | -                                                |
+| 19         | Memory #008   | 4.12, 4.89 min                         | High deaths.                                     |
+| 20         | Memory #015   | 2.12, 9.87 min                         | Longer puzzle.                                   |
+| 21         | Memory #021   | 7.73, 7.86 min                         | Extreme difficulty (97.6% falls).                |
+| 22         | Memory #032   | 1.19, 6.12 min                         | -                                                |
+| 23         | Memory #033   | 2.96, 3.30 min                         | -                                                |
+| 24         | Memory #017   | 0.08, 1.30 min                         | Very easy.                                       |
+| 25         | Memory #022   | 0.14, 4.21 min                         | -                                                |
+| 26         | Memory #034   | 9.93, 17.44 min                        | Hardest (concentrated deaths).                   |
+| 27         | Memory #010   | 1.01, 6.21 min                         | -                                                |
+| 28         | Memory #018   | 2.49, 4.01 min                         | -                                                |
+| 29         | Memory #035   | 3.29, 5.75 min                         | -                                                |
+| 30         | Memory #019   | 5.46, 6.19 min                         | -                                                |
+| 31         | Memory #023   | 7.35, 16.98 min                        | Long and deadly.                                 |
+| 32         | Memory #037   | 6.56, 15.11 min                        | -                                                |
+| 33         | Memory #038   | 0.46, 2.53 min                         | Easy late-game.                                  |
+| 34         | Memory #011   | 4.86, 12.32 min                        | -                                                |
+| 35         | Memory #020   | 9.79, 9.85 min                         | High deaths (64% falls).                         |
+| 36         | Memory #039   | 0.42, 2.83 min                         | -                                                |
+| 37         | Memory #040   | 2.15, 2.98 min                         | Finale.                                          |
 
 ### How a Developer Sets a Specific Level for Testing
 Replica Island's level selection is data-driven via XML and runtime preferences, allowing developers to jump to any level (including Memory #001 for quick playtests) without replaying prior ones. This is handled in `LevelTree.java`, which loads the tree and uses Android SharedPreferences for state.
@@ -117,15 +117,15 @@ Memory #034 is the 26th level encountered in the game's play order (out of 40 ma
 ### Difficulty Metrics
 Based on aggregated player data from the game's launch (over 500 players tracked):
 
-| Metric              | Value          | Notes |
-|---------------------|----------------|-------|
-| Total Deaths        | 5,234         | Extremely high, indicating a design bottleneck. |
-| Players Attempted   | 527           | Represents a dedicated subset who reached this far. |
-| Deaths per Player   | 9.93          | Highest in the game; acts as a "wall" where ~30-40% of players drop off. |
-| Average Completion Time | 17.44 minutes | Far exceeds the design goal of <5 minutes; reflects looping attempts. |
-| Minimum Time        | 3.17 minutes  | Achievable with optimal knowledge. |
-| Maximum Time        | 114.07 minutes| Highlights extreme frustration for some. |
-| Fall-Related Deaths | 0%            | No platforming pitfalls; all failures are puzzle-related. |
+| Metric                  | Value          | Notes                                                                    |
+|-------------------------|----------------|--------------------------------------------------------------------------|
+| Total Deaths            | 5,234          | Extremely high, indicating a design bottleneck.                          |
+| Players Attempted       | 527            | Represents a dedicated subset who reached this far.                      |
+| Deaths per Player       | 9.93           | Highest in the game; acts as a "wall" where ~30-40% of players drop off. |
+| Average Completion Time | 17.44 minutes  | Far exceeds the design goal of <5 minutes; reflects looping attempts.    |
+| Minimum Time            | 3.17 minutes   | Achievable with optimal knowledge.                                       |
+| Maximum Time            | 114.07 minutes | Highlights extreme frustration for some.                                 |
+| Fall-Related Deaths     | 0%             | No platforming pitfalls; all failures are puzzle-related.                |
 
 This level's metrics show a sharp spike compared to earlier ones (e.g., Memory #017 at 0.08 deaths/player), contributing to the end-game's uneven difficulty curve.
 
