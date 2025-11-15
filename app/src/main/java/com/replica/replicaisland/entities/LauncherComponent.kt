@@ -1,26 +1,11 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.core.GameObject.ActionType
-import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.core.GameObjectFactory
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -33,10 +18,10 @@ class LauncherComponent : GameComponent() {
     private var launchMagnitude = 0f
     private var mPostLaunchDelay = 0f
     private var mDriveActions = false
-    private var launchEffect: GameObjectType? = null
+    private var launchEffect: GameObjectFactory.GameObjectType? = null
     private var launchEffectOffsetX = 0f
     private var launchEffectOffsetY = 0f
-    private var launchSound: Sound? = null
+    private var launchSound: SoundSystem.Sound? = null
     override fun reset() {
         mShot = null
         launchTime = 0.0f
@@ -45,7 +30,7 @@ class LauncherComponent : GameComponent() {
         launchMagnitude = DEFAULT_LAUNCH_MAGNITUDE
         mPostLaunchDelay = DEFAULT_POST_LAUNCH_DELAY
         mDriveActions = true
-        launchEffect = GameObjectType.INVALID
+        launchEffect = GameObjectFactory.GameObjectType.INVALID
         launchEffectOffsetX = 0.0f
         launchEffectOffsetY = 0.0f
         launchSound = null
@@ -65,7 +50,7 @@ class LauncherComponent : GameComponent() {
                     fire(mShot!!, parentObject, mAngle)
                     mShot = null
                     if (mDriveActions) {
-                        parentObject!!.currentAction = ActionType.ATTACK
+                        parentObject!!.currentAction = GameObject.ActionType.ATTACK
                     }
                 } else {
                     mShot!!.position = parentObject!!.position
@@ -73,7 +58,7 @@ class LauncherComponent : GameComponent() {
             }
         } else if (gameTime > launchTime + mPostLaunchDelay) {
             if (mDriveActions) {
-                parentObject!!.currentAction = ActionType.IDLE
+                parentObject!!.currentAction = GameObject.ActionType.IDLE
             }
         }
     }
@@ -94,7 +79,7 @@ class LauncherComponent : GameComponent() {
 
     private fun fire(thing: GameObject, parentObject: GameObject?, mAngle: Float) {
         if (mDriveActions) {
-            thing.currentAction = ActionType.MOVE
+            thing.currentAction = GameObject.ActionType.MOVE
         }
         launchDirection[sin(mAngle.toDouble()).toFloat()] = cos(mAngle.toDouble()).toFloat()
         launchDirection.multiply(parentObject!!.facingDirection)
@@ -102,9 +87,9 @@ class LauncherComponent : GameComponent() {
         thing.velocity = launchDirection
         if (launchSound != null) {
             val sound = sSystemRegistry.soundSystem
-            sound?.play(launchSound!!, false, SoundSystem.PRIORITY_NORMAL)
+            sound?.play(launchSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
         }
-        if (launchEffect !== GameObjectType.INVALID) {
+        if (launchEffect !== GameObjectFactory.GameObjectType.INVALID) {
             val factory = sSystemRegistry.gameObjectFactory
             val manager = sSystemRegistry.gameObjectManager
             if (factory != null && manager != null) {
@@ -128,13 +113,13 @@ class LauncherComponent : GameComponent() {
         mDriveActions = driveActions
     }
 
-    fun setLaunchEffect(effectType: GameObjectType?, offsetX: Float, offsetY: Float) {
+    fun setLaunchEffect(effectType: GameObjectFactory.GameObjectType?, offsetX: Float, offsetY: Float) {
         launchEffect = effectType
         launchEffectOffsetX = offsetX
         launchEffectOffsetY = offsetY
     }
 
-    fun setLaunchSound(sound: Sound?) {
+    fun setLaunchSound(sound: SoundSystem.Sound?) {
         launchSound = sound
     }
 

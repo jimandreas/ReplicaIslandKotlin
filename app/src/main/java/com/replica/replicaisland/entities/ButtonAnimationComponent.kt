@@ -1,25 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.ChannelSystem.ChannelFloatValue
+import com.replica.replicaisland.ChannelSystem
+import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.SpriteComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 
 class ButtonAnimationComponent : GameComponent() {
     object Animation {
@@ -30,8 +17,8 @@ class ButtonAnimationComponent : GameComponent() {
 
     private var mChannel: ChannelSystem.Channel? = null
     private var mSprite: SpriteComponent? = null
-    private val lastPressedTime: ChannelFloatValue
-    private var depressSound: Sound? = null
+    private val lastPressedTime: ChannelSystem.ChannelFloatValue
+    private var depressSound: SoundSystem.Sound? = null
     override fun reset() {
         mSprite = null
         mChannel = null
@@ -46,7 +33,7 @@ class ButtonAnimationComponent : GameComponent() {
                     parentObject.lastReceivedHitType == CollisionParameters.HitType.DEPRESS) {
                 if (mSprite!!.currentAnimation == Animation.UP) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(depressSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(depressSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                 }
                 mSprite!!.playAnimation(Animation.DOWN)
                 parentObject.currentAction = GameObject.ActionType.IDLE
@@ -69,13 +56,13 @@ class ButtonAnimationComponent : GameComponent() {
         mChannel = channel
     }
 
-    fun setDepressSound(sound: Sound?) {
+    fun setDepressSound(sound: SoundSystem.Sound?) {
         depressSound = sound
     }
 
     init {
         setPhaseToThis(ComponentPhases.ANIMATION.ordinal)
-        lastPressedTime = ChannelFloatValue()
+        lastPressedTime = ChannelSystem.ChannelFloatValue()
         reset()
     }
 }

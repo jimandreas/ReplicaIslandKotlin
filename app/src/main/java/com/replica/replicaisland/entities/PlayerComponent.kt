@@ -1,24 +1,19 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UNUSED_VARIABLE", "UNUSED_PARAMETER")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.AdultsDifficultyConstants
+import com.replica.replicaisland.BabyDifficultyConstants
+import com.replica.replicaisland.ChangeComponentsComponent
+import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.DifficultyConstants
+import com.replica.replicaisland.FadeDrawableComponent
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.GameFlowEvent
+import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.HotSpotSystem
+import com.replica.replicaisland.InventoryComponent
+import com.replica.replicaisland.KidsDifficultyConstants
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import kotlin.math.abs
@@ -121,13 +116,13 @@ class PlayerComponent : GameComponent() {
                 val newSpeed = abs(currentSpeed + impulse.x)
                 if (newSpeed > maxHorizontalSpeed) {
                     if (abs(currentSpeed) < maxHorizontalSpeed) {
-                        currentSpeed = maxHorizontalSpeed * Utils.sign(impulse.x)
+                        currentSpeed = maxHorizontalSpeed * Utils.Companion.sign(impulse.x)
                         parentObject.velocity.x = currentSpeed
                     }
                     impulse.x = 0.0f
                 }
                 if (parentObject.velocity.y + impulse.y > MAX_UPWARD_SPEED
-                        && Utils.sign(impulse.y) > 0) {
+                        && Utils.Companion.sign(impulse.y) > 0) {
                     impulse.y = 0.0f
                     if (parentObject.velocity.y < MAX_UPWARD_SPEED) {
                         parentObject.velocity.y = MAX_UPWARD_SPEED
@@ -137,11 +132,11 @@ class PlayerComponent : GameComponent() {
                     // Apply drag while in the air.
                     if (abs(currentSpeed) > maxHorizontalSpeed) {
                         var postDragSpeed = currentSpeed -
-                                AIR_DRAG_SPEED * timeDelta * Utils.sign(currentSpeed)
-                        if (Utils.sign(currentSpeed) != Utils.sign(postDragSpeed)) {
+                                AIR_DRAG_SPEED * timeDelta * Utils.Companion.sign(currentSpeed)
+                        if (Utils.Companion.sign(currentSpeed) != Utils.Companion.sign(postDragSpeed)) {
                             postDragSpeed = 0.0f
                         } else if (abs(postDragSpeed) < maxHorizontalSpeed) {
-                            postDragSpeed = maxHorizontalSpeed * Utils.sign(postDragSpeed)
+                            postDragSpeed = maxHorizontalSpeed * Utils.Companion.sign(postDragSpeed)
                         }
                         parentObject.velocity.x = postDragSpeed
                     }
@@ -158,7 +153,7 @@ class PlayerComponent : GameComponent() {
         val gameTime = time!!.gameTime
         mTouchingGround = parentObject!!.touchingGround()
         rocketsOn = false
-        if (parentObject.currentAction === ActionType.INVALID) {
+        if (parentObject.currentAction === GameObject.ActionType.INVALID) {
             gotoMove(parentObject)
         }
         if (mInventory != null && mState != State.WIN) {
@@ -207,7 +202,7 @@ class PlayerComponent : GameComponent() {
                 // we fell off the bottom of the screen, die.
                 parentObject.life = 0
                 gotoDead(gameTime)
-            } else if (mState != State.HIT_REACT && parentObject.lastReceivedHitType != HitType.INVALID && parentObject.currentAction === ActionType.HIT_REACT) {
+            } else if (mState != State.HIT_REACT && parentObject.lastReceivedHitType != CollisionParameters.HitType.INVALID && parentObject.currentAction === GameObject.ActionType.HIT_REACT) {
                 gotoHitReact(parentObject, gameTime)
             } else {
                 val hotSpot = sSystemRegistry.hotSpotSystem
@@ -238,7 +233,7 @@ class PlayerComponent : GameComponent() {
     }
 
     private fun gotoMove(parentObject: GameObject?) {
-        parentObject!!.currentAction = ActionType.MOVE
+        parentObject!!.currentAction = GameObject.ActionType.MOVE
         mState = State.MOVE
     }
 
@@ -283,7 +278,7 @@ class PlayerComponent : GameComponent() {
     }
 
     private fun gotoStomp(parentObject: GameObject?) {
-        parentObject!!.currentAction = ActionType.ATTACK
+        parentObject!!.currentAction = GameObject.ActionType.ATTACK
         mState = State.STOMP
         mTimer = -1.0f
         timer2 = -1.0f
@@ -325,7 +320,7 @@ class PlayerComponent : GameComponent() {
     }
 
     private fun gotoHitReact(parentObject: GameObject?, time: Float) {
-        if (parentObject!!.lastReceivedHitType == HitType.LAUNCH) {
+        if (parentObject!!.lastReceivedHitType == CollisionParameters.HitType.LAUNCH) {
             if (mState != State.FROZEN) {
                 gotoFrozen(parentObject)
             }
@@ -348,24 +343,24 @@ class PlayerComponent : GameComponent() {
     }
 
     private fun stateDead(time: Float, timeDelta: Float, parentObject: GameObject?) {
-        if (mTouchingGround && parentObject!!.currentAction !== ActionType.DEATH) {
-            parentObject!!.currentAction = ActionType.DEATH
+        if (mTouchingGround && parentObject!!.currentAction !== GameObject.ActionType.DEATH) {
+            parentObject!!.currentAction = GameObject.ActionType.DEATH
             parentObject.velocity.zero()
             parentObject.targetVelocity.zero()
         }
         if (parentObject!!.position.y < -parentObject.height) {
             // fell off the bottom of the screen.
-            parentObject.currentAction = ActionType.DEATH
+            parentObject.currentAction = GameObject.ActionType.DEATH
             parentObject.velocity.zero()
             parentObject.targetVelocity.zero()
         }
-        if (parentObject.currentAction === ActionType.DEATH && mTimer > 0.0f) {
+        if (parentObject.currentAction === GameObject.ActionType.DEATH && mTimer > 0.0f) {
             val elapsed = time - mTimer
             val hud = sSystemRegistry.hudSystem
             if (hud != null && !hud.isFading) {
                 if (elapsed > 2.0f) {
                     hud.startFade(false, 1.5f)
-                    hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_RESTART_LEVEL, 0)
+                    hud.sendGameEventOnFadeComplete(GameFlowEvent.Companion.EVENT_RESTART_LEVEL, 0)
                     val recorder = sSystemRegistry.eventRecorder
                     if (recorder != null) {
                         recorder.lastDeathPosition = parentObject.position
@@ -390,7 +385,7 @@ class PlayerComponent : GameComponent() {
             if (hud != null && !hud.isFading) {
                 if (elapsed > 2.0f) {
                     hud.startFade(false, 1.5f)
-                    hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0)
+                    hud.sendGameEventOnFadeComplete(GameFlowEvent.Companion.EVENT_GO_TO_NEXT_LEVEL, 0)
                 }
             }
         }
@@ -398,11 +393,11 @@ class PlayerComponent : GameComponent() {
 
     private fun gotoFrozen(parentObject: GameObject?) {
         mState = State.FROZEN
-        parentObject!!.currentAction = ActionType.FROZEN
+        parentObject!!.currentAction = GameObject.ActionType.FROZEN
     }
 
     private fun stateFrozen(time: Float, timeDelta: Float, parentObject: GameObject?) {
-        if (parentObject!!.currentAction === ActionType.MOVE) {
+        if (parentObject!!.currentAction === GameObject.ActionType.MOVE) {
             gotoMove(parentObject)
         }
     }
@@ -486,9 +481,9 @@ class PlayerComponent : GameComponent() {
         private const val ONE_GEM_GHOST_TIME = 8.0f
         private const val TWO_GEMS_GHOST_TIME = 0.0f // no limit.
         private val sDifficultyArray = arrayOf(
-                BabyDifficultyConstants(),
-                KidsDifficultyConstants(),
-                AdultsDifficultyConstants()
+            BabyDifficultyConstants(),
+            KidsDifficultyConstants(),
+            AdultsDifficultyConstants()
         )
         @JvmStatic
         val difficultyConstants: DifficultyConstants

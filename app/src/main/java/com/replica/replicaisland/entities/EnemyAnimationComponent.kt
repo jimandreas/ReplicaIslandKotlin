@@ -1,23 +1,8 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("CascadeIf")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.SpriteComponent
+import com.replica.replicaisland.Utils
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import kotlin.math.abs
@@ -58,9 +43,9 @@ class EnemyAnimationComponent : GameComponent() {
                     if (mFacePlayer) {
                         facePlayer(parentObject)
                     }
-                    if (currentAction == ActionType.ATTACK) {
+                    if (currentAction == GameObject.ActionType.ATTACK) {
                         mState = AnimationState.ATTACKING
-                    } else if (currentAction == ActionType.HIDE) {
+                    } else if (currentAction == GameObject.ActionType.HIDE) {
                         mState = AnimationState.HIDING
                     } else if (abs(velocityX) > 0.0f) {
                         mState = AnimationState.MOVING
@@ -69,16 +54,16 @@ class EnemyAnimationComponent : GameComponent() {
                 AnimationState.MOVING -> {
                     mSprite!!.playAnimation(EnemyAnimations.MOVE.ordinal)
                     val targetVelocityX = parentObject.targetVelocity.x
-                    if (!Utils.close(velocityX, 0.0f)) {
+                    if (!Utils.Companion.close(velocityX, 0.0f)) {
                         if (velocityX < 0.0f && targetVelocityX < 0.0f) {
                             parentObject.facingDirection.x = -1.0f
                         } else if (velocityX > 0.0f && targetVelocityX > 0.0f) {
                             parentObject.facingDirection.x = 1.0f
                         }
                     }
-                    if (currentAction == ActionType.ATTACK) {
+                    if (currentAction == GameObject.ActionType.ATTACK) {
                         mState = AnimationState.ATTACKING
-                    } else if (currentAction == ActionType.HIDE) {
+                    } else if (currentAction == GameObject.ActionType.HIDE) {
                         mState = AnimationState.HIDING
                     } else if (abs(velocityX) == 0.0f) {
                         mState = AnimationState.IDLING
@@ -86,14 +71,14 @@ class EnemyAnimationComponent : GameComponent() {
                 }
                 AnimationState.ATTACKING -> {
                     mSprite!!.playAnimation(EnemyAnimations.ATTACK.ordinal)
-                    if (currentAction != ActionType.ATTACK
+                    if (currentAction != GameObject.ActionType.ATTACK
                             && mSprite!!.animationFinished()) {
                         mState = AnimationState.IDLING
                     }
                 }
                 AnimationState.HIDING -> {
                     mSprite!!.playAnimation(EnemyAnimations.HIDDEN.ordinal)
-                    if (currentAction != ActionType.HIDE) {
+                    if (currentAction != GameObject.ActionType.HIDE) {
                         mState = AnimationState.APPEARING
                     }
                 }

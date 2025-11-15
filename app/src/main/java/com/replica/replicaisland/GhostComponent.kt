@@ -20,6 +20,7 @@ package com.replica.replicaisland
 import com.replica.replicaisland.core.GameObject.ActionType
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.entities.PlayerComponent
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 

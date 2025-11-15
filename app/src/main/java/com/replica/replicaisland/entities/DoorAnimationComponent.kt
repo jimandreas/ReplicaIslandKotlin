@@ -1,27 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.ChannelSystem.ChannelFloatValue
+import com.replica.replicaisland.ChannelSystem
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.SolidSurfaceComponent
+import com.replica.replicaisland.SpriteComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 
 class DoorAnimationComponent : GameComponent() {
     object Animation {
@@ -37,8 +22,8 @@ class DoorAnimationComponent : GameComponent() {
     private var mChannel: ChannelSystem.Channel? = null
     private var solidSurface: SolidSurfaceComponent? = null
     private var stayOpenTime = 0f
-    private var mCloseSound: Sound? = null
-    private var mOpenSound: Sound? = null
+    private var mCloseSound: SoundSystem.Sound? = null
+    private var mOpenSound: SoundSystem.Sound? = null
     override fun reset() {
         mSprite = null
         mState = STATE_CLOSED
@@ -77,7 +62,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.currentAnimationTime = timeOffset
                 if (mOpenSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mOpenSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(mOpenSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                 }
             }
         }
@@ -103,7 +88,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.currentAnimationTime = timeOffset
                 if (mCloseSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mCloseSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(mCloseSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                 }
             }
         }
@@ -111,8 +96,8 @@ class DoorAnimationComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (mChannel != null) {
-            if (mChannel!!.value != null && mChannel!!.value is ChannelFloatValue) {
-                val lastPressedTime = (mChannel!!.value as ChannelFloatValue?)!!.value
+            if (mChannel!!.value != null && mChannel!!.value is ChannelSystem.ChannelFloatValue) {
+                val lastPressedTime = (mChannel!!.value as ChannelSystem.ChannelFloatValue?)!!.value
                 val time = sSystemRegistry.timeSystem
                 val gameTime = time!!.gameTime
                 val delta = gameTime - lastPressedTime
@@ -163,7 +148,7 @@ class DoorAnimationComponent : GameComponent() {
         stayOpenTime = time
     }
 
-    fun setSounds(openSound: Sound?, closeSound: Sound?) {
+    fun setSounds(openSound: SoundSystem.Sound?, closeSound: SoundSystem.Sound?) {
         mOpenSound = openSound
         mCloseSound = closeSound
     }

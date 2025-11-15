@@ -24,6 +24,7 @@ import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
 import com.replica.replicaisland.InventoryComponent.UpdateRecord
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.entities.LauncherComponent
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 
