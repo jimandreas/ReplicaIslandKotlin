@@ -17,11 +17,12 @@
 
 package com.replica.replicaisland
 
-import com.replica.replicaisland.ChannelSystem.ChannelBooleanValue
+import com.replica.replicaisland.mechanics.ChannelSystem.ChannelBooleanValue
 import com.replica.replicaisland.core.GameObject.ActionType
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.core.GameObjectFactory
+import com.replica.replicaisland.mechanics.ChannelSystem
 import kotlin.math.sin
 
 class TheSourceComponent : GameComponent() {

@@ -1,23 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("CascadeIf")
+package com.replica.replicaisland.mechanics
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.Lerp.ease
+import com.replica.replicaisland.Lerp
 import com.replica.replicaisland.core.BaseObject
 
 /**
@@ -66,11 +49,11 @@ class TimeSystem : BaseObject() {
                     scale = if (easeScale) {
                         if (scaleTime <= EASE_DURATION) {
                             // ease in
-                            ease(1.0f, targetScale, EASE_DURATION, scaleTime)
+                            Lerp.ease(1.0f, targetScale, EASE_DURATION, scaleTime)
                         } else if (scaleDuration - scaleTime < EASE_DURATION) {
                             // ease out
                             val easeOutTime = EASE_DURATION - (scaleDuration - scaleTime)
-                            ease(targetScale, 1.0f, EASE_DURATION, easeOutTime)
+                            Lerp.ease(targetScale, 1.0f, EASE_DURATION, easeOutTime)
                         } else {
                             targetScale
                         }

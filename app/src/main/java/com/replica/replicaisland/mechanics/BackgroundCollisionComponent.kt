@@ -1,25 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "VARIABLE_WITH_REDUNDANT_INITIALIZER", "ConstantConditionIf")
+package com.replica.replicaisland.mechanics
 
-package com.replica.replicaisland
-
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.HitPoint
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
-import java.util.*
+import java.util.Comparator
 import kotlin.math.abs
 
 /**
@@ -133,7 +120,7 @@ class BackgroundCollisionComponent : GameComponent {
      */
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        parentObject.backgroundCollisionNormal = Vector2.ZERO
+        parentObject.backgroundCollisionNormal = Vector2.Companion.ZERO
         if (mPreviousPosition.length2() != 0f) {
             val collision = sSystemRegistry.collisionSystem
             if (collision != null) {
@@ -300,11 +287,11 @@ class BackgroundCollisionComponent : GameComponent {
 
     /* Sweeps the space between two points looking for surfaces that oppose horizontal movement. */
     private fun sweepHorizontal(previousPosition: Vector2?, currentPosition: Vector2, delta: Vector2,
-                                  left: Int, right: Int, centerY: Float, hitPoint: Vector2, hitNormal: Vector2?,
-                                  parentObject: GameObject
+                                left: Int, right: Int, centerY: Float, hitPoint: Vector2, hitNormal: Vector2?,
+                                parentObject: GameObject
     ): Boolean {
         var hit = false
-        if (!Utils.close(delta.x, 0.0f)) {
+        if (!Utils.Companion.close(delta.x, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem
 
             // Shoot a ray from the center of the previous frame's box to the edge (left or right,
@@ -335,11 +322,11 @@ class BackgroundCollisionComponent : GameComponent {
 
     /* Sweeps the space between two points looking for surfaces that oppose vertical movement. */
     private fun sweepVertical(previousPosition: Vector2?, currentPosition: Vector2, delta: Vector2,
-                                bottom: Int, top: Int, centerX: Float, hitPoint: Vector2, hitNormal: Vector2?,
-                                parentObject: GameObject
+                              bottom: Int, top: Int, centerX: Float, hitPoint: Vector2, hitNormal: Vector2?,
+                              parentObject: GameObject
     ): Boolean {
         var hit = false
-        if (!Utils.close(delta.y, 0.0f)) {
+        if (!Utils.Companion.close(delta.y, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem
             // Shoot a ray from the center of the previous frame's box to the edge (top or bottom,
             // depending on the direction of movement) of the current box.

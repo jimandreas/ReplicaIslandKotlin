@@ -1,21 +1,8 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.mechanics
 
 import android.content.Context
+import com.replica.replicaisland.AndouKun
+import com.replica.replicaisland.DebugLog
 
 class GameFlowEvent : Runnable {
     private var eventCode = 0
@@ -23,7 +10,7 @@ class GameFlowEvent : Runnable {
     private var mainActivity: AndouKun? = null
     fun post(event: Int, index: Int, context: Context?) {
         if (context is AndouKun) {
-            DebugLog.d("GameFlowEvent", "Post Game Flow Event: $event, $index")
+            DebugLog.Companion.d("GameFlowEvent", "Post Game Flow Event: $event, $index")
             eventCode = event
             dataIndex = index
             mainActivity = context
@@ -33,7 +20,7 @@ class GameFlowEvent : Runnable {
 
     fun postImmediate(event: Int, index: Int, context: Context?) {
         if (context is AndouKun) {
-            DebugLog.d("GameFlowEvent", "Execute Immediate Game Flow Event: $event, $index")
+            DebugLog.Companion.d("GameFlowEvent", "Execute Immediate Game Flow Event: $event, $index")
             eventCode = event
             dataIndex = index
             mainActivity = context
@@ -43,7 +30,7 @@ class GameFlowEvent : Runnable {
 
     override fun run() {
         if (mainActivity != null) {
-            DebugLog.d("GameFlowEvent", "Execute Game Flow Event: $eventCode, $dataIndex")
+            DebugLog.Companion.d("GameFlowEvent", "Execute Game Flow Event: $eventCode, $dataIndex")
             mainActivity!!.onGameFlowEvent(eventCode, dataIndex)
             mainActivity = null
         }

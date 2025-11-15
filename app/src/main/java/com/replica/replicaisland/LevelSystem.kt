@@ -22,6 +22,7 @@ import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.levels.LevelTree
 import com.replica.replicaisland.levels.TiledWorld
+import com.replica.replicaisland.mechanics.GameFlowEvent
 import java.io.IOException
 import java.io.InputStream
 
@@ -62,12 +63,14 @@ class LevelSystem : BaseObject() {
         get() = (heightInTiles * tileHeight).toFloat()
 
     fun sendRestartEvent() {
-        gameFlowEvent.post(GameFlowEvent.EVENT_RESTART_LEVEL, 0,
+        gameFlowEvent.post(
+            GameFlowEvent.EVENT_RESTART_LEVEL, 0,
                 sSystemRegistry.contextParameters!!.context)
     }
 
     fun sendNextLevelEvent() {
-        gameFlowEvent.post(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0,
+        gameFlowEvent.post(
+            GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0,
                 sSystemRegistry.contextParameters!!.context)
     }
 

@@ -1,23 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "UNUSED_PARAMETER", "UNCHECKED_CAST", "ConvertTwoComparisonsToRangeCheck", "RemoveEmptySecondaryConstructorBody", "SENSELESS_COMPARISON")
+package com.replica.replicaisland.mechanics
 
-package com.replica.replicaisland
-
-import android.content.res.AssetManager.AssetInputStream
+import android.content.res.AssetManager
+import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.HitPoint
+import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.levels.TiledWorld
@@ -159,10 +148,10 @@ class CollisionSystem : BaseObject() {
                     yIncrement = -1
                 }
             }
-            val startTileX = Utils.clamp((startX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
-            val endTileX = Utils.clamp((endX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
-            val startTileY = Utils.clamp((startY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
-            val endTileY = Utils.clamp((endY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
+            val startTileX = Utils.Companion.clamp((startX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
+            val endTileX = Utils.Companion.clamp((endX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
+            val startTileY = Utils.Companion.clamp((startY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
+            val endTileY = Utils.Companion.clamp((endY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
             val vectorPool = sSystemRegistry.vectorPool
             val worldTileOffset = vectorPool!!.allocate()
             val tileArray = mWorld!!.fetchTiles()
@@ -196,7 +185,7 @@ class CollisionSystem : BaseObject() {
         // temporary segments
         val tempHit = testBoxAgainstList(temporarySegments,
                 left, right, top, bottom,
-                movementDirection, excludeObject, Vector2.ZERO, hitPoints)
+                movementDirection, excludeObject, Vector2.Companion.ZERO, hitPoints)
         if (tempHit) {
             foundHit = true
         }
@@ -245,9 +234,9 @@ class CollisionSystem : BaseObject() {
      * @return  The index of the tile that intersected the ray, or -1 if no intersection was found.
      */
     private fun executeStraigtRay(startPoint: Vector2?, endPoint: Vector2?,
-                                    startTileX: Int, startTileY: Int, endTileX: Int, endTileY: Int,
-                                    deltaX: Int, deltaY: Int,
-                                    hitPoint: Vector2, hitNormal: Vector2?, visitor: TileVisitor): Int {
+                                  startTileX: Int, startTileY: Int, endTileX: Int, endTileY: Int,
+                                  deltaX: Int, deltaY: Int,
+                                  hitPoint: Vector2, hitNormal: Vector2?, visitor: TileVisitor): Int {
         var currentX = startTileX
         var currentY = startTileY
         var xIncrement = 0
@@ -255,10 +244,10 @@ class CollisionSystem : BaseObject() {
         var distance = 0
         if (deltaX != 0) {
             distance = abs(deltaX) + 1
-            xIncrement = Utils.sign(deltaX.toFloat())
+            xIncrement = Utils.Companion.sign(deltaX.toFloat())
         } else if (deltaY != 0) {
             distance = abs(deltaY) + 1
-            yIncrement = Utils.sign(deltaY.toFloat())
+            yIncrement = Utils.Companion.sign(deltaY.toFloat())
         }
         var hitTile = -1
         val worldHeight = mWorld!!.fetchHeight() - 1
@@ -292,7 +281,7 @@ class CollisionSystem : BaseObject() {
      * @return  The index of the tile that intersected the ray, or -1 if no intersection was found.
      */
     private fun executeRay(startPoint: Vector2, endPoint: Vector2,
-                             hitPoint: Vector2, hitNormal: Vector2?, visitor: TileVisitor): Int {
+                           hitPoint: Vector2, hitNormal: Vector2?, visitor: TileVisitor): Int {
         val worldHeight = mWorld!!.fetchHeight()
         val worldWidth = mWorld!!.fetchWidth()
         val startTileX = worldToTileColumn(startPoint.x, worldWidth)
@@ -308,13 +297,17 @@ class CollisionSystem : BaseObject() {
             hitTile = executeStraigtRay(startPoint, endPoint, startTileX, startTileY,
                     endTileX, endTileY, deltaX, deltaY, hitPoint, hitNormal, visitor)
         } else {
-            val xIncrement = if (deltaX != 0) Utils.sign(deltaX.toFloat()) else 0
-            val yIncrement = if (deltaY != 0) Utils.sign(deltaY.toFloat()) else 0
+            val xIncrement = if (deltaX != 0) Utils.Companion.sign(deltaX.toFloat()) else 0
+            val yIncrement = if (deltaY != 0) Utils.Companion.sign(deltaY.toFloat()) else 0
 
             // Note: I'm deviating from the Bresenham algorithm here by adding one to force the end
             // tile to be visited.
-            val lateralDelta = if (endTileX > 0 && endTileX < worldWidth - 1) abs(deltaX) + 1 else abs(deltaX)
-            val verticalDelta = if (endTileY > 0 && endTileY < worldHeight - 1) abs(deltaY) + 1 else abs(deltaY)
+            val lateralDelta = if (endTileX > 0 && endTileX < worldWidth - 1) abs(deltaX) + 1 else abs(
+                deltaX
+            )
+            val verticalDelta = if (endTileY > 0 && endTileY < worldHeight - 1) abs(deltaY) + 1 else abs(
+                deltaY
+            )
             val deltaX2 = lateralDelta * 2
             val deltaY2 = verticalDelta * 2
             val worldHeightMinusOne = worldHeight - 1
@@ -363,11 +356,11 @@ class CollisionSystem : BaseObject() {
     }
 
     private fun worldToTileColumn(x: Float, width: Int): Int {
-        return Utils.clamp(floor(x / mTileWidth.toDouble()).toInt(), 0, width - 1)
+        return Utils.Companion.clamp(floor(x / mTileWidth.toDouble()).toInt(), 0, width - 1)
     }
 
     private fun worldToTileRow(y: Float, height: Int): Int {
-        return Utils.clamp(floor(y / mTileHeight.toDouble()).toInt(), 0, height - 1)
+        return Utils.Companion.clamp(floor(y / mTileHeight.toDouble()).toInt(), 0, height - 1)
     }
 
     /*
@@ -376,7 +369,7 @@ class CollisionSystem : BaseObject() {
      */
     fun loadCollisionTiles(stream: InputStream): Boolean {
         val success = false
-        val byteStream = stream as AssetInputStream
+        val byteStream = stream as AssetManager.AssetInputStream
         val signature: Int
 
         // TODO: this is a hack.  I really should only allocate an array that is the size of the
@@ -404,17 +397,17 @@ class CollisionSystem : BaseObject() {
                         }
                         for (y in 0 until segmentCount) {
                             byteStream.read(workspaceBytes, 0, 4)
-                            val startX = Utils.byteArrayToFloat(workspaceBytes)
+                            val startX = Utils.Companion.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val startY = Utils.byteArrayToFloat(workspaceBytes)
+                            val startY = Utils.Companion.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val endX = Utils.byteArrayToFloat(workspaceBytes)
+                            val endX = Utils.Companion.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val endY = Utils.byteArrayToFloat(workspaceBytes)
+                            val endY = Utils.Companion.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val normalX = Utils.byteArrayToFloat(workspaceBytes)
+                            val normalX = Utils.Companion.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val normalY = Utils.byteArrayToFloat(workspaceBytes)
+                            val normalY = Utils.Companion.byteArrayToFloat(workspaceBytes)
 
                             // TODO: it might be wise to pool line segments.  I don't think that
                             // this data will be loaded very often though, so this is ok for now.
@@ -667,9 +660,9 @@ class CollisionSystem : BaseObject() {
          * returns the closest intersecting segment, if any exists.
          */
         private fun testSegmentAgainstList(
-                segments: FixedSizeArray<LineSegment?>,
-                 startPoint: Vector2, endPoint: Vector2, hitPoint: Vector2?, hitNormal: Vector2?,
-                 movementDirection: Vector2, excludeObject: GameObject?): Boolean {
+            segments: FixedSizeArray<LineSegment?>,
+            startPoint: Vector2, endPoint: Vector2, hitPoint: Vector2?, hitNormal: Vector2?,
+            movementDirection: Vector2, excludeObject: GameObject?): Boolean {
             var foundHit = false
             var closestDistance = -1f
             var hitX = 0f
@@ -710,7 +703,8 @@ class CollisionSystem : BaseObject() {
         private fun testBoxAgainstList(segments: FixedSizeArray<LineSegment?>,
                                        left: Float, right: Float, top: Float, bottom: Float,
                                        movementDirection: Vector2?, excludeObject: GameObject, outputOffset: Vector2?,
-                                       outputHitPoints: FixedSizeArray<HitPoint?>): Boolean {
+                                       outputHitPoints: FixedSizeArray<HitPoint?>
+        ): Boolean {
             var hitCount = 0
             val maxSegments = outputHitPoints.getCapacity() - outputHitPoints.count
             val count = segments.count

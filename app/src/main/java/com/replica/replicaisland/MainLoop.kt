@@ -16,6 +16,7 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.mechanics.TimeSystem
 
 /**
  * Main game loop.  Updates the time system and passes the result down to the rest of the game

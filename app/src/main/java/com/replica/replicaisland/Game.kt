@@ -33,6 +33,10 @@ import com.replica.replicaisland.input.SingleTouchFilter
 import com.replica.replicaisland.input.TouchFilter
 import com.replica.replicaisland.levels.LevelBuilder
 import com.replica.replicaisland.levels.LevelTree
+import com.replica.replicaisland.mechanics.ChannelSystem
+import com.replica.replicaisland.mechanics.CollisionSystem
+import com.replica.replicaisland.mechanics.EventRecorder
+import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.CameraSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.sound.SoundSystem

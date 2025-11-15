@@ -21,6 +21,11 @@ import com.replica.replicaisland.core.GameObjectManager
 import com.replica.replicaisland.input.InputGameInterface
 import com.replica.replicaisland.input.InputSystem
 import com.replica.replicaisland.levels.LevelBuilder
+import com.replica.replicaisland.mechanics.ChannelSystem
+import com.replica.replicaisland.mechanics.CollisionSystem
+import com.replica.replicaisland.mechanics.EventRecorder
+import com.replica.replicaisland.mechanics.HotSpotSystem
+import com.replica.replicaisland.mechanics.TimeSystem
 import com.replica.replicaisland.rendering.CameraSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.sound.SoundSystem

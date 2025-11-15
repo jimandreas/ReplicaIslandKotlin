@@ -1,7 +1,7 @@
 package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.ChannelSystem
-import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.mechanics.ChannelSystem
+import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.SpriteComponent
 import com.replica.replicaisland.core.BaseObject

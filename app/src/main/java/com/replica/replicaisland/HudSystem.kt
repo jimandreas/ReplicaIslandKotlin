@@ -19,6 +19,7 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.InventoryComponent.UpdateRecord
 import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.mechanics.GameFlowEvent
 
 /**
  * A very simple manager for orthographic in-game UI elements.

@@ -1,6 +1,6 @@
 package com.replica.replicaisland.core
 
-import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.core.PhasedObjectManager
 import com.replica.replicaisland.Utils
 import com.replica.replicaisland.Vector2
