@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import android.view.KeyEvent
+import com.replica.replicaisland.input.InputButton
+import com.replica.replicaisland.input.InputXY
 import kotlin.math.abs
 import kotlin.math.max
 

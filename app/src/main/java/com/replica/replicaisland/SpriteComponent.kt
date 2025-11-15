@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.rendering.RenderComponent
+
 /**
  * Provides an interface for controlling a sprite with animations.  Manages a list of animations
  * and provides a drawable surface with the correct animation frame to a render component each

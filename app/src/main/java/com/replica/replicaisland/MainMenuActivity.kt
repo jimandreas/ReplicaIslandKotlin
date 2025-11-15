@@ -35,9 +35,9 @@ import android.widget.ImageView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.LevelTree.isLoaded
-import com.replica.replicaisland.LevelTree.loadAllDialog
-import com.replica.replicaisland.LevelTree.loadLevelTree
+import com.replica.replicaisland.levels.LevelTree.isLoaded
+import com.replica.replicaisland.levels.LevelTree.loadAllDialog
+import com.replica.replicaisland.levels.LevelTree.loadLevelTree
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 

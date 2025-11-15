@@ -23,7 +23,7 @@ import android.os.SystemClock
 import com.replica.replicaisland.DrawableBitmap.Companion.beginDrawing
 import com.replica.replicaisland.DrawableBitmap.Companion.endDrawing
 import com.replica.replicaisland.OpenGLSystem.Companion.gL
-import com.replica.replicaisland.RenderSystem.RenderElement
+import com.replica.replicaisland.rendering.RenderSystem.RenderElement
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 

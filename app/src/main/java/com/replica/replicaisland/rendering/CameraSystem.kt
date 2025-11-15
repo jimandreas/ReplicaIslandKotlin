@@ -1,26 +1,14 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.Lerp.ease
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.GameObject
+import com.replica.replicaisland.Lerp
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.sin
-
 
 /**
  * Manages the position of the camera based on a target game object.
@@ -95,10 +83,14 @@ class CameraSystem : BaseObject() {
             if (targetChangedTime > 0.0f) {
                 val time = sSystemRegistry.timeSystem
                 val delta = time!!.gameTime - targetChangedTime
-                currentCameraPosition.x = ease(preInterpolateCameraPosition.x,
-                        targetPosition.x, INTERPOLATE_TO_TARGET_TIME, delta)
-                currentCameraPosition.y = ease(preInterpolateCameraPosition.y,
-                        targetPosition.y, INTERPOLATE_TO_TARGET_TIME, delta)
+                currentCameraPosition.x = Lerp.ease(
+                    preInterpolateCameraPosition.x,
+                    targetPosition.x, INTERPOLATE_TO_TARGET_TIME, delta
+                )
+                currentCameraPosition.y = Lerp.ease(
+                    preInterpolateCameraPosition.y,
+                    targetPosition.y, INTERPOLATE_TO_TARGET_TIME, delta
+                )
                 if (delta > INTERPOLATE_TO_TARGET_TIME) {
                     targetChangedTime = -1f
                 }
@@ -113,7 +105,7 @@ class CameraSystem : BaseObject() {
                 }
                 val xDelta: Float = targetPosition.x - currentCameraPosition.x
                 if (abs(xDelta) > X_FOLLOW_DISTANCE) {
-                    currentCameraPosition.x = targetPosition.x - X_FOLLOW_DISTANCE * Utils.sign(xDelta)
+                    currentCameraPosition.x = targetPosition.x - X_FOLLOW_DISTANCE * Utils.Companion.sign(xDelta)
                 }
                 val yDelta: Float = targetPosition.y - currentCameraPosition.y
                 if (yDelta > Y_UP_FOLLOW_DISTANCE) {
@@ -174,7 +166,10 @@ class CameraSystem : BaseObject() {
         val height = sSystemRegistry.contextParameters!!.gameHeight.toFloat()
         val level = sSystemRegistry.levelSystem
         if (level != null) {
-            val worldPixelHeight: Float = max(level.levelHeight.toInt(), sSystemRegistry.contextParameters!!.gameHeight).toFloat()
+            val worldPixelHeight: Float = max(
+                level.levelHeight.toInt(),
+                sSystemRegistry.contextParameters!!.gameHeight
+            ).toFloat()
             val topEdge = focalPositionY + height / 2.0f
             val bottomEdge = focalPositionY - height / 2.0f
             if (topEdge > worldPixelHeight) {

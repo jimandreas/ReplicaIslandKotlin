@@ -1,6 +1,8 @@
-@file:Suppress("unused")
+package com.replica.replicaisland.input
 
-package com.replica.replicaisland
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.input.InputXY
+import com.replica.replicaisland.Vector2
 
 class InputTouchScreen : BaseObject() {
     private val touchPoints: Array<InputXY?>

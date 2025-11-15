@@ -1,24 +1,8 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "ConvertTwoComparisonsToRangeCheck")
+package com.replica.replicaisland.levels
 
-package com.replica.replicaisland
-
-import android.content.res.AssetManager.AssetInputStream
-import com.replica.replicaisland.Utils.Companion.byteArrayToInt
+import android.content.res.AssetManager
+import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.Utils
 import java.io.IOException
 import java.io.InputStream
 
@@ -69,15 +53,15 @@ class TiledWorld : AllocationGuard {
     // TODO: add a checksum in here somewhere.
     private fun parseInput(stream: InputStream): Boolean {
         var success = false
-        val byteStream = stream as AssetInputStream
+        val byteStream = stream as AssetManager.AssetInputStream
         val signature: Int
         try {
             signature = byteStream.read()
             if (signature == 42) {
                 byteStream.read(workspaceBytes, 0, 4)
-                val width = byteArrayToInt(workspaceBytes)
+                val width = Utils.Companion.byteArrayToInt(workspaceBytes)
                 byteStream.read(workspaceBytes, 0, 4)
-                val height = byteArrayToInt(workspaceBytes)
+                val height = Utils.Companion.byteArrayToInt(workspaceBytes)
                 val totalTiles = width * height
                 val bytesRemaining = byteStream.available()
                 //TODO 2 fix: assert(bytesRemaining >= totalTiles)

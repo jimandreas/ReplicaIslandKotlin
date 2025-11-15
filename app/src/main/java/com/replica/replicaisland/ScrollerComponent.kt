@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.rendering.RenderComponent
+
 /**
  * Adjusts the scroll position of a drawable object based on the camera's focus position.
  * May be used to scroll a ScrollableBitmap or TiledWorld to match the camera.  Uses DrawableFactory

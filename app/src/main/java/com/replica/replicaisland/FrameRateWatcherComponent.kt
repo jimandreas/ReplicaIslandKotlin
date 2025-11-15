@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.rendering.RenderComponent
+
 class FrameRateWatcherComponent : GameComponent() {
     private var renderComponent: RenderComponent? = null
     private var mDrawable: DrawableObject? = null

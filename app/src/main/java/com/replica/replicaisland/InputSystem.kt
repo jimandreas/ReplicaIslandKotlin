@@ -17,6 +17,10 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.input.InputKeyboard
+import com.replica.replicaisland.input.InputTouchScreen
+import com.replica.replicaisland.input.InputXY
+
 /**
  * Manages input from a roller wheel and touch screen.  Reduces frequent UI messages to
  * an average direction over a short period of time.

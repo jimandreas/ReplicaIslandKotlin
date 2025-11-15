@@ -1,21 +1,15 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UNCHECKED_CAST")
+package com.replica.replicaisland.rendering
 
-package com.replica.replicaisland
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.DrawableObject
+import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.GameRenderer
+import com.replica.replicaisland.ObjectManager
+import com.replica.replicaisland.PhasedObject
+import com.replica.replicaisland.PhasedObjectManager
+import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 
 /**
  * Manages a double-buffered queue of renderable objects.  The game thread submits drawable objects
@@ -83,7 +77,7 @@ class RenderSystem : BaseObject() {
             if (drawable != null) {
                 val tex = drawable.texture
                 if (tex != null) {
-                    sortOffset = tex.resource % TEXTURE_SORT_BUCKET_SIZE * Utils.sign(priority.toFloat())
+                    sortOffset = tex.resource % TEXTURE_SORT_BUCKET_SIZE * Utils.Companion.sign(priority.toFloat())
                 }
             }
             setPhaseToThis(sortBucket + sortOffset)

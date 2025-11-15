@@ -1,22 +1,14 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UnnecessaryVariable")
+package com.replica.replicaisland.levels
 
-package com.replica.replicaisland
-
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.GameObject
+import com.replica.replicaisland.R
+import com.replica.replicaisland.rendering.RenderComponent
+import com.replica.replicaisland.ScrollerComponent
+import com.replica.replicaisland.SortConstants
+import com.replica.replicaisland.TiledVertexGrid
+import com.replica.replicaisland.levels.TiledWorld
 import kotlin.math.max
 import kotlin.math.min
 
@@ -47,15 +39,23 @@ class LevelBuilder : BaseObject() {
                 // The background image is ideally 1.5 times the size of the largest screen axis
                 // (normally the width, but just in case, let's calculate it).
                 val idealSize = max(params!!.gameWidth * 1.5f, params.gameHeight * 1.5f).toInt()
-                val scroller3 = ScrollerComponent(0.0f, 0.0f, idealSize, idealSize,
-                        textureLibrary.allocateTexture(backgroundResource))
+                val scroller3 = ScrollerComponent(
+                    0.0f, 0.0f, idealSize, idealSize,
+                    textureLibrary.allocateTexture(backgroundResource)
+                )
                 scroller3.setRenderComponent(backgroundRender)
 
                 // Scroll speeds such that the background will evenly match the beginning
                 // and end of the level.  Don't allow speeds > 1.0, though; that would be faster than
                 // the foreground, which is disorienting and looks like rotation.
-                val scrollSpeedX = min((idealSize - params.gameWidth).toFloat() / (levelWidth - params.gameWidth), 1.0f)
-                val scrollSpeedY = min((idealSize - params.gameHeight).toFloat() / (levelHeight - params.gameHeight), 1.0f)
+                val scrollSpeedX = min(
+                    (idealSize - params.gameWidth).toFloat() / (levelWidth - params.gameWidth),
+                    1.0f
+                )
+                val scrollSpeedY = min(
+                    (idealSize - params.gameHeight).toFloat() / (levelHeight - params.gameHeight),
+                    1.0f
+                )
                 scroller3.setScrollSpeed(scrollSpeedX, scrollSpeedY)
                 backgroundRender.setCameraRelative(false)
                 background.add(scroller3)
@@ -88,8 +88,10 @@ class LevelBuilder : BaseObject() {
 
         //Vertex Buffer Code
         val textureLibrary = sSystemRegistry.shortTermTextureLibrary
-        val bg = TiledVertexGrid(textureLibrary!!.allocateTexture(tileMapIndex),
-                width, height, tileWidth, tileHeight)
+        val bg = TiledVertexGrid(
+            textureLibrary!!.allocateTexture(tileMapIndex),
+            width, height, tileWidth, tileHeight
+        )
         bg.setWorld(world)
 
         //TODO: The map format should really just output independent speeds for x and y,
@@ -102,8 +104,10 @@ class LevelBuilder : BaseObject() {
         } else {
             yScrollSpeed = scrollSpeed
         }
-        val scroller = ScrollerComponent(xScrollSpeed, yScrollSpeed,
-                width, height, bg)
+        val scroller = ScrollerComponent(
+            xScrollSpeed, yScrollSpeed,
+            width, height, bg
+        )
         scroller.setRenderComponent(backgroundRender)
         background.add(scroller)
         background.add(backgroundRender)

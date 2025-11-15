@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.rendering.RenderComponent
+
 class MotionBlurComponent : GameComponent() {
     private val history: Array<BlurRecord?>
     private var blurTarget: RenderComponent? = null

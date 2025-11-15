@@ -1,26 +1,10 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("NullChecksToSafeCall", "SENSELESS_COMPARISON")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.levels
 
 import android.content.Context
-import com.replica.replicaisland.ConversationUtils.loadDialog
+import com.replica.replicaisland.ConversationUtils
+import com.replica.replicaisland.DebugLog
 import org.xmlpull.v1.XmlPullParser
-import java.util.*
+import java.util.ArrayList
 
 object LevelTree {
     val levels = ArrayList<LevelGroup>()
@@ -132,7 +116,7 @@ object LevelTree {
                 eventType = parser.next()
             }
         } catch (e: Exception) {
-            DebugLog.e("LevelTree", e.stackTrace.toString())
+            DebugLog.Companion.e("LevelTree", e.stackTrace.toString())
         } finally {
             parser.close()
         }
@@ -151,10 +135,12 @@ object LevelTree {
                 if (level != null && level.dialogResources != null) {
                     val dialog = level.dialogResources
                     if (dialog!!.character1Entry != 0) {
-                        dialog.character1Conversations = loadDialog(dialog.character1Entry, context!!)
+                        dialog.character1Conversations =
+                            ConversationUtils.loadDialog(dialog.character1Entry, context!!)
                     }
                     if (dialog.character2Entry != 0) {
-                        dialog.character2Conversations = loadDialog(dialog.character2Entry, context!!)
+                        dialog.character2Conversations =
+                            ConversationUtils.loadDialog(dialog.character2Entry, context!!)
                     }
                 }
             }
