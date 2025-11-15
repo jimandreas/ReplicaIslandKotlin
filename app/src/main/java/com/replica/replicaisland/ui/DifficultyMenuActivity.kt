@@ -1,4 +1,4 @@
-package com.replica.replicaisland
+package com.replica.replicaisland.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -8,11 +8,14 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.animation.Animation
-import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.AndouKun
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.R
+import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
 class DifficultyMenuActivity : Activity() {
@@ -107,9 +110,9 @@ class DifficultyMenuActivity : Activity() {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@DifficultyMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         } else {
@@ -118,7 +121,8 @@ class DifficultyMenuActivity : Activity() {
         return result
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val mIntent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation constructor(private val mIntent: Intent) :
+        Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             mBabyButton!!.visibility = View.INVISIBLE
             mBabyButton!!.clearAnimation()
@@ -132,9 +136,9 @@ class DifficultyMenuActivity : Activity() {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@DifficultyMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         }

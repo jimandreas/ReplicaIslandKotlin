@@ -17,6 +17,7 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.ui.DebugLog
 import java.util.*
 
 /**

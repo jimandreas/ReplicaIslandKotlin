@@ -1,23 +1,8 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "CascadeIf", "NullChecksToSafeCall")
+package com.replica.replicaisland.ui
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.InventoryComponent.UpdateRecord
+import com.replica.replicaisland.InventoryComponent
+import com.replica.replicaisland.ui.SortConstants
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.rendering.DrawableBitmap
@@ -108,7 +93,7 @@ class HudSystem : BaseObject() {
             digitDrawables[x] = null
         }
         xDrawable = null
-        fadePendingEventType = GameFlowEvent.EVENT_INVALID
+        fadePendingEventType = GameFlowEvent.Companion.EVENT_INVALID
         fadePendingEventIndex = 0
         movementSliderBaseDrawable = null
         movementSliderButtonDrawable = null
@@ -176,7 +161,7 @@ class HudSystem : BaseObject() {
         isFading = false
     }
 
-    fun updateInventory(newInventory: UpdateRecord) {
+    fun updateInventory(newInventory: InventoryComponent.UpdateRecord) {
         coinDigitsChanged = mCoinCount != newInventory.coinCount
         rubyDigitsChanged = mRubyCount != newInventory.rubyCount
         mCoinCount = newInventory.coinCount
@@ -367,13 +352,13 @@ class HudSystem : BaseObject() {
                 bitmap.texture = fadeTexture
                 bitmap.setCrop(0, fadeTexture!!.height, fadeTexture!!.width, fadeTexture!!.height)
                 bitmap.setOpacity(opacityValue)
-                render!!.scheduleForDraw(bitmap, Vector2.ZERO, SortConstants.FADE, false)
+                render!!.scheduleForDraw(bitmap, Vector2.Companion.ZERO, SortConstants.FADE, false)
             }
-            if (percentComplete >= 1.0f && fadePendingEventType != GameFlowEvent.EVENT_INVALID) {
+            if (percentComplete >= 1.0f && fadePendingEventType != GameFlowEvent.Companion.EVENT_INVALID) {
                 val level = sSystemRegistry.levelSystem
                 if (level != null) {
                     level.sendGameEvent(fadePendingEventType, fadePendingEventIndex, false)
-                    fadePendingEventType = GameFlowEvent.EVENT_INVALID
+                    fadePendingEventType = GameFlowEvent.Companion.EVENT_INVALID
                     fadePendingEventIndex = 0
                 }
             }

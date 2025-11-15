@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.opengl.GLU
 import android.opengl.GLUtils
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.core.BaseObject
 import java.io.IOException
 import javax.microedition.khronos.opengles.GL10

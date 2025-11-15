@@ -23,6 +23,7 @@ import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.mechanics.AABoxCollisionVolume
 import com.replica.replicaisland.mechanics.CollisionVolume
+import com.replica.replicaisland.ui.DebugSystem
 import java.util.*
 
 /**

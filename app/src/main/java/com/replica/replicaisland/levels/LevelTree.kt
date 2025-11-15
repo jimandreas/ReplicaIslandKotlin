@@ -1,8 +1,8 @@
 package com.replica.replicaisland.levels
 
 import android.content.Context
-import com.replica.replicaisland.ConversationUtils
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.ConversationUtils
+import com.replica.replicaisland.ui.DebugLog
 import org.xmlpull.v1.XmlPullParser
 import java.util.ArrayList
 

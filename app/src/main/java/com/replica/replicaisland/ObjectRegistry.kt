@@ -32,6 +32,9 @@ import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.rendering.TextureLibrary
 import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.ui.CustomToastSystem
+import com.replica.replicaisland.ui.DebugSystem
+import com.replica.replicaisland.ui.HudSystem
 import java.util.*
 
 /**

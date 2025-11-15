@@ -1,21 +1,4 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("DEPRECATION", "SENSELESS_COMPARISON", "UNUSED_ANONYMOUS_PARAMETER", "ConvertTwoComparisonsToRangeCheck", "CascadeIf")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -29,18 +12,23 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.view.animation.Animation
-import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.AndouKun
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.ui.DifficultyMenuActivity
+import com.replica.replicaisland.ui.ExtrasMenuActivity
+import com.replica.replicaisland.ui.PreferenceConstants
+import com.replica.replicaisland.R
+import com.replica.replicaisland.ui.SetPreferencesActivity
+import com.replica.replicaisland.ui.UIConstants
 import com.replica.replicaisland.input.MultiTouchFilter
 import com.replica.replicaisland.input.SingleTouchFilter
 import com.replica.replicaisland.input.TouchFilter
-import com.replica.replicaisland.levels.LevelTree.isLoaded
-import com.replica.replicaisland.levels.LevelTree.loadAllDialog
-import com.replica.replicaisland.levels.LevelTree.loadLevelTree
+import com.replica.replicaisland.levels.LevelTree
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
@@ -139,9 +127,9 @@ class MainMenuActivity : Activity() {
                 levelTreeResource = R.xml.linear_level_tree
             }
         }
-        if (!isLoaded(levelTreeResource)) {
-            loadLevelTree(levelTreeResource, this)
-            loadAllDialog(this)
+        if (!LevelTree.isLoaded(levelTreeResource)) {
+            LevelTree.loadLevelTree(levelTreeResource, this)
+            LevelTree.loadAllDialog(this)
         }
         mTicker = findViewById(R.id.ticker)
         if (mTicker != null) {
@@ -221,7 +209,7 @@ class MainMenuActivity : Activity() {
                     }
                 }
             }
-            if (abs(lastVersion) < abs(AndouKun.VERSION)) {
+            if (abs(lastVersion) < abs(AndouKun.Companion.VERSION)) {
                 // This is a new install or an upgrade.
 
                 // Check the safe mode option.
@@ -249,7 +237,7 @@ class MainMenuActivity : Activity() {
                 }
 
                 // show what's new message
-                editor.putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, AndouKun.VERSION)
+                editor.putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, AndouKun.Companion.VERSION)
                 editor.commit()
                 showDialog(WHATS_NEW_DIALOG)
 
@@ -336,16 +324,17 @@ class MainMenuActivity : Activity() {
         return dialog
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) : AnimationListener {
+    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) :
+        Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             startActivity(intent)
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@MainMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         }

@@ -45,6 +45,9 @@ import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.rendering.TextureLibrary
 import com.replica.replicaisland.sound.SoundSystem
+import com.replica.replicaisland.ui.CustomToastSystem
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.ui.HudSystem
 
 /**
  * High-level setup object for the AndouKun game engine.

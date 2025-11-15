@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.ui.DebugLog
+
 /**
  * AllocationGuard is a utility class for tracking down memory leaks.  It implements a
  * "checkpoint" memory scheme.  After the static sGuardActive flag has been set, any further

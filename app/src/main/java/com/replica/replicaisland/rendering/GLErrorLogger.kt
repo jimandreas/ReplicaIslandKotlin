@@ -1,7 +1,7 @@
 package com.replica.replicaisland.rendering
 
 import android.opengl.GLU
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.GLSurfaceView
 import java.nio.Buffer
 import java.nio.FloatBuffer

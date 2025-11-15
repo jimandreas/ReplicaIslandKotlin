@@ -6,7 +6,7 @@ import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.R
 import com.replica.replicaisland.rendering.RenderComponent
 import com.replica.replicaisland.ScrollerComponent
-import com.replica.replicaisland.SortConstants
+import com.replica.replicaisland.ui.SortConstants
 import com.replica.replicaisland.rendering.TiledVertexGrid
 import kotlin.math.max
 import kotlin.math.min

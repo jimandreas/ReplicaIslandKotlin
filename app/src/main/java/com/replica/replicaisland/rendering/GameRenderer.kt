@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.SystemClock
 import com.replica.replicaisland.BufferLibrary
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.GLSurfaceView
 import com.replica.replicaisland.Game

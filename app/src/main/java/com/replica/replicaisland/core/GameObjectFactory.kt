@@ -3,7 +3,7 @@ package com.replica.replicaisland.core
 import com.replica.replicaisland.mechanics.AABoxCollisionVolume
 import com.replica.replicaisland.AnimationComponent
 import com.replica.replicaisland.AnimationFrame
-import com.replica.replicaisland.AnimationPlayerActivity
+import com.replica.replicaisland.ui.AnimationPlayerActivity
 import com.replica.replicaisland.AttackAtDistanceComponent
 import com.replica.replicaisland.mechanics.BackgroundCollisionComponent
 import com.replica.replicaisland.entities.ButtonAnimationComponent
@@ -12,7 +12,7 @@ import com.replica.replicaisland.mechanics.ChannelSystem
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.mechanics.CollisionVolume
 import com.replica.replicaisland.entities.CrusherAndouComponent
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.entities.DoorAnimationComponent
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.mechanics.DynamicCollisionComponent
@@ -21,7 +21,7 @@ import com.replica.replicaisland.mechanics.EventRecorder
 import com.replica.replicaisland.FadeDrawableComponent
 import com.replica.replicaisland.FixedAnimationComponent
 import com.replica.replicaisland.FixedSizeArray
-import com.replica.replicaisland.FrameRateWatcherComponent
+import com.replica.replicaisland.ui.FrameRateWatcherComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.GenericAnimationComponent
@@ -49,7 +49,7 @@ import com.replica.replicaisland.SimpleCollisionComponent
 import com.replica.replicaisland.mechanics.SimplePhysicsComponent
 import com.replica.replicaisland.SleeperComponent
 import com.replica.replicaisland.SolidSurfaceComponent
-import com.replica.replicaisland.SortConstants
+import com.replica.replicaisland.ui.SortConstants
 import com.replica.replicaisland.mechanics.SphereCollisionVolume
 import com.replica.replicaisland.rendering.SpriteAnimation
 import com.replica.replicaisland.rendering.SpriteComponent

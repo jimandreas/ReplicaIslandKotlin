@@ -22,7 +22,7 @@ right now has no 3D acceleration, so it's slow and unplayable. -->
         android:theme="@style/Theme.AppCompat.NoTitleBar.Fullscreen"
 		tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".ui.MainMenuActivity"
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"
 			android:screenOrientation="landscape"
@@ -41,51 +41,51 @@ right now has no 3D acceleration, so it's slow and unplayable. -->
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="LevelSelectActivity"
+            android:name=".ui.LevelSelectActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="ConversationDialogActivity"
+            android:name=".ui.ConversationDialogActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.ConversationDialog"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="DiaryActivity"
+            android:name=".ui.DiaryActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
 
         <activity
-            android:name="SetPreferencesActivity"
+            android:name=".ui.SetPreferencesActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="AnimationPlayerActivity"
+            android:name=".ui.AnimationPlayerActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="ExtrasMenuActivity"
+            android:name=".ui.ExtrasMenuActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="DifficultyMenuActivity"
+            android:name=".ui.DifficultyMenuActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name="GameOverActivity"
+            android:name=".ui.GameOverActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="landscape"
             tools:ignore="DiscouragedApi" />

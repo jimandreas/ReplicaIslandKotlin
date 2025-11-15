@@ -32,7 +32,7 @@
 
                 <view
                     android:id="@+id/typewritertext"
-                    class="com.replica.replicaisland.ConversationDialogActivity$TypewriterTextView"
+                    class="com.replica.replicaisland.ui.ConversationDialogActivity$TypewriterTextView"
                     android:layout_width="300dp"
                     android:layout_height="110dp"
 

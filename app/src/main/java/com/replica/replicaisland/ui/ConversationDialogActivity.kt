@@ -1,21 +1,4 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("RemoveEmptySecondaryConstructorBody")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.ui
 
 import android.app.Activity
 import android.content.Context
@@ -32,16 +15,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ConversationUtils.ConversationPage
+import com.replica.replicaisland.ui.ConversationUtils
+import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
-import java.util.*
+import java.util.ArrayList
 
 class ConversationDialogActivity : Activity() {
     private var mConversation: ConversationUtils.Conversation? = null
-    private var mPages: ArrayList<ConversationPage>? = null
+    private var mPages: ArrayList<ConversationUtils.ConversationPage>? = null
     private var mCurrentPage = 0
     private var okArrow: ImageView? = null
     private var okAnimation: AnimationDrawable? = null
@@ -130,7 +115,7 @@ class ConversationDialogActivity : Activity() {
                         currentPage.text = spannedText.subSequence(lastPageStart, currentOffset)
                     } else {
                         // split into a new page
-                        val newPage = ConversationPage()
+                        val newPage = ConversationUtils.ConversationPage()
                         newPage.imageResource = currentPage.imageResource
                         newPage.text = spannedText.subSequence(lastPageStart, currentOffset)
                         newPage.title = currentPage.title
@@ -169,7 +154,7 @@ class ConversationDialogActivity : Activity() {
         return true
     }
 
-    private fun showPage(page: ConversationPage) {
+    private fun showPage(page: ConversationUtils.ConversationPage) {
         val tv = findViewById<View>(R.id.typewritertext) as TypewriterTextView
         tv.setTypewriterText(page.text)
         okArrow!!.visibility = View.INVISIBLE
@@ -204,7 +189,7 @@ class ConversationDialogActivity : Activity() {
         }
     }
 
-    class TypewriterTextView : androidx.appcompat.widget.AppCompatTextView {
+    class TypewriterTextView : AppCompatTextView {
         private var currentCharacter = 0
         private var lastTime: Long = 0
         private var mText: CharSequence? = null

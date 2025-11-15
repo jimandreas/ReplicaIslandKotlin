@@ -1,22 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("DEPRECATION")
+package com.replica.replicaisland.ui
 
-package com.replica.replicaisland
-
+import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
@@ -30,7 +14,7 @@ import android.view.View
 import android.widget.TextView
 
 class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
-                                                               defStyle: Int = android.R.attr.dialogPreferenceStyle) : DialogPreference(context, attrs, defStyle), DialogInterface.OnKeyListener {
+                                                               defStyle: Int = R.attr.dialogPreferenceStyle) : DialogPreference(context, attrs, defStyle), DialogInterface.OnKeyListener {
     private var sharedPrefs: SharedPreferences? = null
     private var mContext: Context? = null
     private val leftPrefKey: String?
@@ -67,24 +51,24 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
             rightKeyCode = sharedPrefs!!.getInt(rightPrefKey, KeyEvent.KEYCODE_DPAD_RIGHT)
             jumpKeyCode = sharedPrefs!!.getInt(jumpPrefKey, KeyEvent.KEYCODE_SPACE)
             attackKeyCode = sharedPrefs!!.getInt(attackPrefKey, KeyEvent.KEYCODE_SHIFT_LEFT)
-            leftText = view.findViewById<View>(R.id.key_left) as TextView
+            leftText = view.findViewById<View>(com.replica.replicaisland.R.id.key_left) as TextView
             leftText!!.text = getKeyLabel(leftKeyCode)
-            rightText = view.findViewById<View>(R.id.key_right) as TextView
+            rightText = view.findViewById<View>(com.replica.replicaisland.R.id.key_right) as TextView
             rightText!!.text = getKeyLabel(rightKeyCode)
-            jumpText = view.findViewById<View>(R.id.key_jump) as TextView
+            jumpText = view.findViewById<View>(com.replica.replicaisland.R.id.key_jump) as TextView
             jumpText!!.text = getKeyLabel(jumpKeyCode)
-            attackText = view.findViewById<View>(R.id.key_attack) as TextView
+            attackText = view.findViewById<View>(com.replica.replicaisland.R.id.key_attack) as TextView
             attackText!!.text = getKeyLabel(attackKeyCode)
-            leftBorder = view.findViewById(R.id.left_border)
-            rightBorder = view.findViewById(R.id.right_border)
-            jumpBorder = view.findViewById(R.id.jump_border)
-            attackBorder = view.findViewById(R.id.attack_border)
-            leftBorder!!.setOnClickListener(ConfigClickListener(R.id.key_left))
-            rightBorder!!.setOnClickListener(ConfigClickListener(R.id.key_right))
-            jumpBorder!!.setOnClickListener(ConfigClickListener(R.id.key_jump))
-            attackBorder!!.setOnClickListener(ConfigClickListener(R.id.key_attack))
-            unselectedBorder = mContext!!.resources.getDrawable(R.drawable.key_config_border)
-            mSelectedBorder = mContext!!.resources.getDrawable(R.drawable.key_config_border_active)
+            leftBorder = view.findViewById(com.replica.replicaisland.R.id.left_border)
+            rightBorder = view.findViewById(com.replica.replicaisland.R.id.right_border)
+            jumpBorder = view.findViewById(com.replica.replicaisland.R.id.jump_border)
+            attackBorder = view.findViewById(com.replica.replicaisland.R.id.attack_border)
+            leftBorder!!.setOnClickListener(ConfigClickListener(com.replica.replicaisland.R.id.key_left))
+            rightBorder!!.setOnClickListener(ConfigClickListener(com.replica.replicaisland.R.id.key_right))
+            jumpBorder!!.setOnClickListener(ConfigClickListener(com.replica.replicaisland.R.id.key_jump))
+            attackBorder!!.setOnClickListener(ConfigClickListener(com.replica.replicaisland.R.id.key_attack))
+            unselectedBorder = mContext!!.resources.getDrawable(com.replica.replicaisland.R.drawable.key_config_border)
+            mSelectedBorder = mContext!!.resources.getDrawable(com.replica.replicaisland.R.drawable.key_config_border_active)
         }
         listeningId = 0
     }
@@ -102,7 +86,7 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
     private fun getKeyLabel(keycode: Int): String {
         var result = "Unknown Key"
         if (keyLabels == null) {
-            keyLabels = mContext!!.resources.getStringArray(R.array.keycode_labels)
+            keyLabels = mContext!!.resources.getStringArray(com.replica.replicaisland.R.array.keycode_labels)
         }
         if (keycode > 0 && keycode < keyLabels!!.size) {
             result = keyLabels!![keycode - 1]
@@ -129,10 +113,10 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
     private fun getConfigViewById(id: Int): View? {
         var config: View? = null
         when (id) {
-            R.id.key_left -> config = leftBorder
-            R.id.key_right -> config = rightBorder
-            R.id.key_jump -> config = jumpBorder
-            R.id.key_attack -> config = attackBorder
+            com.replica.replicaisland.R.id.key_left -> config = leftBorder
+            com.replica.replicaisland.R.id.key_right -> config = rightBorder
+            com.replica.replicaisland.R.id.key_jump -> config = jumpBorder
+            com.replica.replicaisland.R.id.key_attack -> config = attackBorder
         }
         return config
     }
@@ -164,19 +148,19 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
         if (listeningId != 0) {
             eatKey = true
             when (listeningId) {
-                R.id.key_left -> {
+                com.replica.replicaisland.R.id.key_left -> {
                     leftText!!.text = getKeyLabel(keyCode)
                     leftKeyCode = keyCode
                 }
-                R.id.key_right -> {
+                com.replica.replicaisland.R.id.key_right -> {
                     rightText!!.text = getKeyLabel(keyCode)
                     rightKeyCode = keyCode
                 }
-                R.id.key_jump -> {
+                com.replica.replicaisland.R.id.key_jump -> {
                     jumpText!!.text = getKeyLabel(keyCode)
                     jumpKeyCode = keyCode
                 }
-                R.id.key_attack -> {
+                com.replica.replicaisland.R.id.key_attack -> {
                     attackText!!.text = getKeyLabel(keyCode)
                     attackKeyCode = keyCode
                 }
@@ -188,11 +172,11 @@ class KeyboardConfigDialogPreference @JvmOverloads constructor(context: Context,
 
     init {
         val a = context.obtainStyledAttributes(attrs,
-                R.styleable.KeyConfigPreference, defStyle, 0)
-        leftPrefKey = a.getString(R.styleable.KeyConfigPreference_leftKey)
-        rightPrefKey = a.getString(R.styleable.KeyConfigPreference_rightKey)
-        jumpPrefKey = a.getString(R.styleable.KeyConfigPreference_jumpKey)
-        attackPrefKey = a.getString(R.styleable.KeyConfigPreference_attackKey)
+                com.replica.replicaisland.R.styleable.KeyConfigPreference, defStyle, 0)
+        leftPrefKey = a.getString(com.replica.replicaisland.R.styleable.KeyConfigPreference_leftKey)
+        rightPrefKey = a.getString(com.replica.replicaisland.R.styleable.KeyConfigPreference_rightKey)
+        jumpPrefKey = a.getString(com.replica.replicaisland.R.styleable.KeyConfigPreference_jumpKey)
+        attackPrefKey = a.getString(com.replica.replicaisland.R.styleable.KeyConfigPreference_attackKey)
         a.recycle()
     }
 }

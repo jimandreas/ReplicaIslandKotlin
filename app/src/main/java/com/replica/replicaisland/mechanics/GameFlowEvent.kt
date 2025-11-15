@@ -2,7 +2,7 @@ package com.replica.replicaisland.mechanics
 
 import android.content.Context
 import com.replica.replicaisland.AndouKun
-import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.ui.DebugLog
 
 class GameFlowEvent : Runnable {
     private var eventCode = 0

@@ -1,21 +1,4 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "RemoveEmptySecondaryConstructorBody", "CascadeIf")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.ui
 
 import android.app.Activity
 import android.content.Context
@@ -30,6 +13,11 @@ import android.widget.TextView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.ui.AnimationPlayerActivity
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.ui.PreferenceConstants
+import com.replica.replicaisland.R
+import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.floor
 import kotlin.math.min
@@ -38,7 +26,7 @@ class GameOverActivity : Activity() {
     private val pearlPercent = 100.0f
     private val enemiesDestroyedPercent = 100.0f
     private val mPlayTime = 0.0f
-    private val mEnding = AnimationPlayerActivity.KABOCHA_ENDING
+    private val mEnding = AnimationPlayerActivity.Companion.KABOCHA_ENDING
     private var pearlView: IncrementingTextView? = null
     private var enemiesDestroyedView: IncrementingTextView? = null
     private var playTimeView: IncrementingTextView? = null
@@ -113,9 +101,9 @@ class GameOverActivity : Activity() {
             try {
                 UIConstants.mOverridePendingTransition!!.invoke(this@GameOverActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
             } catch (ite: InvocationTargetException) {
-                DebugLog.d("Activity Transition", "Invocation Target Exception")
+                DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
             } catch (ie: IllegalAccessException) {
-                DebugLog.d("Activity Transition", "Illegal Access Exception")
+                DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
             }
         }
     }
@@ -155,9 +143,9 @@ class GameOverActivity : Activity() {
         playTimeView!!.setTargetValue(playTime)
         playTimeView!!.setIncrement(90.0f)
         playTimeView!!.setMode(IncrementingTextView.MODE_TIME)
-        if (ending == AnimationPlayerActivity.KABOCHA_ENDING) {
+        if (ending == AnimationPlayerActivity.Companion.KABOCHA_ENDING) {
             endingView!!.setText(R.string.game_results_kabocha_ending)
-        } else if (ending == AnimationPlayerActivity.ROKUDOU_ENDING) {
+        } else if (ending == AnimationPlayerActivity.Companion.ROKUDOU_ENDING) {
             endingView!!.setText(R.string.game_results_rokudou_ending)
         } else {
             endingView!!.setText(R.string.game_results_wanda_ending)
