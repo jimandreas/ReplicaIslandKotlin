@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER", "SameParameterValue")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.input
 
 import android.view.KeyEvent
-import com.replica.replicaisland.input.InputButton
-import com.replica.replicaisland.input.InputXY
+import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.ButtonConstants
+import com.replica.replicaisland.Utils
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -72,8 +56,8 @@ class InputGameInterface : BaseObject() {
                 val center = ButtonConstants.MOVEMENT_SLIDER_X + halfWidth
                 val offset = sliderTouch.retreiveXaxisMagnitude() - center
                 val magnitudeRamp = if (abs(offset) > halfWidth) 1.0f else abs(offset) / halfWidth
-                val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * movementSensitivity
-                sliderOffset = magnitudeRamp * Utils.sign(offset)
+                val magnitude = magnitudeRamp * Utils.Companion.sign(offset) * SLIDER_FILTER * movementSensitivity
+                sliderOffset = magnitudeRamp * Utils.Companion.sign(offset)
                 directionalPad.press(gameTime, magnitude, 0.0f)
             } else {
                 directionalPad.release()
@@ -117,16 +101,16 @@ class InputGameInterface : BaseObject() {
                     var x = directionalPad.retreiveXaxisMagnitude()
                     var y = directionalPad.retreiveYaxisMagnitude()
                     if (x != 0.0f) {
-                        val sign = Utils.sign(x)
+                        val sign = Utils.Companion.sign(x)
                         x -= sign * ROLL_DECAY * timeDelta
-                        if (Utils.sign(x) != sign) {
+                        if (Utils.Companion.sign(x) != sign) {
                             x = 0.0f
                         }
                     }
                     if (y != 0.0f) {
-                        val sign = Utils.sign(y)
+                        val sign = Utils.Companion.sign(y)
                         y -= sign * ROLL_DECAY * timeDelta
-                        if (Utils.sign(x) != sign) {
+                        if (Utils.Companion.sign(x) != sign) {
                             y = 0.0f
                         }
                     }

@@ -35,6 +35,9 @@ import android.widget.ImageView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.input.MultiTouchFilter
+import com.replica.replicaisland.input.SingleTouchFilter
+import com.replica.replicaisland.input.TouchFilter
 import com.replica.replicaisland.levels.LevelTree.isLoaded
 import com.replica.replicaisland.levels.LevelTree.loadAllDialog
 import com.replica.replicaisland.levels.LevelTree.loadLevelTree

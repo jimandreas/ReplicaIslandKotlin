@@ -1,7 +1,8 @@
-package com.replica.replicaisland
+package com.replica.replicaisland.input
 
 import android.content.Context
 import android.view.MotionEvent
+import com.replica.replicaisland.input.SingleTouchFilter
 
 class MultiTouchFilter : SingleTouchFilter() {
     private var checkedForMultitouch = false

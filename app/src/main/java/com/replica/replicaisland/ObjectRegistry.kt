@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.input.InputGameInterface
+import com.replica.replicaisland.input.InputSystem
 import com.replica.replicaisland.levels.LevelBuilder
 import com.replica.replicaisland.rendering.CameraSystem
 import com.replica.replicaisland.rendering.RenderSystem

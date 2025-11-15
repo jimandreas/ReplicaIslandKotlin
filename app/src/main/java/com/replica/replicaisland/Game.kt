@@ -23,6 +23,11 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.Toast
+import com.replica.replicaisland.input.InputGameInterface
+import com.replica.replicaisland.input.InputSystem
+import com.replica.replicaisland.input.MultiTouchFilter
+import com.replica.replicaisland.input.SingleTouchFilter
+import com.replica.replicaisland.input.TouchFilter
 import com.replica.replicaisland.levels.LevelBuilder
 import com.replica.replicaisland.levels.LevelTree
 import com.replica.replicaisland.rendering.CameraSystem
