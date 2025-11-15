@@ -1,7 +1,7 @@
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.SpriteComponent
+import com.replica.replicaisland.rendering.SpriteComponent
 import com.replica.replicaisland.Utils
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject

@@ -17,7 +17,9 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.rendering.RenderComponent
+import com.replica.replicaisland.rendering.Texture
 
 class MotionBlurComponent : GameComponent() {
     private val history: Array<BlurRecord?>

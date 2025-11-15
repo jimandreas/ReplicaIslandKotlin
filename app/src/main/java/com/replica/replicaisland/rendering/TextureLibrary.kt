@@ -1,27 +1,11 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "SimplifyBooleanWithConstants", "SameParameterValue")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.rendering
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.opengl.GLU
 import android.opengl.GLUtils
+import com.replica.replicaisland.DebugLog
 import com.replica.replicaisland.core.BaseObject
 import java.io.IOException
 import javax.microedition.khronos.opengles.GL10
@@ -86,7 +70,7 @@ class TextureLibrary : BaseObject() {
                 gl.glDeleteTextures(1, textureNameWorkspace, 0)
                 val error = gl.glGetError()
                 if (error != GL10.GL_NO_ERROR) {
-                    DebugLog.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
+                    DebugLog.Companion.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
                 }
                 //TODO: assert(error == GL10.GL_NO_ERROR)
             }
@@ -112,14 +96,14 @@ class TextureLibrary : BaseObject() {
             gl!!.glGenTextures(1, textureNameWorkspace, 0)
             var error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.Companion.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             val textureName = textureNameWorkspace[0]
             gl.glBindTexture(GL10.GL_TEXTURE_2D, textureName)
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 2", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.Companion.d("Texture Load 2", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST.toFloat())
@@ -142,14 +126,15 @@ class TextureLibrary : BaseObject() {
             GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0)
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.Companion.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             cropWorkspace[0] = 0
             cropWorkspace[1] = bitmap.height
             cropWorkspace[2] = bitmap.width
             cropWorkspace[3] = -bitmap.height
-            (gl as GL11?)!!.glTexParameteriv(GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES,
+            (gl as GL11?)!!.glTexParameteriv(
+                GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES,
                     cropWorkspace, 0)
             texture.name = textureName
             texture.width = bitmap.width
@@ -157,7 +142,7 @@ class TextureLibrary : BaseObject() {
             bitmap.recycle()
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 4", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.Companion.d("Texture Load 4", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             texture.loaded = true

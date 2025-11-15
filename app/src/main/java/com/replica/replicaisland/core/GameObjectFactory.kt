@@ -14,7 +14,7 @@ import com.replica.replicaisland.mechanics.CollisionVolume
 import com.replica.replicaisland.entities.CrusherAndouComponent
 import com.replica.replicaisland.DebugLog
 import com.replica.replicaisland.entities.DoorAnimationComponent
-import com.replica.replicaisland.DrawableBitmap
+import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.mechanics.DynamicCollisionComponent
 import com.replica.replicaisland.entities.EnemyAnimationComponent
 import com.replica.replicaisland.mechanics.EventRecorder
@@ -51,8 +51,8 @@ import com.replica.replicaisland.SleeperComponent
 import com.replica.replicaisland.SolidSurfaceComponent
 import com.replica.replicaisland.SortConstants
 import com.replica.replicaisland.mechanics.SphereCollisionVolume
-import com.replica.replicaisland.SpriteAnimation
-import com.replica.replicaisland.SpriteComponent
+import com.replica.replicaisland.rendering.SpriteAnimation
+import com.replica.replicaisland.rendering.SpriteComponent
 import com.replica.replicaisland.TObjectPool
 import com.replica.replicaisland.TheSourceComponent
 import com.replica.replicaisland.Utils

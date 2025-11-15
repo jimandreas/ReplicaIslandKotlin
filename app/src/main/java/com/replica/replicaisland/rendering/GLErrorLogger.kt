@@ -1,30 +1,19 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
-
-package com.replica.replicaisland
+package com.replica.replicaisland.rendering
 
 import android.opengl.GLU
+import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.GLSurfaceView
 import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.nio.ShortBuffer
-import javax.microedition.khronos.opengles.*
+import javax.microedition.khronos.opengles.GL
+import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10Ext
+import javax.microedition.khronos.opengles.GL11
+import javax.microedition.khronos.opengles.GL11Ext
 
-// unused so far 
+// unused so far
 class GLErrorLogger : GLSurfaceView.GLWrapper {
     override fun wrap(gl: GL?): GL? {
         return ErrorLoggingGL(gl)
@@ -35,7 +24,7 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
             val error = (mGL as GL10?)!!.glGetError()
             if (error != GL10.GL_NO_ERROR) {
                 val method = Thread.currentThread().stackTrace[3].methodName
-                DebugLog.d("GL ERROR", "Error: " + error + " (" + GLU.gluErrorString(error) + "): " + method)
+                DebugLog.Companion.d("GL ERROR", "Error: " + error + " (" + GLU.gluErrorString(error) + "): " + method)
             }
             //TODO 2 fix: assert(error == GL10.GL_NO_ERROR)
         }
@@ -117,14 +106,16 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glColorPointer(size: Int, type: Int, stride: Int,
-                                    pointer: Buffer) {
+                                    pointer: Buffer
+        ) {
             (mGL as GL10?)!!.glColorPointer(size, type, stride, pointer)
             checkError()
         }
 
         override fun glCompressedTexImage2D(target: Int, level: Int,
                                             internalformat: Int, width: Int, height: Int, border: Int,
-                                            imageSize: Int, data: Buffer) {
+                                            imageSize: Int, data: Buffer
+        ) {
             (mGL as GL10?)!!.glCompressedTexImage2D(target, level,
                     internalformat, width, height, border, imageSize, data)
             checkError()
@@ -132,7 +123,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
 
         override fun glCompressedTexSubImage2D(target: Int, level: Int,
                                                xoffset: Int, yoffset: Int, width: Int, height: Int, format: Int,
-                                               imageSize: Int, data: Buffer) {
+                                               imageSize: Int, data: Buffer
+        ) {
             (mGL as GL10?)!!.glCompressedTexSubImage2D(target, level,
                     xoffset, yoffset, width, height, format,
                     imageSize, data)
@@ -543,7 +535,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glReadPixels(x: Int, y: Int, width: Int, height: Int,
-                                  format: Int, type: Int, pixels: Buffer) {
+                                  format: Int, type: Int, pixels: Buffer
+        ) {
             (mGL as GL10?)!!.glReadPixels(x, y, width, height,
                     format, type, pixels)
             checkError()
@@ -605,7 +598,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glTexCoordPointer(size: Int, type: Int, stride: Int,
-                                       pointer: Buffer) {
+                                       pointer: Buffer
+        ) {
             (mGL as GL10?)!!.glTexCoordPointer(size, type, stride,
                     pointer)
             checkError()
@@ -643,7 +637,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
 
         override fun glTexImage2D(target: Int, level: Int, internalformat: Int,
                                   width: Int, height: Int, border: Int, format: Int, type: Int,
-                                  pixels: Buffer) {
+                                  pixels: Buffer
+        ) {
             (mGL as GL10?)!!.glTexImage2D(target, level, internalformat,
                     width, height, border, format, type,
                     pixels)
@@ -662,7 +657,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
 
         override fun glTexSubImage2D(target: Int, level: Int, xoffset: Int,
                                      yoffset: Int, width: Int, height: Int, format: Int, type: Int,
-                                     pixels: Buffer) {
+                                     pixels: Buffer
+        ) {
             (mGL as GL10?)!!.glTexSubImage2D(target, level, xoffset,
                     yoffset, width, height, format, type,
                     pixels)
@@ -680,7 +676,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glVertexPointer(size: Int, type: Int, stride: Int,
-                                     pointer: Buffer) {
+                                     pointer: Buffer
+        ) {
             (mGL as GL10?)!!.glVertexPointer(size, type, stride,
                     pointer)
             checkError()
@@ -772,7 +769,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glGetBufferParameteriv(target: Int, pname: Int,
-                                            params: IntBuffer) {
+                                            params: IntBuffer
+        ) {
             (mGL as GL11?)!!.glGetBufferParameteriv(target, pname,
                     params)
             checkError()
@@ -897,7 +895,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glGetTexParameterfv(target: Int, pname: Int,
-                                         params: FloatBuffer) {
+                                         params: FloatBuffer
+        ) {
             (mGL as GL11?)!!.glGetTexParameterfv(target, pname,
                     params)
             checkError()
@@ -1130,7 +1129,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glMatrixIndexPointerOES(size: Int, type: Int, stride: Int,
-                                             pointer: Buffer) {
+                                             pointer: Buffer
+        ) {
             (mGL as GL11Ext?)!!.glMatrixIndexPointerOES(size, type, stride,
                     pointer)
             checkError()
@@ -1144,7 +1144,8 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
         }
 
         override fun glWeightPointerOES(size: Int, type: Int, stride: Int,
-                                        pointer: Buffer) {
+                                        pointer: Buffer
+        ) {
             (mGL as GL11Ext?)!!.glWeightPointerOES(size, type, stride,
                     pointer)
             checkError()

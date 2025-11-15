@@ -1,25 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("NAME_SHADOWING", "SameParameterValue", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
+package com.replica.replicaisland.rendering
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.Grid.Companion.endDrawing
-import com.replica.replicaisland.OpenGLSystem.Companion.bindTexture
-import com.replica.replicaisland.OpenGLSystem.Companion.gL
+import com.replica.replicaisland.Grid
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.levels.TiledWorld
 import javax.microedition.khronos.opengles.GL10
@@ -108,7 +89,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
 
     fun draw(x: Float, y: Float, scrollOriginX: Float, scrollOriginY: Float) {
         val world = mWorld
-        val gl = gL
+        val gl = OpenGLSystem.Companion.gL
         if (!generated && world != null && gl != null && mTexture != null) {
             val tilesAcross = mWorld!!.fetchWidth()
             val tilesDown = mWorld!!.fetchHeight()
@@ -147,7 +128,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                 // calculate any sub-tile slop that our scroll position may require.
                 val horizontalSlop = if ((tileSpaceX - leftTile) * mTileWidth > 0) 1 else 0
                 val verticalSlop = if ((tileSpaceY - bottomTile) * mTileHeight > 0) 1 else 0
-                bindTexture(GL10.GL_TEXTURE_2D, texture.name)
+                OpenGLSystem.Companion.bindTexture(GL10.GL_TEXTURE_2D, texture.name)
                 tileMap.beginDrawingStrips(gl, true)
                 val horzTileCount = ceil(mWidth.toFloat() / mTileWidth.toDouble()).toInt()
                 val vertTileCount = ceil(mHeight.toFloat() / mTileHeight.toDouble()).toInt()
@@ -171,7 +152,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                     tileY++
                 }
                 gl.glPopMatrix()
-                endDrawing(gl)
+                Grid.Companion.endDrawing(gl)
             }
         }
     }

@@ -19,6 +19,9 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.RenderComponent
+import com.replica.replicaisland.rendering.ScrollableBitmap
+import com.replica.replicaisland.rendering.Texture
+import com.replica.replicaisland.rendering.TiledVertexGrid
 
 /**
  * Adjusts the scroll position of a drawable object based on the camera's focus position.

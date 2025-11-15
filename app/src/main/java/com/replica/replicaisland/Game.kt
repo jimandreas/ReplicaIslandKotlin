@@ -38,7 +38,12 @@ import com.replica.replicaisland.mechanics.CollisionSystem
 import com.replica.replicaisland.mechanics.EventRecorder
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.CameraSystem
+import com.replica.replicaisland.rendering.DrawableBitmap
+import com.replica.replicaisland.rendering.DrawableFactory
+import com.replica.replicaisland.rendering.GameRenderer
+import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
+import com.replica.replicaisland.rendering.TextureLibrary
 import com.replica.replicaisland.sound.SoundSystem
 
 /**
@@ -149,28 +154,60 @@ class Game : AllocationGuard() {
             BaseObject.sSystemRegistry.drawableFactory = DrawableFactory()
             val hud = HudSystem()
             hud.setFuelDrawable(
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_bar), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_bar_bg), 0, 0))
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_bar
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_bar_bg
+                    ), 0, 0
+                )
+            )
             hud.setFadeTexture(longTermTextureLibrary.allocateTexture(R.drawable.black))
             hud.setButtonDrawables(
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_button_fly_disabled), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_button_fly_off), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_button_fly_on), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_button_stomp_off), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_button_stomp_on), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_movement_slider_base), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_movement_slider_button_off), 0, 0),
-                    DrawableBitmap(longTermTextureLibrary.allocateTexture(
-                            R.drawable.ui_movement_slider_button_on), 0, 0))
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_button_fly_disabled
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_button_fly_off
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_button_fly_on
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_button_stomp_off
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_button_stomp_on
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_movement_slider_base
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_movement_slider_button_off
+                    ), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(
+                        R.drawable.ui_movement_slider_button_on
+                    ), 0, 0
+                )
+            )
             val digitTextures = arrayOf(
                     longTermTextureLibrary.allocateTexture(R.drawable.ui_0),
                     longTermTextureLibrary.allocateTexture(R.drawable.ui_1),
@@ -184,25 +221,29 @@ class Game : AllocationGuard() {
                     longTermTextureLibrary.allocateTexture(R.drawable.ui_9)
             )
             val digits = arrayOf(
-                    DrawableBitmap(digitTextures[0], 0, 0),
-                    DrawableBitmap(digitTextures[1], 0, 0),
-                    DrawableBitmap(digitTextures[2], 0, 0),
-                    DrawableBitmap(digitTextures[3], 0, 0),
-                    DrawableBitmap(digitTextures[4], 0, 0),
-                    DrawableBitmap(digitTextures[5], 0, 0),
-                    DrawableBitmap(digitTextures[6], 0, 0),
-                    DrawableBitmap(digitTextures[7], 0, 0),
-                    DrawableBitmap(digitTextures[8], 0, 0),
-                    DrawableBitmap(digitTextures[9], 0, 0)
+                DrawableBitmap(digitTextures[0], 0, 0),
+                DrawableBitmap(digitTextures[1], 0, 0),
+                DrawableBitmap(digitTextures[2], 0, 0),
+                DrawableBitmap(digitTextures[3], 0, 0),
+                DrawableBitmap(digitTextures[4], 0, 0),
+                DrawableBitmap(digitTextures[5], 0, 0),
+                DrawableBitmap(digitTextures[6], 0, 0),
+                DrawableBitmap(digitTextures[7], 0, 0),
+                DrawableBitmap(digitTextures[8], 0, 0),
+                DrawableBitmap(digitTextures[9], 0, 0)
             )
             val xDrawable = DrawableBitmap(
-                    longTermTextureLibrary.allocateTexture(R.drawable.ui_x), 0, 0)
+                longTermTextureLibrary.allocateTexture(R.drawable.ui_x), 0, 0
+            )
             hud.setDigitDrawables(digits, xDrawable)
             hud.setCollectableDrawables(
-                    DrawableBitmap(
-                            longTermTextureLibrary.allocateTexture(R.drawable.ui_pearl), 0, 0),
-                    DrawableBitmap(
-                            longTermTextureLibrary.allocateTexture(R.drawable.ui_gem), 0, 0))
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(R.drawable.ui_pearl), 0, 0
+                ),
+                DrawableBitmap(
+                    longTermTextureLibrary.allocateTexture(R.drawable.ui_gem), 0, 0
+                )
+            )
             BaseObject.sSystemRegistry.hudSystem = hud
             if (AndouKun.VERSION < 0) {
                 hud.setShowFPS(true)

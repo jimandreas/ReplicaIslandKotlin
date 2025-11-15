@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.rendering.Texture
+import com.replica.replicaisland.rendering.TextureLibrary
 
 class DebugSystem(library: TextureLibrary?) : BaseObject() {
     private var redBoxTexture: Texture? = null

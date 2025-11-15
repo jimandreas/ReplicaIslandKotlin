@@ -20,6 +20,8 @@ package com.replica.replicaisland
 import com.replica.replicaisland.InventoryComponent.UpdateRecord
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.mechanics.GameFlowEvent
+import com.replica.replicaisland.rendering.DrawableBitmap
+import com.replica.replicaisland.rendering.Texture
 
 /**
  * A very simple manager for orthographic in-game UI elements.

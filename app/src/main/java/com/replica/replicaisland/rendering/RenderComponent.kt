@@ -1,7 +1,7 @@
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.DrawableObject
+import com.replica.replicaisland.rendering.DrawableObject
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.Vector2

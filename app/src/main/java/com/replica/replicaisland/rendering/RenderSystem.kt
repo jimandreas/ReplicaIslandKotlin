@@ -1,9 +1,8 @@
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.DrawableObject
+import com.replica.replicaisland.rendering.DrawableObject
 import com.replica.replicaisland.FixedSizeArray
-import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.ObjectManager
 import com.replica.replicaisland.core.PhasedObject
 import com.replica.replicaisland.core.PhasedObjectManager
