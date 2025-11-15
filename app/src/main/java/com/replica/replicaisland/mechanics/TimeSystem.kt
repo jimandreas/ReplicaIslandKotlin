@@ -1,6 +1,6 @@
 package com.replica.replicaisland.mechanics
 
-import com.replica.replicaisland.Lerp
+import com.replica.replicaisland.utils.Lerp
 import com.replica.replicaisland.core.BaseObject
 
 /**

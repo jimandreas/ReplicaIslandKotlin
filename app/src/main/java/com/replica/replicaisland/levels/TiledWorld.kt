@@ -1,8 +1,8 @@
 package com.replica.replicaisland.levels
 
 import android.content.res.AssetManager
-import com.replica.replicaisland.AllocationGuard
-import com.replica.replicaisland.Utils
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.Utils
 import java.io.IOException
 import java.io.InputStream
 

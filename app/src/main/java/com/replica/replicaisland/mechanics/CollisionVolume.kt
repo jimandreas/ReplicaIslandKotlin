@@ -1,8 +1,8 @@
 package com.replica.replicaisland.mechanics
 
-import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.utils.AllocationGuard
 import com.replica.replicaisland.mechanics.CollisionParameters
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * CollisionVolume describes a volume (rectangle, sphere, etc) used for dynamic collision detection.

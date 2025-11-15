@@ -1,6 +1,6 @@
 package com.replica.replicaisland.mechanics
 
-import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.core.BaseObject
 import java.util.Comparator
 

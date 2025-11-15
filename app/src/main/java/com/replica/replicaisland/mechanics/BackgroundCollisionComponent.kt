@@ -2,8 +2,8 @@ package com.replica.replicaisland.mechanics
 
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.HitPoint
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import java.util.Comparator

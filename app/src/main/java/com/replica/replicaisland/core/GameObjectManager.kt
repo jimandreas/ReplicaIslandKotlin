@@ -1,8 +1,8 @@
 package com.replica.replicaisland.core
 
-import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.ObjectManager
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import java.util.Comparator
 
 /**

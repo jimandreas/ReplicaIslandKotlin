@@ -1,6 +1,6 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11Ext
 

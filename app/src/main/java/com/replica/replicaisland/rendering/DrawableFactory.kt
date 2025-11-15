@@ -1,7 +1,7 @@
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.rendering.ScrollableBitmap
-import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.utils.TObjectPool
 import com.replica.replicaisland.rendering.TiledBackgroundVertexGrid
 import com.replica.replicaisland.core.BaseObject
 

@@ -19,6 +19,7 @@ package com.replica.replicaisland
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.mechanics.GravityComponent
+import com.replica.replicaisland.utils.Vector2
 import kotlin.math.sqrt
 
 class OrbitalMagnetComponent : GameComponent() {

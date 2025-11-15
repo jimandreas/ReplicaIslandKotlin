@@ -2,13 +2,13 @@ package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.DrawableObject
-import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.ObjectManager
 import com.replica.replicaisland.core.PhasedObject
 import com.replica.replicaisland.core.PhasedObjectManager
-import com.replica.replicaisland.TObjectPool
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.TObjectPool
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * Manages a double-buffered queue of renderable objects.  The game thread submits drawable objects

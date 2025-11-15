@@ -5,8 +5,8 @@ import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.HitReactionComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 

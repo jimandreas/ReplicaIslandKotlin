@@ -24,6 +24,10 @@ import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.mechanics.AABoxCollisionVolume
 import com.replica.replicaisland.mechanics.CollisionVolume
 import com.replica.replicaisland.ui.DebugSystem
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.FixedSizeArray
+import com.replica.replicaisland.utils.TObjectPool
+import com.replica.replicaisland.utils.Vector2
 import java.util.*
 
 /**

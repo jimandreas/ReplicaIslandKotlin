@@ -17,8 +17,8 @@
 
 package com.replica.replicaisland
 
-import com.replica.replicaisland.Lerp.ease
-import com.replica.replicaisland.Lerp.lerp
+import com.replica.replicaisland.utils.Lerp.ease
+import com.replica.replicaisland.utils.Lerp.lerp
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.rendering.DrawableBitmap

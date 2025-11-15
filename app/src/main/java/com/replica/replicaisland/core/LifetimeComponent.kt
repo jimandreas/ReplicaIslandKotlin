@@ -4,7 +4,7 @@ import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.GhostComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.LaunchProjectileComponent
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.sound.SoundSystem
 import kotlin.math.abs
 

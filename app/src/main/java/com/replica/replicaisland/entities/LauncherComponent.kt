@@ -1,7 +1,7 @@
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.core.GameObjectFactory

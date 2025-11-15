@@ -18,6 +18,7 @@ package com.replica.replicaisland
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.mechanics.CollisionParameters
+import com.replica.replicaisland.utils.Vector2
 
 class HitPlayerComponent : GameComponent() {
     private var mDistance2 = 0f

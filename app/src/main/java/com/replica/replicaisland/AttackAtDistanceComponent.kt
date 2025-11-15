@@ -17,6 +17,8 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 
 class AttackAtDistanceComponent : GameComponent() {
     private var attackDistance = 0f

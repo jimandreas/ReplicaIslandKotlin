@@ -21,6 +21,8 @@ import com.replica.replicaisland.core.GameObject.ActionType
 import com.replica.replicaisland.mechanics.HotSpotSystem.HotSpotType
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 import kotlin.math.abs
 
 /**

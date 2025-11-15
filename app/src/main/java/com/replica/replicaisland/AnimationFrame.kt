@@ -17,6 +17,8 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.mechanics.CollisionVolume
 import com.replica.replicaisland.rendering.Texture
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.FixedSizeArray
 
 /**
  * A single animation frame.  Frames contain a texture, a hold time, and collision volumes to

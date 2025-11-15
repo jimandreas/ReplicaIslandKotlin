@@ -1,6 +1,6 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.utils.AllocationGuard
 
 /**
  * Simple container class for textures.  Serves as a mapping between Android resource ids and

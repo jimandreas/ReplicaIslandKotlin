@@ -15,6 +15,9 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.Vector2
+
 class HitPoint : AllocationGuard() {
     @JvmField
     var hitPoint: Vector2? = null

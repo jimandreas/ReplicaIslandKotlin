@@ -1,7 +1,7 @@
 package com.replica.replicaisland.core
 
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.utils.TObjectPool
 
 class GameComponentPool : TObjectPool<GameComponent?> {
     @JvmField

@@ -2,8 +2,8 @@ package com.replica.replicaisland.core
 
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.core.PhasedObjectManager
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * GameObject defines any object that resides in the game world (character, background, special

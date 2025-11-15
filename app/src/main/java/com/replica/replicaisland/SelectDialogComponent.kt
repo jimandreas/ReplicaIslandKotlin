@@ -22,6 +22,7 @@ import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.mechanics.HotSpotSystem
+import com.replica.replicaisland.utils.Vector2
 
 class SelectDialogComponent : GameComponent() {
     private var hitReact: HitReactionComponent? = null

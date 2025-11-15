@@ -1,6 +1,6 @@
 package com.replica.replicaisland.mechanics
 
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import kotlin.math.max
 import kotlin.math.min
 

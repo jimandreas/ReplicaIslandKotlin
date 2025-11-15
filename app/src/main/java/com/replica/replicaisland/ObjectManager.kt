@@ -18,6 +18,7 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.utils.FixedSizeArray
 
 /**
  * ObjectManagers are "group nodes" in the game graph.  They contain child objects, and updating

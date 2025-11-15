@@ -35,6 +35,9 @@ import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.ui.CustomToastSystem
 import com.replica.replicaisland.ui.DebugSystem
 import com.replica.replicaisland.ui.HudSystem
+import com.replica.replicaisland.utils.BufferLibrary
+import com.replica.replicaisland.utils.ContextParameters
+import com.replica.replicaisland.utils.VectorPool
 import java.util.*
 
 /**

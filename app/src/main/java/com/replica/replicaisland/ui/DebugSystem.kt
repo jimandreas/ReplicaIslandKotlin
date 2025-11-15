@@ -1,7 +1,7 @@
 package com.replica.replicaisland.ui
 
 import com.replica.replicaisland.R
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.Texture
 import com.replica.replicaisland.rendering.TextureLibrary

@@ -2,7 +2,7 @@ package com.replica.replicaisland.ui
 
 import com.replica.replicaisland.InventoryComponent
 import com.replica.replicaisland.ui.SortConstants
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.rendering.DrawableBitmap

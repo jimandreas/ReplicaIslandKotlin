@@ -17,6 +17,7 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * A component that implements the "pop-out" AI behavior.  Pop-out characters alternate between

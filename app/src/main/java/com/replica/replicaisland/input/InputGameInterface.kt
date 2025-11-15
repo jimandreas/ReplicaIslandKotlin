@@ -3,7 +3,7 @@ package com.replica.replicaisland.input
 import android.view.KeyEvent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.ui.ButtonConstants
-import com.replica.replicaisland.Utils
+import com.replica.replicaisland.utils.Utils
 import kotlin.math.abs
 import kotlin.math.max
 

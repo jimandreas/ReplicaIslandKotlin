@@ -1,24 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UNCHECKED_CAST", "ConvertTwoComparisonsToRangeCheck", "unused")
+package com.replica.replicaisland.utils
 
-package com.replica.replicaisland
-
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.BuildConfig
+import com.replica.replicaisland.utils.Sorter
+import com.replica.replicaisland.utils.StandardSorter
 import com.replica.replicaisland.ui.DebugLog
-import java.util.*
+import java.util.Arrays
+import java.util.Comparator
 
 /**
  * FixedSizeArray is an alternative to a standard Java collection like ArrayList.  It is designed
@@ -244,7 +232,7 @@ class FixedSizeArray<T> : AllocationGuard {
             if (mComparator != null) {
                 mSorter.sort(mContents, count, mComparator!!)
             } else {
-                DebugLog.d("FixedSizeArray", "No comparator specified for this type, using Arrays.sort().")
+                DebugLog.Companion.d("FixedSizeArray", "No comparator specified for this type, using Arrays.sort().")
                 Arrays.sort(mContents, 0, count)
             }
             mSorted = true

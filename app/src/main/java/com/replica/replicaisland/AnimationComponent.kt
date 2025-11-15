@@ -26,6 +26,7 @@ import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.SpriteComponent
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
+import com.replica.replicaisland.utils.Utils
 import kotlin.math.abs
 import kotlin.math.cos
 

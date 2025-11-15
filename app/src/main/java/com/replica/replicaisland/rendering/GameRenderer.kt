@@ -3,7 +3,7 @@ package com.replica.replicaisland.rendering
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
-import com.replica.replicaisland.BufferLibrary
+import com.replica.replicaisland.utils.BufferLibrary
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.GLSurfaceView

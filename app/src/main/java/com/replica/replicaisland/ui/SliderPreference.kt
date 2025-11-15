@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
 import com.replica.replicaisland.R
-import com.replica.replicaisland.Utils
+import com.replica.replicaisland.utils.Utils
 
 class SliderPreference : Preference, SeekBar.OnSeekBarChangeListener {
     private var value = INITIAL_VALUE

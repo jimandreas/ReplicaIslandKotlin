@@ -19,6 +19,7 @@ import com.replica.replicaisland.core.GameObject.ActionType
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.rendering.SpriteComponent
+import com.replica.replicaisland.utils.Utils
 
 class GenericAnimationComponent : GameComponent() {
     private var mSprite: SpriteComponent? = null

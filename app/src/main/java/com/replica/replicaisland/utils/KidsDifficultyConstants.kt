@@ -1,21 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.utils
 
-class AdultsDifficultyConstants : DifficultyConstants() {
+class KidsDifficultyConstants : DifficultyConstants() {
     override fun whatIsFuelAirRefillSpeed(): Float {
         return FUEL_AIR_REFILL_SPEED
     }
@@ -63,16 +48,16 @@ class AdultsDifficultyConstants : DifficultyConstants() {
     companion object {
         private const val FUEL_AIR_REFILL_SPEED = 0.15f
         private const val FUEL_GROUND_REFILL_SPEED = 2.0f
-        const val MAX_PLAYER_LIFE = 2
-        private const val COINS_PER_POWERUP = 30
-        const val GLOW_DURATION = 10.0f
+        const val MAX_PLAYER_LIFE = 3
+        private const val COINS_PER_POWERUP = 20
+        const val GLOW_DURATION = 15.0f
 
         // DDA boosts
-        private const val DDA_STAGE_1_ATTEMPTS = 4
+        private const val DDA_STAGE_1_ATTEMPTS = 3
         private const val DDA_STAGE_2_ATTEMPTS = 8
         private const val DDA_STAGE_1_LIFE_BOOST = 1
         private const val DDA_STAGE_2_LIFE_BOOST = 2
-        private const val DDA_STAGE_1_FUEL_AIR_REFILL_SPEED = 0.15f
-        private const val DDA_STAGE_2_FUEL_AIR_REFILL_SPEED = 0.22f
+        private const val DDA_STAGE_1_FUEL_AIR_REFILL_SPEED = 0.22f
+        private const val DDA_STAGE_2_FUEL_AIR_REFILL_SPEED = 0.30f
     }
 }

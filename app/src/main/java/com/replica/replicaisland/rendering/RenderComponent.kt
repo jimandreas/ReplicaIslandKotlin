@@ -4,7 +4,7 @@ import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.DrawableObject
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.GameObject
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * Implements rendering of a drawable object for a game object.  If a drawable is set on this

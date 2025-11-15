@@ -2,9 +2,9 @@ package com.replica.replicaisland.sound
 
 import android.media.AudioAttributes
 import android.media.SoundPool
-import com.replica.replicaisland.AllocationGuard
+import com.replica.replicaisland.utils.AllocationGuard
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.utils.FixedSizeArray
 
 class SoundSystem : BaseObject() {
     private val soundPool: SoundPool

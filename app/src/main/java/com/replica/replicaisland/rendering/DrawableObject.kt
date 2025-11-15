@@ -1,8 +1,8 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.AllocationGuard
-import com.replica.replicaisland.ObjectPool
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.ObjectPool
+import com.replica.replicaisland.utils.Vector2
 
 /**
  * DrawableObject is the base object interface for objects that can be rendered to the screen.

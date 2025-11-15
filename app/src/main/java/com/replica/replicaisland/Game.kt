@@ -48,6 +48,11 @@ import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.ui.CustomToastSystem
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.ui.HudSystem
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.BufferLibrary
+import com.replica.replicaisland.utils.ContextParameters
+import com.replica.replicaisland.utils.Vector2
+import com.replica.replicaisland.utils.VectorPool
 
 /**
  * High-level setup object for the AndouKun game engine.

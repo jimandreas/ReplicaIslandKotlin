@@ -20,7 +20,7 @@ import com.replica.replicaisland.entities.EnemyAnimationComponent
 import com.replica.replicaisland.mechanics.EventRecorder
 import com.replica.replicaisland.FadeDrawableComponent
 import com.replica.replicaisland.FixedAnimationComponent
-import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.ui.FrameRateWatcherComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
@@ -53,10 +53,10 @@ import com.replica.replicaisland.ui.SortConstants
 import com.replica.replicaisland.mechanics.SphereCollisionVolume
 import com.replica.replicaisland.rendering.SpriteAnimation
 import com.replica.replicaisland.rendering.SpriteComponent
-import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.utils.TObjectPool
 import com.replica.replicaisland.TheSourceComponent
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.levels.TiledWorld
 import com.replica.replicaisland.rendering.CameraBiasComponent
 import com.replica.replicaisland.rendering.RenderComponent

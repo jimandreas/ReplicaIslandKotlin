@@ -2,9 +2,9 @@ package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
-import com.replica.replicaisland.Lerp
-import com.replica.replicaisland.Utils
-import com.replica.replicaisland.Vector2
+import com.replica.replicaisland.utils.Lerp
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max

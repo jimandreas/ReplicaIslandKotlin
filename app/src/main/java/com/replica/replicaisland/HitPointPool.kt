@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.utils.TObjectPool
+
 class HitPointPool : TObjectPool<HitPoint?>() {
     override fun fill() {
         val size = fetchSize()
