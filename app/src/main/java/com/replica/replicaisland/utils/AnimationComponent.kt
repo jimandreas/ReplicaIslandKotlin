@@ -1,32 +1,15 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("SENSELESS_COMPARISON", "CascadeIf")
+package com.replica.replicaisland.utils
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.mechanics.CollisionParameters.HitType
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.entities.ChangeComponentsComponent
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.entities.InventoryComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.entities.PlayerComponent
+import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.SpriteComponent
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
-import com.replica.replicaisland.utils.Utils
 import kotlin.math.abs
 import kotlin.math.cos
 
@@ -46,23 +29,23 @@ class AnimationComponent : GameComponent() {
     private var lastFlickerTime = 0f
     private var flickerOn = false
     private var flickerTimeRemaining = 0f
-    private var previousAction: ActionType? = null
+    private var previousAction: GameObject.ActionType? = null
     private var lastRocketsOnTime = 0f
     private var mExplodingDeath = false
     private var mDamageSwap: ChangeComponentsComponent? = null
-    private var landThump: Sound? = null
-    private var rocketSound: Sound? = null
-    private var explosionSound: Sound? = null
+    private var landThump: SoundSystem.Sound? = null
+    private var rocketSound: SoundSystem.Sound? = null
+    private var explosionSound: SoundSystem.Sound? = null
     private var landThumpDelay = 0f
     private var rocketSoundStream = 0
     private var rocketSoundPaused = false
     private var lastRubyCount = 0
-    private var rubySound1: Sound? = null
-    private var rubySound2: Sound? = null
-    private var rubySound3: Sound? = null
+    private var rubySound1: SoundSystem.Sound? = null
+    private var rubySound2: SoundSystem.Sound? = null
+    private var rubySound3: SoundSystem.Sound? = null
     private var mInventory: InventoryComponent? = null
     override fun reset() {
-        previousAction = ActionType.INVALID
+        previousAction = GameObject.ActionType.INVALID
         mSprite = null
         jetSprite = null
         sparksSprite = null
@@ -96,7 +79,7 @@ class AnimationComponent : GameComponent() {
             }
             val time = sSystemRegistry.timeSystem
             val gameTime = time!!.gameTime
-            if (currentAction != ActionType.HIT_REACT && previousAction == ActionType.HIT_REACT) {
+            if (currentAction != GameObject.ActionType.HIT_REACT && previousAction == GameObject.ActionType.HIT_REACT) {
                 flickerTimeRemaining = FLICKER_DURATION
             }
             val touchingGround = parentObject.touchingGround()
@@ -119,7 +102,7 @@ class AnimationComponent : GameComponent() {
                 if (rocketSound != null) {
                     if (boosting) {
                         if (rocketSoundStream == -1) {
-                            rocketSoundStream = sound.play(rocketSound!!, true, SoundSystem.PRIORITY_HIGH)
+                            rocketSoundStream = sound.play(rocketSound!!, true, SoundSystem.Companion.PRIORITY_HIGH)
                             rocketSoundPaused = false
                         } else if (rocketSoundPaused) {
                             sound.resume(rocketSoundStream)
@@ -141,9 +124,9 @@ class AnimationComponent : GameComponent() {
                 if (rubyCount != lastRubyCount) {
                     lastRubyCount = rubyCount
                     when (rubyCount) {
-                        1 -> sound.play(rubySound1!!, false, SoundSystem.PRIORITY_NORMAL)
-                        2 -> sound.play(rubySound2!!, false, SoundSystem.PRIORITY_NORMAL)
-                        3 -> sound.play(rubySound3!!, false, SoundSystem.PRIORITY_NORMAL)
+                        1 -> sound.play(rubySound1!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                        2 -> sound.play(rubySound2!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                        3 -> sound.play(rubySound3!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                     }
                 }
             }
@@ -157,7 +140,7 @@ class AnimationComponent : GameComponent() {
                 }
             }
             var opacity = 1.0f
-            if (currentAction == ActionType.MOVE) {
+            if (currentAction == GameObject.ActionType.MOVE) {
                 val input = sSystemRegistry.inputGameInterface
                 val dpad = input!!.directionalPad
                 if (dpad.retreiveXaxisMagnitude() < 0.0f) {
@@ -204,17 +187,17 @@ class AnimationComponent : GameComponent() {
                         }
                     }
                 }
-            } else if (currentAction == ActionType.ATTACK) {
+            } else if (currentAction == GameObject.ActionType.ATTACK) {
                 mSprite!!.playAnimation(PlayerAnimations.STOMP.ordinal)
                 if (touchingGround && gameTime > landThumpDelay) {
                     if (landThump != null && sound != null) {
                         // modulate the sound slightly to avoid sounding too similar
-                        sound.play(landThump!!, false, SoundSystem.PRIORITY_HIGH, 1.0f,
+                        sound.play(landThump!!, false, SoundSystem.Companion.PRIORITY_HIGH, 1.0f,
                                 (Math.random() * 0.5f).toFloat() + 0.75f)
                         landThumpDelay = gameTime + LAND_THUMP_DELAY
                     }
                 }
-            } else if (currentAction == ActionType.HIT_REACT) {
+            } else if (currentAction == GameObject.ActionType.HIT_REACT) {
                 mSprite!!.playAnimation(PlayerAnimations.HIT_REACT.ordinal)
                 if (velocityX > 0.0f) {
                     parentObject.facingDirection.x = -1.0f
@@ -224,13 +207,13 @@ class AnimationComponent : GameComponent() {
                 if (sparksSprite != null) {
                     sparksSprite!!.visible = true
                 }
-            } else if (currentAction == ActionType.DEATH) {
+            } else if (currentAction == GameObject.ActionType.DEATH) {
                 if (previousAction != currentAction) {
                     if (explosionSound != null) {
-                        sound.play(explosionSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                        sound.play(explosionSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                     }
                     // by default, explode when hit with the DEATH hit type.
-                    var explodingDeath = parentObject.lastReceivedHitType == HitType.DEATH
+                    var explodingDeath = parentObject.lastReceivedHitType == CollisionParameters.HitType.DEATH
                     // or if touching a death tile.
                     val hotSpot = sSystemRegistry.hotSpotSystem
                     if (hotSpot != null) {
@@ -264,7 +247,7 @@ class AnimationComponent : GameComponent() {
                 if (mExplodingDeath) {
                     visible = false
                 }
-            } else if (currentAction == ActionType.FROZEN) {
+            } else if (currentAction == GameObject.ActionType.FROZEN) {
                 mSprite!!.playAnimation(PlayerAnimations.FROZEN.ordinal)
             }
             if (flickerTimeRemaining > 0.0f) {
@@ -305,15 +288,15 @@ class AnimationComponent : GameComponent() {
         mDamageSwap = damageSwap
     }
 
-    fun setLandThump(land: Sound?) {
+    fun setLandThump(land: SoundSystem.Sound?) {
         landThump = land
     }
 
-    fun setRocketSound(sound: Sound?) {
+    fun setRocketSound(sound: SoundSystem.Sound?) {
         rocketSound = sound
     }
 
-    fun setRubySounds(one: Sound?, two: Sound?, three: Sound?) {
+    fun setRubySounds(one: SoundSystem.Sound?, two: SoundSystem.Sound?, three: SoundSystem.Sound?) {
         rubySound1 = one
         rubySound2 = two
         rubySound3 = three
@@ -323,7 +306,7 @@ class AnimationComponent : GameComponent() {
         mInventory = inventory
     }
 
-    fun setExplosionSound(sound: Sound?) {
+    fun setExplosionSound(sound: SoundSystem.Sound?) {
         explosionSound = sound
     }
 

@@ -2,15 +2,15 @@ package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.utils.AdultsDifficultyConstants
 import com.replica.replicaisland.utils.BabyDifficultyConstants
-import com.replica.replicaisland.ChangeComponentsComponent
+import com.replica.replicaisland.entities.ChangeComponentsComponent
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.utils.DifficultyConstants
-import com.replica.replicaisland.FadeDrawableComponent
+import com.replica.replicaisland.utils.FadeDrawableComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
-import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.entities.HitReactionComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
-import com.replica.replicaisland.InventoryComponent
+import com.replica.replicaisland.entities.InventoryComponent
 import com.replica.replicaisland.utils.KidsDifficultyConstants
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2

@@ -3,7 +3,7 @@ package com.replica.replicaisland.entities
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
-import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.entities.HitReactionComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2

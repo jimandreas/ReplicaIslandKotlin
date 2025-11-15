@@ -1,6 +1,6 @@
 package com.replica.replicaisland.ui
 
-import com.replica.replicaisland.InventoryComponent
+import com.replica.replicaisland.entities.InventoryComponent
 import com.replica.replicaisland.ui.SortConstants
 import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject

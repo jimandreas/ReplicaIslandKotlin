@@ -1,32 +1,12 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UNUSED_PARAMETER", "unused", "IfThenToSafeAccess")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.mechanics.CollisionParameters.HitType
-import com.replica.replicaisland.core.GameObject.ActionType
-import com.replica.replicaisland.core.GameObject.Team
-import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
-import com.replica.replicaisland.InventoryComponent.UpdateRecord
+import com.replica.replicaisland.entities.ChangeComponentsComponent
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
-import com.replica.replicaisland.entities.LauncherComponent
+import com.replica.replicaisland.core.GameObjectFactory
+import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 import com.replica.replicaisland.utils.Utils
 
 /**
@@ -46,7 +26,7 @@ class HitReactionComponent : GameComponent() {
     private var dieOnCollect = false
     private var dieOnAttack = false
     private var possessionComponent: ChangeComponentsComponent? = null
-    private var inventoryUpdate: UpdateRecord? = null
+    private var inventoryUpdate: InventoryComponent.UpdateRecord? = null
     private var launcherComponent: LauncherComponent? = null
     private var launcherHitType = 0
     private var invincibleTime = 0f
@@ -55,11 +35,11 @@ class HitReactionComponent : GameComponent() {
     private var gameEventIndexData = 0
     private var lastGameEventTime = 0f
     private var forceInvincibility = false
-    private var takeHitSound: Sound? = null
-    private var dealHitSound: Sound? = null
+    private var takeHitSound: SoundSystem.Sound? = null
+    private var dealHitSound: SoundSystem.Sound? = null
     private var dealHitSoundHitType = 0
     private var takeHitSoundHitType = 0
-    private var spawnOnDealHitObjectType: GameObjectType? = null
+    private var spawnOnDealHitObjectType: GameObjectFactory.GameObjectType? = null
     private var spawnOnDealHitHitType = 0
     private var alignDealHitObjectToVictimX = false
     private var alignDealHitObjectToVictimY = false
@@ -75,18 +55,18 @@ class HitReactionComponent : GameComponent() {
         possessionComponent = null
         inventoryUpdate = null
         launcherComponent = null
-        launcherHitType = HitType.LAUNCH
+        launcherHitType = CollisionParameters.HitType.LAUNCH
         invincibleTime = 0.0f
         gameEventOnHit = -1
         gameEventIndexData = 0
         lastGameEventTime = -1.0f
-        gameEventHitType = HitType.INVALID
+        gameEventHitType = CollisionParameters.HitType.INVALID
         forceInvincibility = false
         takeHitSound = null
         dealHitSound = null
-        spawnOnDealHitObjectType = GameObjectType.INVALID
-        spawnOnDealHitHitType = HitType.INVALID
-        dealHitSoundHitType = HitType.INVALID
+        spawnOnDealHitObjectType = GameObjectFactory.GameObjectType.INVALID
+        spawnOnDealHitHitType = CollisionParameters.HitType.INVALID
+        dealHitSoundHitType = CollisionParameters.HitType.INVALID
         alignDealHitObjectToVictimX = false
         alignDealHitObjectToVictimY = false
     }
@@ -95,7 +75,7 @@ class HitReactionComponent : GameComponent() {
     fun hitVictim(parent: GameObject, victim: GameObject, hitType: Int,
                   hitAccepted: Boolean) {
         if (hitAccepted) {
-            if (pauseOnAttack && hitType == HitType.HIT) {
+            if (pauseOnAttack && hitType == CollisionParameters.HitType.HIT) {
                 val time = sSystemRegistry.timeSystem
                 time!!.freeze(pauseOnAttackTime)
             }
@@ -107,11 +87,11 @@ class HitReactionComponent : GameComponent() {
             }
             if (dealHitSound != null &&
                     (hitType == dealHitSoundHitType ||
-                            dealHitSoundHitType == HitType.INVALID)) {
+                            dealHitSoundHitType == CollisionParameters.HitType.INVALID)) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(dealHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                sound?.play(dealHitSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
             }
-            if (spawnOnDealHitObjectType != GameObjectType.INVALID &&
+            if (spawnOnDealHitObjectType != GameObjectFactory.GameObjectType.INVALID &&
                     hitType == spawnOnDealHitHitType) {
                 val x = if (alignDealHitObjectToVictimX) victim.position.x else parent.position.x
                 val y = if (alignDealHitObjectToVictimY) victim.position.y else parent.position.y
@@ -134,7 +114,7 @@ class HitReactionComponent : GameComponent() {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
         if (gameEventHitType == hitType &&
-                gameEventHitType != HitType.INVALID) {
+                gameEventHitType != CollisionParameters.HitType.INVALID) {
             if (lastGameEventTime < 0.0f || gameTime > lastGameEventTime + EVENT_SEND_DELAY) {
                 val level = sSystemRegistry.levelSystem
                 level!!.sendGameEvent(gameEventOnHit, gameEventIndexData, true)
@@ -142,23 +122,23 @@ class HitReactionComponent : GameComponent() {
                 // special case.  If we're waiting for a hit type to spawn an event and
                 // another event has just happened, eat this hit so we don't miss
                 // the chance to send the event.
-                hitType = HitType.INVALID
+                hitType = CollisionParameters.HitType.INVALID
             }
             lastGameEventTime = gameTime
         }
         when (hitType) {
-            HitType.INVALID -> {
+            CollisionParameters.HitType.INVALID -> {
             }
-            HitType.HIT -> {
+            CollisionParameters.HitType.HIT -> {
                 // don't hit our friends, if we have friends.
-                val sameTeam = parent.team == attacker.team && parent.team != Team.NONE
+                val sameTeam = parent.team == attacker.team && parent.team != GameObject.Team.NONE
                 if (!forceInvincibility && !mInvincible && parent.life > 0 && !sameTeam) {
                     parent.life -= 1
                     if (bounceOnHit && parent.life > 0) {
                         val pool = sSystemRegistry.vectorPool
                         val newVelocity = pool!!.allocate(parent.position)
                         newVelocity.subtract(attacker.position)
-                        newVelocity[0.5f * Utils.sign(newVelocity.x)] = 0.5f * Utils.sign(newVelocity.y)
+                        newVelocity[0.5f * Utils.Companion.sign(newVelocity.x)] = 0.5f * Utils.Companion.sign(newVelocity.y)
                         newVelocity.multiply(bounceMagnitude)
                         parent.velocity = newVelocity
                         parent.targetVelocity.zero()
@@ -170,12 +150,12 @@ class HitReactionComponent : GameComponent() {
                     }
                 } else {
                     // Ignore this hit.
-                    hitType = HitType.INVALID
+                    hitType = CollisionParameters.HitType.INVALID
                 }
             }
-            HitType.DEATH ->                 // respect teams?
+            CollisionParameters.HitType.DEATH ->                 // respect teams?
                 parent.life = 0
-            HitType.COLLECT -> {
+            CollisionParameters.HitType.COLLECT -> {
                 if (inventoryUpdate != null && parent.life > 0) {
                     val attackerInventory = attacker.findByClass(InventoryComponent::class.java)
                     if (attackerInventory != null) {
@@ -187,26 +167,26 @@ class HitReactionComponent : GameComponent() {
                     parent.life = 0
                 }
             }
-            HitType.POSSESS -> if (possessionComponent != null && parent.life > 0 && attacker.life > 0) {
+            CollisionParameters.HitType.POSSESS -> if (possessionComponent != null && parent.life > 0 && attacker.life > 0) {
                 possessionComponent!!.activate(parent)
             } else {
-                hitType = HitType.INVALID
+                hitType = CollisionParameters.HitType.INVALID
             }
-            HitType.LAUNCH -> {
+            CollisionParameters.HitType.LAUNCH -> {
             }
             else -> {
             }
         }
-        if (hitType != HitType.INVALID) {
+        if (hitType != CollisionParameters.HitType.INVALID) {
             if (takeHitSound != null && hitType == takeHitSoundHitType) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(takeHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                sound?.play(takeHitSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
             }
             lastHitTime = gameTime
-            parent.currentAction = ActionType.HIT_REACT
+            parent.currentAction = GameObject.ActionType.HIT_REACT
             parent.lastReceivedHitType = hitType
         }
-        return hitType != HitType.INVALID
+        return hitType != CollisionParameters.HitType.INVALID
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -222,7 +202,7 @@ class HitReactionComponent : GameComponent() {
         // This means that the lastReceivedHitType will persist for two frames, giving all systems
         // a chance to react.
         if (gameTime - lastHitTime > timeDelta) {
-            parentObject.lastReceivedHitType = HitType.INVALID
+            parentObject.lastReceivedHitType = CollisionParameters.HitType.INVALID
         }
     }
 
@@ -262,7 +242,7 @@ class HitReactionComponent : GameComponent() {
         possessionComponent = component
     }
 
-    fun setInventoryUpdate(update: UpdateRecord?) {
+    fun setInventoryUpdate(update: InventoryComponent.UpdateRecord?) {
         inventoryUpdate = update
     }
 
@@ -275,7 +255,7 @@ class HitReactionComponent : GameComponent() {
         gameEventHitType = hitType
         gameEventOnHit = gameFlowEventType
         gameEventIndexData = indexData
-        if (hitType == HitType.INVALID) {
+        if (hitType == CollisionParameters.HitType.INVALID) {
             // The game event has been cleared, so reset the timer blocking a
             // subsequent event.
             lastGameEventTime = -1.0f
@@ -286,17 +266,17 @@ class HitReactionComponent : GameComponent() {
         forceInvincibility = force
     }
 
-    fun setTakeHitSound(hitType: Int, sound: Sound?) {
+    fun setTakeHitSound(hitType: Int, sound: SoundSystem.Sound?) {
         takeHitSoundHitType = hitType
         takeHitSound = sound
     }
 
-    fun setDealHitSound(hitType: Int, sound: Sound?) {
+    fun setDealHitSound(hitType: Int, sound: SoundSystem.Sound?) {
         dealHitSound = sound
         dealHitSoundHitType = hitType
     }
 
-    fun setSpawnOnDealHit(hitType: Int, objectType: GameObjectType?, alignToVictimX: Boolean,
+    fun setSpawnOnDealHit(hitType: Int, objectType: GameObjectFactory.GameObjectType?, alignToVictimX: Boolean,
                           alignToVicitmY: Boolean) {
         spawnOnDealHitObjectType = objectType
         spawnOnDealHitHitType = hitType

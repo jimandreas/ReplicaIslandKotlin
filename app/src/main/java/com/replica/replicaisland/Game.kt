@@ -26,6 +26,7 @@ import android.widget.Toast
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObjectFactory
 import com.replica.replicaisland.core.GameObjectManager
+import com.replica.replicaisland.entities.HitPointPool
 import com.replica.replicaisland.input.InputGameInterface
 import com.replica.replicaisland.input.InputSystem
 import com.replica.replicaisland.input.MultiTouchFilter

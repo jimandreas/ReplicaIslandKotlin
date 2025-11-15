@@ -1,25 +1,9 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("MoveVariableDeclarationIntoWhen")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.mechanics.CollisionParameters.HitType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.utils.Vector2
@@ -52,13 +36,13 @@ class SelectDialogComponent : GameComponent() {
                     HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_4,
                     HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_5 -> {
 
-                        var event = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
+                        var event = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER1
                         var index = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1
                         if (hitSpot >= HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1) {
-                            event = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
+                            event = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2
                             index = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
                         }
-                        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, event, index)
+                        hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, event, index)
                     }
                 }
             }

@@ -1,24 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("UNUSED_VALUE")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.mechanics.ChannelSystem.ChannelBooleanValue
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.core.GameObjectFactory
@@ -48,16 +30,16 @@ class TheSourceComponent : GameComponent() {
         val parentObject = parent as GameObject
         var currentAction = parentObject.currentAction
         val camera = sSystemRegistry.cameraSystem
-        if (currentAction == ActionType.HIT_REACT) {
+        if (currentAction == GameObject.ActionType.HIT_REACT) {
             if (parentObject.life > 0) {
                 timer = SHAKE_TIME
                 camera!!.shake(SHAKE_TIME, CAMERA_HIT_SHAKE_MAGNITUDE)
                 shakeStartPosition = parentObject.position.x
-                parentObject.currentAction = ActionType.IDLE
-                currentAction = ActionType.IDLE
+                parentObject.currentAction = GameObject.ActionType.IDLE
+                currentAction = GameObject.ActionType.IDLE
             } else {
-                parentObject.currentAction = ActionType.DEATH
-                currentAction = ActionType.DEATH
+                parentObject.currentAction = GameObject.ActionType.DEATH
+                currentAction = GameObject.ActionType.DEATH
                 timer = DIE_TIME
                 explosionTimer = EXPLOSION_TIME
                 if (mChannel != null) {
@@ -134,7 +116,7 @@ class TheSourceComponent : GameComponent() {
         private const val SHAKE_SCALE = 300.0f
         private const val CAMERA_HIT_SHAKE_MAGNITUDE = 3.0f
         private const val SINK_SPEED = -20.0f
-        private val sChannelValue = ChannelBooleanValue()
+        private val sChannelValue = ChannelSystem.ChannelBooleanValue()
     }
 
     init {

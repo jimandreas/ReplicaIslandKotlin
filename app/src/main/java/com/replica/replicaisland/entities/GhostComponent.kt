@@ -1,29 +1,11 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("IfThenToSafeAccess")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.entities.ChangeComponentsComponent
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
-import com.replica.replicaisland.entities.PlayerComponent
 import com.replica.replicaisland.rendering.SpriteComponent
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 
 class GhostComponent : GameComponent() {
     private var mMovementSpeed = 0f
@@ -32,11 +14,11 @@ class GhostComponent : GameComponent() {
     private var useOrientationSensor = false
     private var mDelayOnRelease = 0f
     private var mKillOnRelease = false
-    private var targetAction: ActionType? = null
+    private var targetAction: GameObject.ActionType? = null
     private var mLifeTime = 0f
     private var mChangeActionOnButton = false
-    private var buttonPressedAction: ActionType? = null
-    private var ambientSound: Sound? = null
+    private var buttonPressedAction: GameObject.ActionType? = null
+    private var ambientSound: SoundSystem.Sound? = null
     private var ambientSoundStream = 0
     override fun reset() {
         mMovementSpeed = 0.0f
@@ -45,10 +27,10 @@ class GhostComponent : GameComponent() {
         useOrientationSensor = false
         mDelayOnRelease = 0.0f
         mKillOnRelease = false
-        targetAction = ActionType.MOVE
+        targetAction = GameObject.ActionType.MOVE
         mLifeTime = 0.0f
         mChangeActionOnButton = false
-        buttonPressedAction = ActionType.INVALID
+        buttonPressedAction = GameObject.ActionType.INVALID
         ambientSound = null
         ambientSoundStream = -1
     }
@@ -110,7 +92,7 @@ class GhostComponent : GameComponent() {
             if (!timeToRelease && ambientSound != null && ambientSoundStream == -1) {
                 val sound = sSystemRegistry.soundSystem
                 if (sound != null) {
-                    ambientSoundStream = sound.play(ambientSound!!, true, SoundSystem.PRIORITY_NORMAL)
+                    ambientSoundStream = sound.play(ambientSound!!, true, SoundSystem.Companion.PRIORITY_NORMAL)
                 }
             }
         }
@@ -193,7 +175,7 @@ class GhostComponent : GameComponent() {
         mKillOnRelease = killOnRelease
     }
 
-    fun setTargetAction(action: ActionType?) {
+    fun setTargetAction(action: GameObject.ActionType?) {
         targetAction = action
     }
 
@@ -201,12 +183,12 @@ class GhostComponent : GameComponent() {
         mLifeTime = lifeTime
     }
 
-    fun changeActionOnButton(pressedAction: ActionType?) {
+    fun changeActionOnButton(pressedAction: GameObject.ActionType?) {
         buttonPressedAction = pressedAction
         mChangeActionOnButton = true
     }
 
-    fun setAmbientSound(sound: Sound?) {
+    fun setAmbientSound(sound: SoundSystem.Sound?) {
         ambientSound = sound
     }
 

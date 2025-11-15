@@ -2,7 +2,7 @@ package com.replica.replicaisland.mechanics
 
 import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.entities.HitReactionComponent
 import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject

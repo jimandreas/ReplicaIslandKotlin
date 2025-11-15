@@ -1,26 +1,9 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("CascadeIf")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.core.GameObject.ActionType
-import com.replica.replicaisland.mechanics.HotSpotSystem.HotSpotType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2
 import kotlin.math.abs
@@ -60,9 +43,9 @@ class PatrolComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (parentObject.currentAction == ActionType.INVALID
-                || parentObject.currentAction == ActionType.HIT_REACT) {
-            parentObject.currentAction = ActionType.MOVE
+        if (parentObject.currentAction == GameObject.ActionType.INVALID
+                || parentObject.currentAction == GameObject.ActionType.HIT_REACT) {
+            parentObject.currentAction = GameObject.ActionType.MOVE
         }
         if ((mFlying || parentObject.touchingGround()) && parentObject.life > 0) {
             val manager = sSystemRegistry.gameObjectManager
@@ -73,9 +56,9 @@ class PatrolComponent : GameComponent() {
             if (mAttack) {
                 updateAttack(player, parentObject)
             }
-            if (parentObject.currentAction == ActionType.MOVE
+            if (parentObject.currentAction == GameObject.ActionType.MOVE
                     && maxSpeed > 0.0f) {
-                var hotSpot = HotSpotType.NONE
+                var hotSpot = HotSpotSystem.HotSpotType.NONE
                 val hotSpotSystem = sSystemRegistry.hotSpotSystem
                 if (hotSpotSystem != null) {
                     // TODO: ack, magic number
@@ -85,21 +68,21 @@ class PatrolComponent : GameComponent() {
                 val targetVelocityX = parentObject.targetVelocity.x
                 val targetVelocityY = parentObject.targetVelocity.y
                 var goLeft = (parentObject.touchingRightWall()
-                        || hotSpot == HotSpotType.GO_LEFT) && targetVelocityX >= 0.0f
+                        || hotSpot == HotSpotSystem.HotSpotType.GO_LEFT) && targetVelocityX >= 0.0f
                 var goRight = (parentObject.touchingLeftWall()
-                        || hotSpot == HotSpotType.GO_RIGHT) && targetVelocityX <= 0.0f
-                var pause = maxSpeed == 0.0f || hotSpot == HotSpotType.GO_DOWN
+                        || hotSpot == HotSpotSystem.HotSpotType.GO_RIGHT) && targetVelocityX <= 0.0f
+                var pause = maxSpeed == 0.0f || hotSpot == HotSpotSystem.HotSpotType.GO_DOWN
                 if (turnToFacePlayer && player != null && player.life > 0) {
                     val horizontalDelta = (player.centeredPositionX
                             - parentObject.centeredPositionX)
-                    val targetFacingDirection = Utils.sign(horizontalDelta)
+                    val targetFacingDirection = Utils.Companion.sign(horizontalDelta)
                     val closestDistance = player.width / 2.0f
                     if (targetFacingDirection < 0.0f) { // we want to turn to the left
                         if (goRight) {
                             goRight = false
                             pause = true
                         } else if (targetFacingDirection
-                                != Utils.sign(parentObject.facingDirection.x)) {
+                                != Utils.Companion.sign(parentObject.facingDirection.x)) {
                             goLeft = true
                         }
                     } else if (targetFacingDirection > 0.0f) { // we want to turn to the right
@@ -107,7 +90,7 @@ class PatrolComponent : GameComponent() {
                             goLeft = false
                             pause = true
                         } else if (targetFacingDirection
-                                != Utils.sign(parentObject.facingDirection.x)) {
+                                != Utils.Companion.sign(parentObject.facingDirection.x)) {
                             goRight = true
                         }
                     }
@@ -137,9 +120,9 @@ class PatrolComponent : GameComponent() {
                     }
                 } else {
                     val goUp = (parentObject.touchingGround() && targetVelocityY < 0.0f
-                            || hotSpot == HotSpotType.GO_UP)
+                            || hotSpot == HotSpotSystem.HotSpotType.GO_UP)
                     val goDown = (parentObject.touchingCeiling() && targetVelocityY > 0.0f
-                            || hotSpot == HotSpotType.GO_DOWN)
+                            || hotSpot == HotSpotSystem.HotSpotType.GO_DOWN)
                     if (goUp) {
                         parentObject.targetVelocity.x = 0.0f
                         parentObject.targetVelocity.y = maxSpeed
@@ -165,7 +148,7 @@ class PatrolComponent : GameComponent() {
             }
         } else if (!mFlying && !parentObject.touchingGround() && parentObject.life > 0) {
             // A non-flying unit is in the air.  In this case, just watch for bounces off walls.
-            if (Utils.sign(parentObject.targetVelocity.x) != Utils.sign(parentObject.velocity.x)) {
+            if (Utils.Companion.sign(parentObject.targetVelocity.x) != Utils.Companion.sign(parentObject.velocity.x)) {
                 // Todo: maybe the physics code should adjust target velocity instead in this case?
                 parentObject.targetVelocity.x *= -1.0f
             }
@@ -183,13 +166,13 @@ class PatrolComponent : GameComponent() {
         if (dx > context!!.gameWidth / 2.0f || dy > context.gameHeight / 2.0f) {
             visible = false
         }
-        if (visible && parentObject.currentAction == ActionType.MOVE) {
+        if (visible && parentObject.currentAction == GameObject.ActionType.MOVE) {
             var closeEnough = false
             val timeToAttack = gameTime - lastAttackTime > attackDelay
             if (attackAtDistance > 0 && player != null && player.life > 0 && timeToAttack) {
                 // only attack if we are facing the player
-                if (Utils.sign(player.position.x - parentObject.position.x)
-                        == Utils.sign(parentObject.facingDirection.x)) {
+                if (Utils.Companion.sign(player.position.x - parentObject.position.x)
+                        == Utils.Companion.sign(parentObject.facingDirection.x)) {
                     workingVector.set(parentObject.position)
                     workingVector.x = parentObject.centeredPositionX
                     workingVector2.set(player.position)
@@ -205,18 +188,18 @@ class PatrolComponent : GameComponent() {
             }
             if (timeToAttack && closeEnough) {
                 // Time to attack.
-                parentObject.currentAction = ActionType.ATTACK
+                parentObject.currentAction = GameObject.ActionType.ATTACK
                 lastAttackTime = gameTime
                 if (attackStopsMovement) {
                     parentObject.velocity.zero()
                     parentObject.targetVelocity.zero()
                 }
             }
-        } else if (parentObject.currentAction == ActionType.ATTACK) {
+        } else if (parentObject.currentAction == GameObject.ActionType.ATTACK) {
             if (gameTime - lastAttackTime > attackDuration) {
-                parentObject.currentAction = ActionType.MOVE
+                parentObject.currentAction = GameObject.ActionType.MOVE
                 if (attackStopsMovement) {
-                    parentObject.targetVelocity.x = maxSpeed * Utils.sign(parentObject.facingDirection.x)
+                    parentObject.targetVelocity.x = maxSpeed * Utils.Companion.sign(parentObject.facingDirection.x)
                     parentObject.acceleration.x = mAcceleration
                 }
             }

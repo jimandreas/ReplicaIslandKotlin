@@ -1,6 +1,6 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.AnimationFrame
+import com.replica.replicaisland.utils.AnimationFrame
 import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.core.PhasedObject
 import java.util.Arrays

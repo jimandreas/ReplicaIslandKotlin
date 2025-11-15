@@ -1,21 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.utils.FixedSizeArray
@@ -33,8 +18,8 @@ class ChangeComponentsComponent : GameComponent() {
     private var mActivated = false
     var currentlySwapped = false
         private set
-    private var swapOnAction: ActionType? = null
-    private var lastAction: ActionType? = null
+    private var swapOnAction: GameObject.ActionType? = null
+    private var lastAction: GameObject.ActionType? = null
     override fun reset() {
         val factory = sSystemRegistry.gameObjectFactory
         // GameComponents hanging out in the componentsToInsert list are not part of the object
@@ -64,12 +49,12 @@ class ChangeComponentsComponent : GameComponent() {
         mPingPong = false
         mActivated = false
         currentlySwapped = false
-        swapOnAction = ActionType.INVALID
-        lastAction = ActionType.INVALID
+        swapOnAction = GameObject.ActionType.INVALID
+        lastAction = GameObject.ActionType.INVALID
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
-        if (swapOnAction != ActionType.INVALID) {
+        if (swapOnAction != GameObject.ActionType.INVALID) {
             val parentObject = parent as GameObject
             val currentAction = parentObject.currentAction
             if (currentAction != lastAction) {
@@ -93,7 +78,7 @@ class ChangeComponentsComponent : GameComponent() {
         mPingPong = pingPong
     }
 
-    fun setSwapAction(action: ActionType?) {
+    fun setSwapAction(action: GameObject.ActionType?) {
         swapOnAction = action
     }
 

@@ -1,29 +1,11 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("ConvertTwoComparisonsToRangeCheck")
+package com.replica.replicaisland.entities
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.core.GameObject.ActionType
-import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.core.GameObjectFactory
 import com.replica.replicaisland.core.LifetimeComponent
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2
 import kotlin.math.cos
@@ -35,13 +17,13 @@ import kotlin.math.sin
  * of game object.
  */
 class LaunchProjectileComponent : GameComponent() {
-    private var mObjectTypeToSpawn: GameObjectType? = null
+    private var mObjectTypeToSpawn: GameObjectFactory.GameObjectType? = null
     private var mOffsetX = 0f
     private var mOffsetY = 0f
     private var mVelocityX = 0f
     private var mVelocityY = 0f
     private var thetaError = 0f
-    private var mRequiredAction: ActionType? = null
+    private var mRequiredAction: GameObject.ActionType? = null
     private var delayBetweenShots = 0f
     private var projectilesInSet = 0
     private var mDelayBetweenSets = 0f
@@ -55,10 +37,10 @@ class LaunchProjectileComponent : GameComponent() {
     private var maxTrackedProjectiles = 0
     private var trackedProjectileCount = 0
     private val workingVector: Vector2
-    private var shootSound: Sound? = null
+    private var shootSound: SoundSystem.Sound? = null
     override fun reset() {
-        mRequiredAction = ActionType.INVALID
-        mObjectTypeToSpawn = GameObjectType.INVALID
+        mRequiredAction = GameObject.ActionType.INVALID
+        mObjectTypeToSpawn = GameObjectFactory.GameObjectType.INVALID
         mOffsetX = 0.0f
         mOffsetY = 0.0f
         mVelocityX = 0.0f
@@ -86,7 +68,7 @@ class LaunchProjectileComponent : GameComponent() {
         val gameTime = time!!.gameTime
         if (trackedProjectileCount < maxTrackedProjectiles || !trackProjectiles) {
             if (parentObject.currentAction == mRequiredAction
-                    || mRequiredAction == ActionType.INVALID) {
+                    || mRequiredAction == GameObject.ActionType.INVALID) {
                 if (setStartedTime == -1.0f) {
                     launchedCount = 0
                     lastProjectileTime = 0.0f
@@ -138,7 +120,7 @@ class LaunchProjectileComponent : GameComponent() {
                     val angle = (Math.random() * thetaError * Math.PI * 2.0f).toFloat()
                     workingVector.x = sin(angle.toDouble()).toFloat()
                     workingVector.y = cos(angle.toDouble()).toFloat()
-                    if (Utils.close(workingVector.length2(), 0.0f)) {
+                    if (Utils.Companion.close(workingVector.length2(), 0.0f)) {
                         workingVector[1.0f] = 1.0f
                     }
                 }
@@ -160,13 +142,13 @@ class LaunchProjectileComponent : GameComponent() {
                 manager.add(thing)
                 if (shootSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(shootSound!!, false, SoundSystem.PRIORITY_NORMAL)
+                    sound?.play(shootSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
                 }
             }
         }
     }
 
-    fun setObjectTypeToSpawn(objectTypeToSpawn: GameObjectType?) {
+    fun setObjectTypeToSpawn(objectTypeToSpawn: GameObjectFactory.GameObjectType?) {
         mObjectTypeToSpawn = objectTypeToSpawn
     }
 
@@ -186,7 +168,7 @@ class LaunchProjectileComponent : GameComponent() {
         mVelocityY = velocityY
     }
 
-    fun setRequiredAction(requiredAction: ActionType?) {
+    fun setRequiredAction(requiredAction: GameObject.ActionType?) {
         mRequiredAction = requiredAction
     }
 
@@ -234,7 +216,7 @@ class LaunchProjectileComponent : GameComponent() {
         thetaError = error
     }
 
-    fun setShootSound(shoot: Sound?) {
+    fun setShootSound(shoot: SoundSystem.Sound?) {
         shootSound = shoot
     }
 

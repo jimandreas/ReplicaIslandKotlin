@@ -3,7 +3,7 @@ package com.replica.replicaisland.mechanics
 import android.content.res.AssetManager
 import com.replica.replicaisland.utils.AllocationGuard
 import com.replica.replicaisland.utils.FixedSizeArray
-import com.replica.replicaisland.HitPoint
+import com.replica.replicaisland.entities.HitPoint
 import com.replica.replicaisland.utils.TObjectPool
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2

@@ -1,21 +1,6 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 
@@ -44,8 +29,8 @@ class SleeperComponent : GameComponent() {
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        if (parentObject.currentAction == ActionType.INVALID) {
-            parentObject.currentAction = ActionType.IDLE
+        if (parentObject.currentAction == GameObject.ActionType.INVALID) {
+            parentObject.currentAction = GameObject.ActionType.IDLE
             state = STATE_SLEEPING
         }
         val camera = sSystemRegistry.cameraSystem
@@ -53,13 +38,13 @@ class SleeperComponent : GameComponent() {
             STATE_SLEEPING -> if (camera!!.shaking() && camera.pointVisible(parentObject.position, parentObject.width / 2.0f)) {
                 state = STATE_WAKING
                 stateTime = wakeUpDuration
-                parentObject.currentAction = ActionType.MOVE
+                parentObject.currentAction = GameObject.ActionType.MOVE
             }
             STATE_WAKING -> {
                 stateTime -= timeDelta
                 if (stateTime <= 0.0f) {
                     state = STATE_ATTACKING
-                    parentObject.currentAction = ActionType.ATTACK
+                    parentObject.currentAction = GameObject.ActionType.ATTACK
                     parentObject.impulse.x += attackImpulseX * parentObject.facingDirection.x
                     parentObject.impulse.y += attackImpulseY
                 }
@@ -71,7 +56,7 @@ class SleeperComponent : GameComponent() {
             }
             STATE_SLAM -> if (!camera!!.shaking()) {
                 state = STATE_SLEEPING
-                parentObject.currentAction = ActionType.IDLE
+                parentObject.currentAction = GameObject.ActionType.IDLE
             }
         }
     }
