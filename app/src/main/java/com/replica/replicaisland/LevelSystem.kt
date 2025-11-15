@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import android.content.res.AssetManager.AssetInputStream
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.levels.LevelTree
 import com.replica.replicaisland.levels.TiledWorld
 import java.io.IOException

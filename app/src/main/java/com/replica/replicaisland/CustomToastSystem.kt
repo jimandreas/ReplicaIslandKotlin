@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.replica.replicaisland.core.BaseObject
 
 class CustomToastSystem(context: Context) : BaseObject() {
     private val mView: View

@@ -15,6 +15,9 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 /**
  * A component to include dynamic collision volumes (such as those produced every frame from
  * animating sprites) in the dynamic collision world.  Given a set of "attack" volumes and

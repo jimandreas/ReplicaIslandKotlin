@@ -17,6 +17,9 @@
 @file:Suppress("unused")
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 /**
  * A game component that implements gravity.  Adding this component to a game object will cause
  * it to be pulled down towards the ground.

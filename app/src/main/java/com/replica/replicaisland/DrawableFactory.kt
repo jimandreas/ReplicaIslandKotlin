@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+
 /**
  * This class manages drawable objects that have short lifetimes (one or two frames).  It provides
  * type-specific allocator functions and a type-insensitive release function.  This class manages

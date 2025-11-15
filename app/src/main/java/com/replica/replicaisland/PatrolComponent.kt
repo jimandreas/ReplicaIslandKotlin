@@ -17,8 +17,10 @@
 
 package com.replica.replicaisland
 
-import com.replica.replicaisland.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.ActionType
 import com.replica.replicaisland.HotSpotSystem.HotSpotType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import kotlin.math.abs
 
 /**

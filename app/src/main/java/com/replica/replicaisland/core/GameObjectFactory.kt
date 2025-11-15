@@ -1,35 +1,68 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("RemoveEmptySecondaryConstructorBody", "MemberVisibilityCanBePrivate", "BooleanLiteralArgument", "NON_EXHAUSTIVE_WHEN", "UNUSED_PARAMETER", "SENSELESS_COMPARISON", "VARIABLE_WITH_REDUNDANT_INITIALIZER", "LocalVariableName", "unused")
+package com.replica.replicaisland.core
 
-package com.replica.replicaisland
-
-
-import com.replica.replicaisland.AnimationComponent.PlayerAnimations
-import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.EnemyAnimationComponent.EnemyAnimations
-import com.replica.replicaisland.GameObject.ActionType
-import com.replica.replicaisland.GameObject.Team
-import com.replica.replicaisland.InventoryComponent.UpdateRecord
-import com.replica.replicaisland.PlayerComponent.Companion.difficultyConstants
+import com.replica.replicaisland.AABoxCollisionVolume
+import com.replica.replicaisland.AnimationComponent
+import com.replica.replicaisland.AnimationFrame
+import com.replica.replicaisland.AnimationPlayerActivity
+import com.replica.replicaisland.AttackAtDistanceComponent
+import com.replica.replicaisland.BackgroundCollisionComponent
+import com.replica.replicaisland.ButtonAnimationComponent
+import com.replica.replicaisland.ChangeComponentsComponent
+import com.replica.replicaisland.ChannelSystem
+import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.CollisionVolume
+import com.replica.replicaisland.CrusherAndouComponent
+import com.replica.replicaisland.DebugLog
+import com.replica.replicaisland.DoorAnimationComponent
+import com.replica.replicaisland.DrawableBitmap
+import com.replica.replicaisland.DynamicCollisionComponent
+import com.replica.replicaisland.EnemyAnimationComponent
+import com.replica.replicaisland.EventRecorder
+import com.replica.replicaisland.FadeDrawableComponent
+import com.replica.replicaisland.FixedAnimationComponent
+import com.replica.replicaisland.FixedSizeArray
+import com.replica.replicaisland.FrameRateWatcherComponent
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.core.GameComponentPool
+import com.replica.replicaisland.GameFlowEvent
+import com.replica.replicaisland.GenericAnimationComponent
+import com.replica.replicaisland.GhostComponent
+import com.replica.replicaisland.GravityComponent
+import com.replica.replicaisland.HitPlayerComponent
+import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.InventoryComponent
+import com.replica.replicaisland.LaunchProjectileComponent
+import com.replica.replicaisland.LauncherComponent
+import com.replica.replicaisland.core.LifetimeComponent
+import com.replica.replicaisland.MotionBlurComponent
+import com.replica.replicaisland.MovementComponent
+import com.replica.replicaisland.NPCAnimationComponent
+import com.replica.replicaisland.NPCComponent
+import com.replica.replicaisland.OrbitalMagnetComponent
+import com.replica.replicaisland.PatrolComponent
+import com.replica.replicaisland.PhysicsComponent
+import com.replica.replicaisland.PlaySingleSoundComponent
+import com.replica.replicaisland.PlayerComponent
+import com.replica.replicaisland.PopOutComponent
+import com.replica.replicaisland.R
+import com.replica.replicaisland.ScrollerComponent
+import com.replica.replicaisland.SelectDialogComponent
+import com.replica.replicaisland.SimpleCollisionComponent
+import com.replica.replicaisland.SimplePhysicsComponent
+import com.replica.replicaisland.SleeperComponent
+import com.replica.replicaisland.SolidSurfaceComponent
+import com.replica.replicaisland.SortConstants
+import com.replica.replicaisland.SphereCollisionVolume
+import com.replica.replicaisland.SpriteAnimation
+import com.replica.replicaisland.SpriteComponent
+import com.replica.replicaisland.TObjectPool
+import com.replica.replicaisland.TheSourceComponent
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.levels.TiledWorld
 import com.replica.replicaisland.rendering.CameraBiasComponent
 import com.replica.replicaisland.rendering.RenderComponent
-
-import java.util.*
+import java.util.Comparator
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
@@ -425,7 +458,7 @@ class GameObjectFactory : BaseObject() {
     fun sanityCheckPools() {
         val outstandingObjects = gameObjectPool.fetchAllocatedCount()
         if (outstandingObjects != 0) {
-            DebugLog.d("Sanity Check", "Outstanding game thing allocations! ("
+            DebugLog.Companion.d("Sanity Check", "Outstanding game thing allocations! ("
                     + outstandingObjects + ")")
             //TODO 2 fix: assert(false)
         }
@@ -433,7 +466,7 @@ class GameObjectFactory : BaseObject() {
         for (x in 0 until componentPoolCount) {
             val outstandingComponents = componentPools[x]!!.fetchAllocatedCount()
             if (outstandingComponents != 0) {
-                DebugLog.d("Sanity Check", "Outstanding "
+                DebugLog.Companion.d("Sanity Check", "Outstanding "
                         + componentPools[x]!!.objectClass!!.simpleName
                         + " allocations! (" + outstandingComponents + ")")
                 ////TODO 2 fix: assert false;
@@ -464,113 +497,222 @@ class GameObjectFactory : BaseObject() {
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
             val pressAndCollectVolume = FixedSizeArray<CollisionVolume>(2)
             val collectionVolume = AABoxCollisionVolume(16, 0, 32, 48)
-            collectionVolume.hitType = HitType.COLLECT
+            collectionVolume.hitType = CollisionParameters.HitType.COLLECT
             pressAndCollectVolume.add(collectionVolume)
             val pressCollisionVolume = AABoxCollisionVolume(16, 0, 32, 16)
-            pressCollisionVolume.hitType = HitType.DEPRESS
+            pressCollisionVolume.hitType = CollisionParameters.HitType.DEPRESS
             pressAndCollectVolume.add(pressCollisionVolume)
-            val idle = SpriteAnimation(PlayerAnimations.IDLE.ordinal, 1)
-            idle.addFrame(AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.andou_stand),
-                    1.0f, pressAndCollectVolume, basicVulnerabilityVolume))
-            val angle = SpriteAnimation(PlayerAnimations.MOVE.ordinal, 1)
+            val idle = SpriteAnimation(AnimationComponent.PlayerAnimations.IDLE.ordinal, 1)
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.allocateTexture(R.drawable.andou_stand),
+                    1.0f, pressAndCollectVolume, basicVulnerabilityVolume
+                )
+            )
+            val angle = SpriteAnimation(AnimationComponent.PlayerAnimations.MOVE.ordinal, 1)
             angle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diag01),
-                            0.0416f, pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diag01),
+                    0.0416f, pressAndCollectVolume, basicVulnerabilityVolume
+                )
+            )
             val extremeAngle = SpriteAnimation(
-                    PlayerAnimations.MOVE_FAST.ordinal, 1)
+                AnimationComponent.PlayerAnimations.MOVE_FAST.ordinal, 1
+            )
             extremeAngle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diagmore01),
-                            0.0416f, pressAndCollectVolume, basicVulnerabilityVolume))
-            val up = SpriteAnimation(PlayerAnimations.BOOST_UP.ordinal, 2)
-            up.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_flyup02),
-                    Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
-            up.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_flyup03),
-                    Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diagmore01),
+                    0.0416f, pressAndCollectVolume, basicVulnerabilityVolume
+                )
+            )
+            val up = SpriteAnimation(AnimationComponent.PlayerAnimations.BOOST_UP.ordinal, 2)
+            up.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_flyup02),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
+            up.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_flyup03),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
             up.loop = true
-            val boostAngle = SpriteAnimation(PlayerAnimations.BOOST_MOVE.ordinal, 2)
+            val boostAngle =
+                SpriteAnimation(AnimationComponent.PlayerAnimations.BOOST_MOVE.ordinal, 2)
             boostAngle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diag02),
-                            Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diag02),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
             boostAngle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diag03),
-                            Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diag03),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
             boostAngle.loop = true
             val boostExtremeAngle = SpriteAnimation(
-                    PlayerAnimations.BOOST_MOVE_FAST.ordinal, 2)
+                AnimationComponent.PlayerAnimations.BOOST_MOVE_FAST.ordinal, 2
+            )
             boostExtremeAngle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diagmore02),
-                            Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diagmore02),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
             boostExtremeAngle.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_diagmore03),
-                            Utils.framesToTime(24, 1), pressAndCollectVolume, basicVulnerabilityVolume))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_diagmore03),
+                    Utils.Companion.framesToTime(24, 1),
+                    pressAndCollectVolume,
+                    basicVulnerabilityVolume
+                )
+            )
             boostExtremeAngle.loop = true
             val stompAttackVolume = FixedSizeArray<CollisionVolume>(3)
-            stompAttackVolume.add(AABoxCollisionVolume(16f, -5.0f, 32f, 37f, HitType.HIT))
+            stompAttackVolume.add(
+                AABoxCollisionVolume(
+                    16f,
+                    -5.0f,
+                    32f,
+                    37f,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             stompAttackVolume.add(pressCollisionVolume)
             stompAttackVolume.add(collectionVolume)
-            val stomp = SpriteAnimation(PlayerAnimations.STOMP.ordinal, 4)
+            val stomp = SpriteAnimation(AnimationComponent.PlayerAnimations.STOMP.ordinal, 4)
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp01),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp01),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp02),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp02),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp03),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp03),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp04),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
-            val hitReactAnim = SpriteAnimation(PlayerAnimations.HIT_REACT.ordinal, 1)
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp04),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
+            val hitReactAnim =
+                SpriteAnimation(AnimationComponent.PlayerAnimations.HIT_REACT.ordinal, 1)
             hitReactAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_hit),
-                            0.1f, pressAndCollectVolume, null))
-            val deathAnim = SpriteAnimation(PlayerAnimations.DEATH.ordinal, 16)
-            val death1 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_die01),
-                    Utils.framesToTime(24, 1), null, null)
-            val death2 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_die02),
-                    Utils.framesToTime(24, 1), null, null)
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_hit),
+                    0.1f, pressAndCollectVolume, null
+                )
+            )
+            val deathAnim = SpriteAnimation(AnimationComponent.PlayerAnimations.DEATH.ordinal, 16)
+            val death1 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.andou_die01),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
+            val death2 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.andou_die02),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             deathAnim.addFrame(death1)
             deathAnim.addFrame(death2)
             deathAnim.addFrame(death1)
             deathAnim.addFrame(death2)
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode01),
-                            Utils.framesToTime(24, 1), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode01),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode02),
-                            Utils.framesToTime(24, 1), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode02),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode03),
-                            Utils.framesToTime(24, 1), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode03),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode04),
-                            Utils.framesToTime(24, 1), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode04),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode05),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode05),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode06),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode06),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode07),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode07),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode08),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode08),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode09),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode09),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode10),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode10),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode11),
-                            Utils.framesToTime(24, 2), null, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode11),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
             deathAnim.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_explode12),
-                            Utils.framesToTime(24, 2), null, null))
-            val frozenAnim = SpriteAnimation(PlayerAnimations.FROZEN.ordinal, 1)
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_explode12),
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            val frozenAnim = SpriteAnimation(AnimationComponent.PlayerAnimations.FROZEN.ordinal, 1)
             // Frozen has no frames!
 
 
@@ -615,9 +757,9 @@ class GameObjectFactory : BaseObject() {
         hitReact!!.setBounceOnHit(true)
         hitReact.setPauseOnAttack(true)
         hitReact.setInvincibleTime(3.0f)
-        hitReact.setSpawnOnDealHit(HitType.HIT, GameObjectType.CRUSH_FLASH, false, true)
+        hitReact.setSpawnOnDealHit(CollisionParameters.HitType.HIT, GameObjectType.CRUSH_FLASH, false, true)
         if (sound != null) {
-            hitReact.setTakeHitSound(HitType.HIT, sound.load(R.raw.deep_clang))
+            hitReact.setTakeHitSound(CollisionParameters.HitType.HIT, sound.load(R.raw.deep_clang))
         }
         dynamicCollision!!.setHitReactionComponent(hitReact)
         player!!.setHitReactionComponent(hitReact)
@@ -648,8 +790,8 @@ class GameObjectFactory : BaseObject() {
         val invincibleSwap = allocateComponent(ChangeComponentsComponent::class.java) as ChangeComponentsComponent?
         invincibleSwap!!.setPingPongBehavior(true)
         player.setInvincibleSwap(invincibleSwap)
-        thing.life = difficultyConstants.whatIsMaxPlayerLife()
-        thing.team = Team.PLAYER
+        thing.life = PlayerComponent.Companion.difficultyConstants.whatIsMaxPlayerLife()
+        thing.team = GameObject.Team.PLAYER
 
         // Very very basic DDA.  Make the game easier if we've died on this level too much.
         val level = sSystemRegistry.levelSystem
@@ -667,7 +809,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(damageSwap)
         thing.add(invincibleSwap)
         addStaticData(GameObjectType.PLAYER, thing, sprite)
-        sprite.playAnimation(PlayerAnimations.IDLE.ordinal)
+        sprite.playAnimation(AnimationComponent.PlayerAnimations.IDLE.ordinal)
 
 
         // Jets
@@ -677,11 +819,17 @@ class GameObjectFactory : BaseObject() {
                 jetStaticData = FixedSizeArray(1)
                 val jetAnim = SpriteAnimation(0, 2)
                 jetAnim.addFrame(
-                        AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.jetfire01),
-                                Utils.framesToTime(24, 1)))
+                    AnimationFrame(
+                        textureLibrary!!.allocateTexture(R.drawable.jetfire01),
+                        Utils.Companion.framesToTime(24, 1)
+                    )
+                )
                 jetAnim.addFrame(
-                        AnimationFrame(textureLibrary.allocateTexture(R.drawable.jetfire02),
-                                Utils.framesToTime(24, 1)))
+                    AnimationFrame(
+                        textureLibrary.allocateTexture(R.drawable.jetfire02),
+                        Utils.Companion.framesToTime(24, 1)
+                    )
+                )
                 jetAnim.loop = true
                 jetStaticData.add(jetAnim)
                 setStaticData(GameObjectType.PLAYER_JETS, jetStaticData)
@@ -705,14 +853,23 @@ class GameObjectFactory : BaseObject() {
                 sparksStaticData = FixedSizeArray(1)
                 val sparksAnim = SpriteAnimation(0, 3)
                 sparksAnim.addFrame(
-                        AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.spark01),
-                                Utils.framesToTime(24, 1)))
+                    AnimationFrame(
+                        textureLibrary!!.allocateTexture(R.drawable.spark01),
+                        Utils.Companion.framesToTime(24, 1)
+                    )
+                )
                 sparksAnim.addFrame(
-                        AnimationFrame(textureLibrary.allocateTexture(R.drawable.spark02),
-                                Utils.framesToTime(24, 1)))
+                    AnimationFrame(
+                        textureLibrary.allocateTexture(R.drawable.spark02),
+                        Utils.Companion.framesToTime(24, 1)
+                    )
+                )
                 sparksAnim.addFrame(
-                        AnimationFrame(textureLibrary.allocateTexture(R.drawable.spark03),
-                                Utils.framesToTime(24, 1)))
+                    AnimationFrame(
+                        textureLibrary.allocateTexture(R.drawable.spark03),
+                        Utils.Companion.framesToTime(24, 1)
+                    )
+                )
                 sparksAnim.loop = true
                 sparksStaticData.add(sparksAnim)
                 setStaticData(GameObjectType.PLAYER_SPARKS, sparksStaticData)
@@ -735,17 +892,33 @@ class GameObjectFactory : BaseObject() {
             if (glowStaticData == null) {
                 glowStaticData = FixedSizeArray(1)
                 val glowAttackVolume = FixedSizeArray<CollisionVolume>(1)
-                glowAttackVolume.add(SphereCollisionVolume(40, 40, 40, HitType.HIT))
+                glowAttackVolume.add(
+                    SphereCollisionVolume(
+                        40,
+                        40,
+                        40,
+                        CollisionParameters.HitType.HIT
+                    )
+                )
                 val glowAnim = SpriteAnimation(0, 3)
                 glowAnim.addFrame(
-                        AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.effect_glow01),
-                                Utils.framesToTime(24, 1), glowAttackVolume, null))
+                    AnimationFrame(
+                        textureLibrary!!.allocateTexture(R.drawable.effect_glow01),
+                        Utils.Companion.framesToTime(24, 1), glowAttackVolume, null
+                    )
+                )
                 glowAnim.addFrame(
-                        AnimationFrame(textureLibrary.allocateTexture(R.drawable.effect_glow02),
-                                Utils.framesToTime(24, 1), glowAttackVolume, null))
+                    AnimationFrame(
+                        textureLibrary.allocateTexture(R.drawable.effect_glow02),
+                        Utils.Companion.framesToTime(24, 1), glowAttackVolume, null
+                    )
+                )
                 glowAnim.addFrame(
-                        AnimationFrame(textureLibrary.allocateTexture(R.drawable.effect_glow03),
-                                Utils.framesToTime(24, 1), glowAttackVolume, null))
+                    AnimationFrame(
+                        textureLibrary.allocateTexture(R.drawable.effect_glow03),
+                        Utils.Companion.framesToTime(24, 1), glowAttackVolume, null
+                    )
+                )
                 glowAnim.loop = true
                 glowStaticData.add(glowAnim)
                 setStaticData(GameObjectType.PLAYER_GLOW, glowStaticData)
@@ -759,10 +932,10 @@ class GameObjectFactory : BaseObject() {
             val glowCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
             glowSprite.setCollisionComponent(glowCollision)
             val glowFade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
-            val glowDuration = difficultyConstants.whatIsGlowDuration()
+            val glowDuration = PlayerComponent.Companion.difficultyConstants.whatIsGlowDuration()
             glowFade!!.setupFade(1.0f, 0.0f, 0.15f,
-                    FadeDrawableComponent.LOOP_TYPE_PING_PONG,
-                    FadeDrawableComponent.FADE_EASE,
+                    FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG,
+                    FadeDrawableComponent.Companion.FADE_EASE,
                     glowDuration - 4.0f) // 4 seconds before the glow ends, start flashing
             glowFade.setPhaseDuration(glowDuration)
             glowFade.setRenderComponent(glowRender)
@@ -790,12 +963,18 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(1)
             val textureLibrary = sSystemRegistry.shortTermTextureLibrary
             val sparksAnim = SpriteAnimation(0, 13)
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.spark01),
-                    Utils.framesToTime(24, 1))
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.spark02),
-                    Utils.framesToTime(24, 1))
-            val frame3 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.spark03),
-                    Utils.framesToTime(24, 1))
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.spark01),
+                Utils.Companion.framesToTime(24, 1)
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.spark02),
+                Utils.Companion.framesToTime(24, 1)
+            )
+            val frame3 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.spark03),
+                Utils.Companion.framesToTime(24, 1)
+            )
             sparksAnim.addFrame(frame1)
             sparksAnim.addFrame(frame2)
             sparksAnim.addFrame(frame3)
@@ -836,32 +1015,68 @@ class GameObjectFactory : BaseObject() {
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(2)
-            basicAttackVolume.add(SphereCollisionVolume(16, 32, 32, HitType.HIT))
-            basicAttackVolume.add(AABoxCollisionVolume(16, 0, 32, 16, HitType.DEPRESS))
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 4)
-            idle.addFrame(AnimationFrame(
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    32,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            basicAttackVolume.add(
+                AABoxCollisionVolume(
+                    16,
+                    0,
+                    32,
+                    16,
+                    CollisionParameters.HitType.DEPRESS
+                )
+            )
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 4)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_brobot_idle01),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_idle02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_idle03),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_idle02),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val walk = SpriteAnimation(EnemyAnimations.MOVE.ordinal, 3)
-            walk.addFrame(AnimationFrame(
+            val walk = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.MOVE.ordinal, 3)
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             walk.loop = true
             staticData.add(gravity)
             staticData.add(movement)
@@ -889,7 +1104,7 @@ class GameObjectFactory : BaseObject() {
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
         lifetime!!.setObjectToSpawnOnDeath(GameObjectType.EXPLOSION_GIANT)
         lifetime.setVulnerableToDeathTiles(true)
-        lifetime.setIncrementEventCounter(EventRecorder.COUNTER_ROBOTS_DESTROYED)
+        lifetime.setIncrementEventCounter(EventRecorder.Companion.COUNTER_ROBOTS_DESTROYED)
         val ghost = allocateComponent(GhostComponent::class.java) as GhostComponent?
         ghost!!.setMovementSpeed(500.0f)
         ghost.setAcceleration(1000.0f)
@@ -914,7 +1129,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(hitReact!!)
         thing.add(lifetime)
         thing.add(ghostSwap)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -963,37 +1178,77 @@ class GameObjectFactory : BaseObject() {
 
             // Animations
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(12, 5, 42, 27, HitType.HIT))
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    12,
+                    5,
+                    42,
+                    27,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(AABoxCollisionVolume(12, 5, 42, 27, HitType.HIT))
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 1)
-            idle.addFrame(AnimationFrame(
+            basicAttackVolume.add(
+                AABoxCollisionVolume(
+                    12,
+                    5,
+                    42,
+                    27,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_stand),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
-            val walk = SpriteAnimation(EnemyAnimations.MOVE.ordinal, 5)
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            val walk = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.MOVE.ordinal, 5)
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_stand),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_walk01),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_walk02),
-                    Utils.framesToTime(24, 6), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 6), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_walk01),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_stand),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             walk.loop = true
-            val attack = SpriteAnimation(EnemyAnimations.ATTACK.ordinal, 2)
-            attack.addFrame(AnimationFrame(
+            val attack = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal, 2)
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_shoot01),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.snailbomb_shoot02),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -1034,9 +1289,9 @@ class GameObjectFactory : BaseObject() {
         gun.setObjectTypeToSpawn(GameObjectType.CANNON_BALL)
         gun.setOffsetX(55f)
         gun.setOffsetY(21f)
-        gun.setRequiredAction(ActionType.ATTACK)
+        gun.setRequiredAction(GameObject.ActionType.ATTACK)
         gun.setVelocityX(100.0f)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1050,7 +1305,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(lifetime)
         thing.add(gun)
         addStaticData(GameObjectType.SNAILBOMB, thing, sprite)
-        val attack = sprite.findAnimation(EnemyAnimations.ATTACK.ordinal)
+        val attack = sprite.findAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal)
         if (attack != null) {
             gun.setDelayBeforeFirstSet(attack.length)
         }
@@ -1083,45 +1338,60 @@ class GameObjectFactory : BaseObject() {
             popOut.setHideDistance(4000f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.HIT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.HIT
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 32, 32, HitType.HIT))
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 2)
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    32,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 2)
             val idle1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_idle01),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_idle01),
+                Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+            )
             val idle2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_idle02),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_idle02),
+                Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+            )
             idle.addFrame(idle1)
             idle.addFrame(idle2)
             idle.loop = true
-            val appear = SpriteAnimation(EnemyAnimations.APPEAR.ordinal, 6)
+            val appear = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.APPEAR.ordinal, 6)
             val appear1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate01),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate01),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val appear2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate02),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate02),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val appear3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate03),
+                Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+            )
             val appear4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate04),
+                Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+            )
             val appear5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate05),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate05),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val appear6 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate06),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_activate06),
+                Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+            )
             appear.addFrame(appear1)
             appear.addFrame(appear2)
             appear.addFrame(appear3)
             appear.addFrame(appear4)
             appear.addFrame(appear5)
             appear.addFrame(appear6)
-            val hidden = SpriteAnimation(EnemyAnimations.HIDDEN.ordinal, 6)
+            val hidden = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.HIDDEN.ordinal, 6)
             hidden.addFrame(appear6)
             hidden.addFrame(appear5)
             hidden.addFrame(appear4)
@@ -1131,31 +1401,39 @@ class GameObjectFactory : BaseObject() {
             /*hidden.addFrame(new AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_stand),
                     Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume));*/
-            val attack = SpriteAnimation(EnemyAnimations.ATTACK.ordinal, 10)
+            val attack = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal, 10)
             val attack1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack01),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack01),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack02),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack02),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack03),
-                    Utils.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack03),
+                Utils.Companion.framesToTime(24, 2), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack04),
-                    Utils.framesToTime(24, 6), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack04),
+                Utils.Companion.framesToTime(24, 6), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attackFlash = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_flash),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_flash),
+                Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack03),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack03),
+                Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack6 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack02),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack02),
+                Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+            )
             val attack7 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_shadowslime_attack04),
+                Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+            )
             attack.addFrame(attack1)
             attack.addFrame(attack2)
             attack.addFrame(attack3)
@@ -1202,9 +1480,9 @@ class GameObjectFactory : BaseObject() {
         gun.setObjectTypeToSpawn(GameObjectType.ENERGY_BALL)
         gun.setOffsetX(44f)
         gun.setOffsetY(22f)
-        gun.setRequiredAction(ActionType.ATTACK)
+        gun.setRequiredAction(GameObject.ActionType.ATTACK)
         gun.setVelocityX(30.0f)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1221,12 +1499,12 @@ class GameObjectFactory : BaseObject() {
         thing.add(lifetime)
         thing.add(gun)
         addStaticData(GameObjectType.SHADOWSLIME, thing, sprite)
-        val attack = sprite.findAnimation(EnemyAnimations.ATTACK.ordinal)
-        val appear = sprite.findAnimation(EnemyAnimations.APPEAR.ordinal)
+        val attack = sprite.findAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal)
+        val appear = sprite.findAnimation(EnemyAnimationComponent.EnemyAnimations.APPEAR.ordinal)
         if (attack != null && appear != null) {
             gun.setDelayBeforeFirstSet(attack.length / 2.0f)
         } else {
-            gun.setDelayBeforeFirstSet(Utils.framesToTime(24, 12))
+            gun.setDelayBeforeFirstSet(Utils.Companion.framesToTime(24, 12))
         }
         return thing
     }
@@ -1268,67 +1546,122 @@ class GameObjectFactory : BaseObject() {
             solidSurface.addSurface(surface2Start, surface2End, surface2Normal)
             solidSurface.addSurface(surface3Start, surface3End, surface3Normal)
             solidSurface.addSurface(surface4Start, surface4End, surface4Normal)
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 4)
-            idle.addFrame(AnimationFrame(
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 4)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_mud_stand),
-                    Utils.framesToTime(24, 12), null, null))
+                    Utils.Companion.framesToTime(24, 12), null, null
+                )
+            )
             val idle1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_mud_idle01),
-                    Utils.framesToTime(24, 2), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_mud_idle01),
+                Utils.Companion.framesToTime(24, 2), null, null
+            )
             val idle2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_mud_idle01),
-                    Utils.framesToTime(24, 7), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_mud_idle01),
+                Utils.Companion.framesToTime(24, 7), null, null
+            )
             idle.addFrame(idle1)
             idle.addFrame(idle2)
             idle.addFrame(idle1)
             idle.loop = true
-            val walk = SpriteAnimation(EnemyAnimations.MOVE.ordinal, 6)
-            walk.addFrame(AnimationFrame(
+            val walk = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.MOVE.ordinal, 6)
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk01),
-                    Utils.framesToTime(24, 4), null, null))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, null
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk02),
-                    Utils.framesToTime(24, 4), null, null))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, null
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk03),
-                    Utils.framesToTime(24, 5), null, null))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 5), null, null
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk04),
-                    Utils.framesToTime(24, 4), null, null))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, null
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk05),
-                    Utils.framesToTime(24, 4), null, null))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, null
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_walk06),
-                    Utils.framesToTime(24, 5), null, null))
+                    Utils.Companion.framesToTime(24, 5), null, null
+                )
+            )
             walk.loop = true
             val crushAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            crushAttackVolume.add(AABoxCollisionVolume(64, 0, 64, 96, HitType.HIT))
-            val attack = SpriteAnimation(EnemyAnimations.ATTACK.ordinal, 8)
-            attack.addFrame(AnimationFrame(
+            crushAttackVolume.add(
+                AABoxCollisionVolume(
+                    64,
+                    0,
+                    64,
+                    96,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val attack = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal, 8)
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_stand),
-                    Utils.framesToTime(24, 2), null, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack01),
-                    Utils.framesToTime(24, 2), null, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack02),
-                    Utils.framesToTime(24, 2), null, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack03),
-                    Utils.framesToTime(24, 2), null, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack04),
-                    Utils.framesToTime(24, 1), crushAttackVolume, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), crushAttackVolume, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack05),
-                    Utils.framesToTime(24, 1), crushAttackVolume, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), crushAttackVolume, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack06),
-                    Utils.framesToTime(24, 8), crushAttackVolume, null))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 8), crushAttackVolume, null
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_mud_attack07),
-                    Utils.framesToTime(24, 5), null, null))
+                    Utils.Companion.framesToTime(24, 5), null, null
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -1356,7 +1689,7 @@ class GameObjectFactory : BaseObject() {
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         collision!!.setHitReactionComponent(hitReact)
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 1
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -1370,7 +1703,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(hitReact!!)
         thing.add(lifetime!!)
         addStaticData(GameObjectType.MUDMAN, thing, sprite)
-        val attack = sprite.findAnimation(EnemyAnimations.ATTACK.ordinal)
+        val attack = sprite.findAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal)
         if (attack != null) {
             patrol.setupAttack(70.0f, attack.length, 0.0f, true)
         }
@@ -1404,43 +1737,80 @@ class GameObjectFactory : BaseObject() {
             solidSurface.addSurface(surface2Start, surface2End, surface2Normal)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.HIT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.HIT
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 48, 32, HitType.HIT))
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 1)
-            idle.addFrame(AnimationFrame(
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    48,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_skeleton_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            val walk = SpriteAnimation(EnemyAnimations.MOVE.ordinal, 6)
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            val walk = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.MOVE.ordinal, 6)
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk01),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk02),
-                    Utils.framesToTime(24, 4), null, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk03),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk04),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk05),
-                    Utils.framesToTime(24, 4), null, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_walk03),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
             walk.loop = true
-            val attack = SpriteAnimation(EnemyAnimations.ATTACK.ordinal, 3)
-            attack.addFrame(AnimationFrame(
+            val attack = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal, 3)
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_attack01),
-                    Utils.framesToTime(24, 5), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 5), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_attack03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_skeleton_attack04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -1474,7 +1844,7 @@ class GameObjectFactory : BaseObject() {
         if (sound != null) {
             lifetime.setDeathSound(sound.load(R.raw.sound_stomp))
         }
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1487,7 +1857,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(hitReact!!)
         thing.add(lifetime)
         addStaticData(GameObjectType.SKELETON, thing, sprite)
-        val attack = sprite.findAnimation(EnemyAnimations.ATTACK.ordinal)
+        val attack = sprite.findAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal)
         if (attack != null) {
             patrol.setupAttack(75.0f, attack.length, 2.0f, true)
         }
@@ -1509,19 +1879,28 @@ class GameObjectFactory : BaseObject() {
             val movement = allocateComponent(MovementComponent::class.java)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(8, 16, 16))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.HIT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.HIT
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(8, 16, 16, HitType.HIT))
+            basicAttackVolume.add(SphereCollisionVolume(8, 16, 16, CollisionParameters.HitType.HIT))
             val idle = SpriteAnimation(0, 3)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_karaguin01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_karaguin02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_karaguin03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -1548,7 +1927,7 @@ class GameObjectFactory : BaseObject() {
         }
         val animation = allocateComponent(EnemyAnimationComponent::class.java) as EnemyAnimationComponent?
         animation!!.setSprite(sprite)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1617,36 +1996,54 @@ class GameObjectFactory : BaseObject() {
             solidSurface.addSurface(surface4Start, surface4End, surface4Normal)
             solidSurface.addSurface(surface5Start, surface5End, surface5Normal)
             val idle = SpriteAnimation(GenericAnimationComponent.Animation.IDLE, 4)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_pinkdude_stand),
-                    Utils.framesToTime(24, 8), null, null))
+                    Utils.Companion.framesToTime(24, 8), null, null
+                )
+            )
             val idle1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_sleep01),
-                    Utils.framesToTime(24, 3), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_sleep01),
+                Utils.Companion.framesToTime(24, 3), null, null
+            )
             val idle2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_sleep02),
-                    Utils.framesToTime(24, 8), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_sleep02),
+                Utils.Companion.framesToTime(24, 8), null, null
+            )
             idle.addFrame(idle1)
             idle.addFrame(idle2)
             idle.addFrame(idle1)
             idle.loop = true
             val wake = SpriteAnimation(GenericAnimationComponent.Animation.MOVE, 4)
             val wake1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_eyeopen),
-                    Utils.framesToTime(24, 3), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_eyeopen),
+                Utils.Companion.framesToTime(24, 3), null, null
+            )
             val wake2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_stand),
-                    Utils.framesToTime(24, 3), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_stand),
+                Utils.Companion.framesToTime(24, 3), null, null
+            )
             wake.addFrame(wake1)
             wake.addFrame(wake2)
             wake.addFrame(wake1)
             wake.addFrame(wake2)
             val crushAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            crushAttackVolume.add(AABoxCollisionVolume(32, 0, 64, 32, HitType.HIT))
+            crushAttackVolume.add(
+                AABoxCollisionVolume(
+                    32,
+                    0,
+                    64,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val attack = SpriteAnimation(GenericAnimationComponent.Animation.ATTACK, 1)
-            attack.addFrame(AnimationFrame(
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_pinkdude_jump),
-                    Utils.framesToTime(24, 2), crushAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 2), crushAttackVolume, null
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -1673,7 +2070,7 @@ class GameObjectFactory : BaseObject() {
         sprite.setCollisionComponent(collision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         collision!!.setHitReactionComponent(hitReact)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 1
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -1708,22 +2105,41 @@ class GameObjectFactory : BaseObject() {
             val movement = allocateComponent(MovementComponent::class.java)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 16))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.HIT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.HIT
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 32, 16, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    32,
+                    16,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 4)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_bat01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_bat02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_bat03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_bat04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -1750,7 +2166,7 @@ class GameObjectFactory : BaseObject() {
         }
         val animation = allocateComponent(EnemyAnimationComponent::class.java) as EnemyAnimationComponent?
         animation!!.setSprite(sprite)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1784,19 +2200,35 @@ class GameObjectFactory : BaseObject() {
             val movement = allocateComponent(MovementComponent::class.java)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 16))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.HIT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.HIT
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 32, 16, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    32,
+                    16,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 3)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_sting01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_sting02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_sting03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -1823,7 +2255,7 @@ class GameObjectFactory : BaseObject() {
         }
         val animation = allocateComponent(EnemyAnimationComponent::class.java) as EnemyAnimationComponent?
         animation!!.setSprite(sprite)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1864,22 +2296,41 @@ class GameObjectFactory : BaseObject() {
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 32, 32, HitType.HIT))
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 1)
-            idle.addFrame(AnimationFrame(
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    32,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_onion01),
-                    Utils.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 3), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val walk = SpriteAnimation(EnemyAnimations.MOVE.ordinal, 3)
-            walk.addFrame(AnimationFrame(
+            val walk = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.MOVE.ordinal, 3)
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_onion01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_onion02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
-            walk.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
+            walk.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_onion03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, basicVulnerabilityVolume
+                )
+            )
             walk.loop = true
             staticData.add(gravity)
             staticData.add(movement)
@@ -1919,7 +2370,7 @@ class GameObjectFactory : BaseObject() {
         thing.add(collision)
         thing.add(hitReact!!)
         thing.add(lifetime)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         }
@@ -1951,27 +2402,43 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.0f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(20, 5, 26, 80, HitType.COLLECT))
-            val idle = SpriteAnimation(NPCAnimationComponent.IDLE, 1)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    20,
+                    5,
+                    26,
+                    80,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
+            val idle = SpriteAnimation(NPCAnimationComponent.Companion.IDLE, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             val walkFrame1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk01),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk02),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk03),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk03),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk04),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk04),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk05),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val walk = SpriteAnimation(NPCAnimationComponent.WALK, 8)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_walk05),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val walk = SpriteAnimation(NPCAnimationComponent.Companion.WALK, 8)
             walk.addFrame(walkFrame1)
             walk.addFrame(walkFrame2)
             walk.addFrame(walkFrame3)
@@ -1982,86 +2449,149 @@ class GameObjectFactory : BaseObject() {
             walk.addFrame(walkFrame2)
             walk.loop = true
             val runFrame4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_run04),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val run = SpriteAnimation(NPCAnimationComponent.RUN, 9)
-            run.addFrame(AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_run04),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val run = SpriteAnimation(NPCAnimationComponent.Companion.RUN, 9)
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            run.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run02),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            run.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run03),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             run.addFrame(runFrame4)
-            run.addFrame(AnimationFrame(
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run05),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            run.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run06),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            run.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run07),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             run.addFrame(runFrame4)
-            run.addFrame(AnimationFrame(
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run08),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             run.loop = true
-            val jumpStart = SpriteAnimation(NPCAnimationComponent.JUMP_START, 4)
+            val jumpStart = SpriteAnimation(NPCAnimationComponent.Companion.JUMP_START, 4)
             val jump1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_jump01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_jump01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             val jump2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_wanda_jump01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            jumpStart.addFrame(AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.enemy_wanda_jump01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            jumpStart.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_run04),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            jumpStart.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            jumpStart.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_crouch),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             jumpStart.addFrame(jump1)
             jumpStart.addFrame(jump2)
-            val jumpAir = SpriteAnimation(NPCAnimationComponent.JUMP_AIR, 2)
+            val jumpAir = SpriteAnimation(NPCAnimationComponent.Companion.JUMP_AIR, 2)
             jumpAir.addFrame(jump1)
             jumpAir.addFrame(jump2)
             jumpAir.loop = true
-            val attack = SpriteAnimation(NPCAnimationComponent.SHOOT, 11)
-            attack.addFrame(AnimationFrame(
+            val attack = SpriteAnimation(NPCAnimationComponent.Companion.SHOOT, 11)
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot02),
-                    Utils.framesToTime(24, 8), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 8), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot03),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot04),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot05),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot06),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot07),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot08),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot09),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot02),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_wanda_shoot01),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -2093,14 +2623,14 @@ class GameObjectFactory : BaseObject() {
         val gun = allocateComponent(LaunchProjectileComponent::class.java) as LaunchProjectileComponent?
         gun!!.setShotsPerSet(1)
         gun.setSetsPerActivation(1)
-        gun.setDelayBeforeFirstSet(Utils.framesToTime(24, 11))
+        gun.setDelayBeforeFirstSet(Utils.Companion.framesToTime(24, 11))
         gun.setObjectTypeToSpawn(GameObjectType.WANDA_SHOT)
         gun.setOffsetX(45f)
         gun.setOffsetY(42f)
-        gun.setRequiredAction(ActionType.ATTACK)
+        gun.setRequiredAction(GameObject.ActionType.ATTACK)
         gun.setVelocityX(300.0f)
         gun.setShootSound(sound!!.load(R.raw.sound_poing))
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 1
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -2134,33 +2664,51 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.0f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(20, 5, 26, 80, HitType.COLLECT))
-            val idle = SpriteAnimation(NPCAnimationComponent.IDLE, 1)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    20,
+                    5,
+                    26,
+                    80,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
+            val idle = SpriteAnimation(NPCAnimationComponent.Companion.IDLE, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_kyle_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             val walkFrame1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk01),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk02),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk03),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk03),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk04),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk04),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk05),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk05),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame6 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk06),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk06),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
             val walkFrame7 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk07),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val walk = SpriteAnimation(NPCAnimationComponent.WALK, 12)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_walk07),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val walk = SpriteAnimation(NPCAnimationComponent.Companion.WALK, 12)
             walk.addFrame(walkFrame1)
             walk.addFrame(walkFrame2)
             walk.addFrame(walkFrame3)
@@ -2175,35 +2723,53 @@ class GameObjectFactory : BaseObject() {
             walk.addFrame(walkFrame5)
             walk.loop = true
             val crouch1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_crouch01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_crouch01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             val crouch2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_crouch02),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
-            val runStart = SpriteAnimation(NPCAnimationComponent.RUN_START, 2)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_crouch02),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
+            val runStart = SpriteAnimation(NPCAnimationComponent.Companion.RUN_START, 2)
             runStart.addFrame(crouch1)
             runStart.addFrame(crouch2)
             val attackVolume = FixedSizeArray<CollisionVolume>(2)
-            attackVolume.add(AABoxCollisionVolume(32, 32, 50, 32, HitType.HIT))
-            attackVolume.add(AABoxCollisionVolume(32, 32, 50, 32, HitType.COLLECT))
-            val run = SpriteAnimation(NPCAnimationComponent.RUN, 2)
-            run.addFrame(AnimationFrame(
+            attackVolume.add(AABoxCollisionVolume(32, 32, 50, 32, CollisionParameters.HitType.HIT))
+            attackVolume.add(
+                AABoxCollisionVolume(
+                    32,
+                    32,
+                    50,
+                    32,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
+            val run = SpriteAnimation(NPCAnimationComponent.Companion.RUN, 2)
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kyle_dash01),
-                    Utils.framesToTime(24, 1), attackVolume, basicVulnerabilityVolume))
-            run.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), attackVolume, basicVulnerabilityVolume
+                )
+            )
+            run.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kyle_dash02),
-                    Utils.framesToTime(24, 1), attackVolume, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), attackVolume, basicVulnerabilityVolume
+                )
+            )
             run.loop = true
-            val jumpStart = SpriteAnimation(NPCAnimationComponent.JUMP_START, 2)
+            val jumpStart = SpriteAnimation(NPCAnimationComponent.Companion.JUMP_START, 2)
             jumpStart.addFrame(crouch1)
             jumpStart.addFrame(crouch2)
-            val jumpAir = SpriteAnimation(NPCAnimationComponent.JUMP_AIR, 2)
+            val jumpAir = SpriteAnimation(NPCAnimationComponent.Companion.JUMP_AIR, 2)
             val jump1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_jump01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_jump01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             val jump2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kyle_jump01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kyle_jump01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             jumpAir.addFrame(jump1)
             jumpAir.addFrame(jump2)
             jumpAir.loop = true
@@ -2231,7 +2797,7 @@ class GameObjectFactory : BaseObject() {
         animation.setStopAtWalls(false) // Kyle can run through walls
         val patrol = allocateComponent(NPCComponent::class.java) as NPCComponent?
         patrol!!.setSpeeds(350.0f, 50.0f, 400.0f, -10.0f, 400.0f)
-        patrol.setGameEvent(GameFlowEvent.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.KYLE_DEATH, false)
+        patrol.setGameEvent(GameFlowEvent.Companion.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.Companion.KYLE_DEATH, false)
         val collision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(collision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
@@ -2242,8 +2808,8 @@ class GameObjectFactory : BaseObject() {
         val launcher = allocateComponent(LauncherComponent::class.java) as LauncherComponent?
         launcher!!.setup((Math.PI * 0.45f).toFloat(), 1000.0f, 0.0f, 0.0f, false)
         launcher.setLaunchEffect(GameObjectType.FLASH, 70.0f, 50.0f)
-        hitReact!!.setLauncherComponent(launcher, HitType.HIT)
-        thing.team = Team.NONE
+        hitReact!!.setLauncherComponent(launcher, CollisionParameters.HitType.HIT)
+        thing.team = GameObject.Team.NONE
         thing.life = 1
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -2274,10 +2840,20 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(32, 5, 64, 32, HitType.COLLECT))
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    32,
+                    5,
+                    64,
+                    32,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
             val idle = SpriteAnimation(0, 1)
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.enemy_kyle_dead),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.enemy_kyle_dead),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             idle.addFrame(frame1)
             idle.loop = true
             staticData.add(idle)
@@ -2292,7 +2868,7 @@ class GameObjectFactory : BaseObject() {
         sprite.setCollisionComponent(dynamicCollision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         dynamicCollision!!.setHitReactionComponent(hitReact)
-        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2, 0)
+        hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2, 0)
         val dialogSelect = allocateComponent(SelectDialogComponent::class.java) as SelectDialogComponent?
         dialogSelect!!.setHitReact(hitReact)
 
@@ -2321,8 +2897,10 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val idle = SpriteAnimation(0, 1)
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.andou_explode12),
-                    Utils.framesToTime(24, 1), null, null)
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.andou_explode12),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             idle.addFrame(frame1)
             idle.loop = true
             staticData.add(idle)
@@ -2375,30 +2953,47 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.0f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(20, 5, 26, 80, HitType.COLLECT))
-            val idle = SpriteAnimation(NPCAnimationComponent.IDLE, 1)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    20,
+                    5,
+                    26,
+                    80,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
+            val idle = SpriteAnimation(NPCAnimationComponent.Companion.IDLE, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_kabocha_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             val walkFrame1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk01),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk01),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk02),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk02),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk03),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk03),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk04),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk04),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk05),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk05),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame6 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk06),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
-            val walk = SpriteAnimation(NPCAnimationComponent.WALK, 6)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_walk06),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
+            val walk = SpriteAnimation(NPCAnimationComponent.Companion.WALK, 6)
             walk.addFrame(walkFrame1)
             walk.addFrame(walkFrame2)
             walk.addFrame(walkFrame3)
@@ -2429,7 +3024,7 @@ class GameObjectFactory : BaseObject() {
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         collision!!.setHitReactionComponent(hitReact)
         patrol!!.setHitReactionComponent(hitReact)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 1
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -2459,19 +3054,31 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(AABoxCollisionVolume(0, 0, 64, 64))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.COLLECT
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.object_terminal01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal02),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame3 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal03),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame4 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val frame5 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val frame6 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal01),
-                    1.0f, null, basicVulnerabilityVolume)
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.COLLECT
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.object_terminal01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal02),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame3 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal03),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame4 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal01),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val frame5 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal02),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val frame6 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal01),
+                1.0f, null, basicVulnerabilityVolume
+            )
             val idle = SpriteAnimation(0, 12)
             idle.addFrame(frame1)
             idle.addFrame(frame5)
@@ -2497,7 +3104,7 @@ class GameObjectFactory : BaseObject() {
         val dynamicCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(dynamicCollision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
-        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2, 0)
+        hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2, 0)
         val dialogSelect = allocateComponent(SelectDialogComponent::class.java) as SelectDialogComponent?
         dialogSelect!!.setHitReact(hitReact)
         dynamicCollision!!.setHitReactionComponent(hitReact)
@@ -2524,19 +3131,31 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(AABoxCollisionVolume(0, 0, 64, 64))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.COLLECT
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.object_terminal_kabocha01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha02),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame3 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha03),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
-            val frame4 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val frame5 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val frame6 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha01),
-                    1.0f, null, basicVulnerabilityVolume)
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.COLLECT
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.object_terminal_kabocha01),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha02),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame3 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha03),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
+            val frame4 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha01),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val frame5 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha02),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val frame6 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_terminal_kabocha01),
+                1.0f, null, basicVulnerabilityVolume
+            )
             val idle = SpriteAnimation(0, 12)
             idle.addFrame(frame1)
             idle.addFrame(frame5)
@@ -2562,7 +3181,7 @@ class GameObjectFactory : BaseObject() {
         val dynamicCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(dynamicCollision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
-        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2, 0)
+        hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2, 0)
         val dialogSelect = allocateComponent(SelectDialogComponent::class.java) as SelectDialogComponent?
         dialogSelect!!.setHitReact(hitReact)
         dynamicCollision!!.setHitReactionComponent(hitReact)
@@ -2592,30 +3211,47 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.0f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(52, 5, 26, 80, HitType.HIT))
-            val idle = SpriteAnimation(NPCAnimationComponent.IDLE, 1)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    52,
+                    5,
+                    26,
+                    80,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(NPCAnimationComponent.Companion.IDLE, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_kabocha_evil_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             val walkFrame1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk01),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk01),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk02),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk02),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk03),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk03),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame4 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk04),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk04),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame5 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk05),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk05),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
             val walkFrame6 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk06),
-                    Utils.framesToTime(24, 3), null, basicVulnerabilityVolume)
-            val walk = SpriteAnimation(NPCAnimationComponent.WALK, 6)
+                textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_walk06),
+                Utils.Companion.framesToTime(24, 3), null, basicVulnerabilityVolume
+            )
+            val walk = SpriteAnimation(NPCAnimationComponent.Companion.WALK, 6)
             walk.addFrame(walkFrame1)
             walk.addFrame(walkFrame2)
             walk.addFrame(walkFrame3)
@@ -2623,33 +3259,57 @@ class GameObjectFactory : BaseObject() {
             walk.addFrame(walkFrame5)
             walk.addFrame(walkFrame6)
             walk.loop = true
-            val surprised = SpriteAnimation(NPCAnimationComponent.SURPRISED, 1)
-            surprised.addFrame(AnimationFrame(
+            val surprised = SpriteAnimation(NPCAnimationComponent.Companion.SURPRISED, 1)
+            surprised.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_surprised),
-                    4.0f, null, null))
-            val hit = SpriteAnimation(NPCAnimationComponent.TAKE_HIT, 2)
-            hit.addFrame(AnimationFrame(
+                    4.0f, null, null
+                )
+            )
+            val hit = SpriteAnimation(NPCAnimationComponent.Companion.TAKE_HIT, 2)
+            hit.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_hit01),
-                    Utils.framesToTime(24, 1), null, null))
-            hit.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
+            hit.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_hit02),
-                    Utils.framesToTime(24, 10), null, null))
-            val die = SpriteAnimation(NPCAnimationComponent.DEATH, 5)
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 10), null, null
+                )
+            )
+            val die = SpriteAnimation(NPCAnimationComponent.Companion.DEATH, 5)
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_die01),
-                    Utils.framesToTime(24, 6), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 6), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_stand),
-                    Utils.framesToTime(24, 2), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_die02),
-                    Utils.framesToTime(24, 2), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_die03),
-                    Utils.framesToTime(24, 2), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_kabocha_evil_die04),
-                    Utils.framesToTime(24, 6), null, null))
+                    Utils.Companion.framesToTime(24, 6), null, null
+                )
+            )
             staticData.add(gravity)
             staticData.add(movement)
             staticData.add(physics)
@@ -2674,21 +3334,21 @@ class GameObjectFactory : BaseObject() {
         val channelSystem = sSystemRegistry.channelSystem
         surpriseChannel = channelSystem!!.registerChannel(sSurprisedNPCChannel)
         animation.setChannel(surpriseChannel)
-        animation.setChannelTrigger(NPCAnimationComponent.SURPRISED)
+        animation.setChannelTrigger(NPCAnimationComponent.Companion.SURPRISED)
         val patrol = allocateComponent(NPCComponent::class.java) as NPCComponent?
         patrol!!.setSpeeds(50.0f, 50.0f, 0.0f, -10.0f, 200.0f)
         patrol.setReactToHits(true)
-        patrol.setGameEvent(GameFlowEvent.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.ROKUDOU_ENDING, true)
+        patrol.setGameEvent(GameFlowEvent.Companion.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.Companion.ROKUDOU_ENDING, true)
         val collision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(collision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         collision!!.setHitReactionComponent(hitReact)
         val sound = sSystemRegistry.soundSystem
         if (sound != null) {
-            hitReact!!.setTakeHitSound(HitType.HIT, sound.load(R.raw.sound_kabocha_hit))
+            hitReact!!.setTakeHitSound(CollisionParameters.HitType.HIT, sound.load(R.raw.sound_kabocha_hit))
         }
         patrol.setHitReactionComponent(hitReact)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 3
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -2728,41 +3388,70 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.0f)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(45, 23, 42, 75, HitType.HIT))
-            val idle = SpriteAnimation(NPCAnimationComponent.IDLE, 1)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    45,
+                    23,
+                    42,
+                    75,
+                    CollisionParameters.HitType.HIT
+                )
+            )
+            val idle = SpriteAnimation(NPCAnimationComponent.Companion.IDLE, 1)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_stand),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            val fly = SpriteAnimation(NPCAnimationComponent.WALK, 2)
-            fly.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            val fly = SpriteAnimation(NPCAnimationComponent.Companion.WALK, 2)
+            fly.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_fly01),
-                    1.0f, null, basicVulnerabilityVolume))
-            fly.addFrame(AnimationFrame(
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
+            fly.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_fly02),
-                    1.0f, null, basicVulnerabilityVolume))
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
             fly.loop = true
-            val shoot = SpriteAnimation(NPCAnimationComponent.SHOOT, 2)
-            shoot.addFrame(AnimationFrame(
+            val shoot = SpriteAnimation(NPCAnimationComponent.Companion.SHOOT, 2)
+            shoot.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_shoot01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            shoot.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            shoot.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_shoot02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
             shoot.loop = true
-            val surprised = SpriteAnimation(NPCAnimationComponent.SURPRISED, 1)
-            surprised.addFrame(AnimationFrame(
+            val surprised = SpriteAnimation(NPCAnimationComponent.Companion.SURPRISED, 1)
+            surprised.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_surprise),
-                    4.0f, null, null))
-            val hit = SpriteAnimation(NPCAnimationComponent.TAKE_HIT, 7)
+                    4.0f, null, null
+                )
+            )
+            val hit = SpriteAnimation(NPCAnimationComponent.Companion.TAKE_HIT, 7)
             val hitFrame1 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit01),
-                    Utils.framesToTime(24, 2), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit01),
+                Utils.Companion.framesToTime(24, 2), null, null
+            )
             val hitFrame2 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit02),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit02),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val hitFrame3 = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit03),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_hit03),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             hit.addFrame(hitFrame1)
             hit.addFrame(hitFrame2)
             hit.addFrame(hitFrame3)
@@ -2770,22 +3459,37 @@ class GameObjectFactory : BaseObject() {
             hit.addFrame(hitFrame3)
             hit.addFrame(hitFrame2)
             hit.addFrame(hitFrame3)
-            val die = SpriteAnimation(NPCAnimationComponent.DEATH, 5)
-            die.addFrame(AnimationFrame(
+            val die = SpriteAnimation(NPCAnimationComponent.Companion.DEATH, 5)
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_stand),
-                    Utils.framesToTime(24, 6), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 6), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_die01),
-                    Utils.framesToTime(24, 2), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_die02),
-                    Utils.framesToTime(24, 4), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 4), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_die03),
-                    Utils.framesToTime(24, 6), null, null))
-            die.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 6), null, null
+                )
+            )
+            die.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_rokudou_fight_die04),
-                    Utils.framesToTime(24, 6), null, null))
+                    Utils.Companion.framesToTime(24, 6), null, null
+                )
+            )
             staticData.add(movement)
             staticData.add(physics)
             staticData.add(idle)
@@ -2811,12 +3515,12 @@ class GameObjectFactory : BaseObject() {
         val channelSystem = sSystemRegistry.channelSystem
         surpriseChannel = channelSystem!!.registerChannel(sSurprisedNPCChannel)
         animation.setChannel(surpriseChannel)
-        animation.setChannelTrigger(NPCAnimationComponent.SURPRISED)
+        animation.setChannelTrigger(NPCAnimationComponent.Companion.SURPRISED)
         val patrol = allocateComponent(NPCComponent::class.java) as NPCComponent?
         patrol!!.setSpeeds(500.0f, 100.0f, 100.0f, -100.0f, 400.0f)
         patrol.setFlying(true)
         patrol.setReactToHits(true)
-        patrol.setGameEvent(GameFlowEvent.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.KABOCHA_ENDING, true)
+        patrol.setGameEvent(GameFlowEvent.Companion.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.Companion.KABOCHA_ENDING, true)
         patrol.setPauseOnAttack(false)
         val collision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(collision)
@@ -2824,12 +3528,12 @@ class GameObjectFactory : BaseObject() {
         collision!!.setHitReactionComponent(hitReact)
         val sound = sSystemRegistry.soundSystem
         if (sound != null) {
-            hitReact!!.setTakeHitSound(HitType.HIT, sound.load(R.raw.sound_rokudou_hit))
+            hitReact!!.setTakeHitSound(CollisionParameters.HitType.HIT, sound.load(R.raw.sound_rokudou_hit))
         }
         patrol.setHitReactionComponent(hitReact)
         val deathSwap = allocateComponent(ChangeComponentsComponent::class.java) as ChangeComponentsComponent?
         deathSwap!!.addSwapInComponent(allocateComponent(GravityComponent::class.java))
-        deathSwap.setSwapAction(ActionType.DEATH)
+        deathSwap.setSwapAction(GameObject.ActionType.DEATH)
         val gun = allocateComponent(LaunchProjectileComponent::class.java) as LaunchProjectileComponent?
         gun!!.setShotsPerSet(1)
         gun.setSetsPerActivation(-1)
@@ -2837,7 +3541,7 @@ class GameObjectFactory : BaseObject() {
         gun.setObjectTypeToSpawn(GameObjectType.ENERGY_BALL)
         gun.setOffsetX(75f)
         gun.setOffsetY(42f)
-        gun.setRequiredAction(ActionType.ATTACK)
+        gun.setRequiredAction(GameObject.ActionType.ATTACK)
         gun.setVelocityX(300.0f)
         gun.setVelocityY(-300.0f)
         gun.setShootSound(sound!!.load(R.raw.sound_poing))
@@ -2849,11 +3553,11 @@ class GameObjectFactory : BaseObject() {
         gun2.setObjectTypeToSpawn(GameObjectType.TURRET_BULLET)
         gun2.setOffsetX(75f)
         gun2.setOffsetY(42f)
-        gun2.setRequiredAction(ActionType.ATTACK)
+        gun2.setRequiredAction(GameObject.ActionType.ATTACK)
         gun2.setVelocityX(300.0f)
         gun2.setVelocityY(-300.0f)
         gun.setShootSound(sound.load(R.raw.sound_gun))
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.life = 3
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -2904,20 +3608,39 @@ class GameObjectFactory : BaseObject() {
                 ghost.setAmbientSound(sound.load(R.raw.sound_possession))
             }
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(32, 32, 32, HitType.POSSESS))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    32,
+                    32,
+                    32,
+                    CollisionParameters.HitType.POSSESS
+                )
+            )
             val idle = SpriteAnimation(0, 4)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.getTextureByResource(R.drawable.effect_energyball01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_energyball02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_energyball03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_energyball04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             idle.loop = true
 
             //staticData.add(gravity);
@@ -2971,20 +3694,39 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val movement = allocateComponent(MovementComponent::class.java)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 16, 16, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    16,
+                    16,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 4)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.energy_ball01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -3003,7 +3745,7 @@ class GameObjectFactory : BaseObject() {
         hitReact!!.setDieOnAttack(true)
         dynamicCollision!!.setHitReactionComponent(hitReact)
         thing.life = 1
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.destroyOnDeactivation = true
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -3031,20 +3773,39 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val movement = allocateComponent(MovementComponent::class.java)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 16, 16, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    16,
+                    16,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 4)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.energy_ball01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.energy_ball04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -3063,7 +3824,7 @@ class GameObjectFactory : BaseObject() {
         //hitReact.setDieOnAttack(true);
         dynamicCollision!!.setHitReactionComponent(hitReact)
         thing.life = 1
-        thing.team = Team.NONE
+        thing.team = GameObject.Team.NONE
         thing.destroyOnDeactivation = true
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -3091,10 +3852,14 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val movement = allocateComponent(MovementComponent::class.java)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(8, 16, 16, HitType.HIT))
+            basicAttackVolume.add(SphereCollisionVolume(8, 16, 16, CollisionParameters.HitType.HIT))
             val idle = SpriteAnimation(0, 1)
-            idle.addFrame(AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.snail_bomb),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.allocateTexture(R.drawable.snail_bomb),
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             staticData.add(movement)
             staticData.add(idle)
             setStaticData(GameObjectType.CANNON_BALL, staticData)
@@ -3114,7 +3879,7 @@ class GameObjectFactory : BaseObject() {
         dynamicCollision!!.setHitReactionComponent(hitReact)
         val collision = allocateComponent(SimpleCollisionComponent::class.java) as SimpleCollisionComponent?
         thing.life = 1
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.destroyOnDeactivation = true
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -3143,12 +3908,20 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val movement = allocateComponent(MovementComponent::class.java)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(8, 8, 8, HitType.HIT))
+            basicAttackVolume.add(SphereCollisionVolume(8, 8, 8, CollisionParameters.HitType.HIT))
             val idle = SpriteAnimation(0, 2)
-            idle.addFrame(AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.effect_bullet01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.effect_bullet02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.allocateTexture(R.drawable.effect_bullet01),
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.effect_bullet02),
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -3167,7 +3940,7 @@ class GameObjectFactory : BaseObject() {
         hitReact!!.setDieOnAttack(true)
         dynamicCollision!!.setHitReactionComponent(hitReact)
         thing.life = 1
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.destroyOnDeactivation = true
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -3195,15 +3968,24 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val movement = allocateComponent(MovementComponent::class.java)
             val idle = SpriteAnimation(0, 3)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.enemy_brobot_walk01),
-                    Utils.framesToTime(24, 1), null, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk02),
-                    Utils.framesToTime(24, 1), null, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.enemy_brobot_walk03),
-                    Utils.framesToTime(24, 1), null, null))
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
+            )
             idle.loop = true
             staticData.add(movement)
             staticData.add(idle)
@@ -3217,7 +3999,7 @@ class GameObjectFactory : BaseObject() {
         sprite!!.setSize(thing.width.toInt(), thing.height.toInt())
         sprite.setRenderComponent(render)
         thing.life = 1
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.destroyOnDeactivation = true
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
@@ -3245,18 +4027,38 @@ class GameObjectFactory : BaseObject() {
             basicVulnerabilityVolume.add(new SphereCollisionVolume(8, 8, 8));
             basicVulnerabilityVolume.get(0).setHitType(HitType.COLLECT);*/
             val idle = SpriteAnimation(0, 5)
-            idle.addFrame(AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.object_coin01),
-                    Utils.framesToTime(24, 30), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_coin02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_coin03),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_coin04),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_coin05),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.allocateTexture(R.drawable.object_coin01),
+                    Utils.Companion.framesToTime(24, 30), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_coin02),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_coin03),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_coin04),
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_coin05),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val addCoin = UpdateRecord()
+            val addCoin = InventoryComponent.UpdateRecord()
             addCoin.coinCount = 1
             staticData.add(addCoin)
             staticData.add(idle)
@@ -3274,25 +4076,25 @@ class GameObjectFactory : BaseObject() {
         hitReact!!.setDieWhenCollected(true)
         hitReact.setInvincible(true)
         val hitPlayer = allocateComponent(HitPlayerComponent::class.java) as HitPlayerComponent?
-        hitPlayer!!.setup(32f, hitReact, HitType.COLLECT, false)
+        hitPlayer!!.setup(32f, hitReact, CollisionParameters.HitType.COLLECT, false)
         val sound = sSystemRegistry.soundSystem
         if (sound != null) {
-            hitReact.setTakeHitSound(HitType.COLLECT, sound.load(R.raw.ding))
+            hitReact.setTakeHitSound(CollisionParameters.HitType.COLLECT, sound.load(R.raw.ding))
         }
 
         // TODO: this is pretty dumb.  The static data binding needs to be made generic.
         val staticDataSize = staticData.count
         for (x in 0 until staticDataSize) {
             val entry = staticData[x]
-            if (entry is UpdateRecord) {
-                hitReact.setInventoryUpdate(entry as UpdateRecord?)
+            if (entry is InventoryComponent.UpdateRecord) {
+                hitReact.setInventoryUpdate(entry as InventoryComponent.UpdateRecord?)
                 break
             }
         }
 
         //dynamicCollision.setHitReactionComponent(hitReact);
         val life = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
-        life!!.setIncrementEventCounter(EventRecorder.COUNTER_PEARLS_COLLECTED)
+        life!!.setIncrementEventCounter(EventRecorder.Companion.COUNTER_PEARLS_COLLECTED)
         thing.life = 1
         thing.add(render)
         thing.add(sprite)
@@ -3303,7 +4105,7 @@ class GameObjectFactory : BaseObject() {
         addStaticData(GameObjectType.COIN, thing, sprite)
         sprite.playAnimation(0)
         val recorder = sSystemRegistry.eventRecorder
-        recorder!!.incrementEventCounter(EventRecorder.COUNTER_PEARLS_TOTAL)
+        recorder!!.incrementEventCounter(EventRecorder.Companion.COUNTER_PEARLS_TOTAL)
         return thing
     }
 
@@ -3320,25 +4122,40 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 16, 16))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.COLLECT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.COLLECT
             val idle = SpriteAnimation(0, 5)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.allocateTexture(R.drawable.object_ruby01),
-                    2.0f, null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    2.0f, null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_ruby02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_ruby03),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_ruby04),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_ruby05),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val addRuby = UpdateRecord()
+            val addRuby = InventoryComponent.UpdateRecord()
             addRuby.rubyCount = 1
             staticData.add(addRuby)
             staticData.add(idle)
@@ -3358,8 +4175,8 @@ class GameObjectFactory : BaseObject() {
         val staticDataSize = staticData.count
         for (x in 0 until staticDataSize) {
             val entry = staticData[x]
-            if (entry is UpdateRecord) {
-                hitReact.setInventoryUpdate(entry as UpdateRecord?)
+            if (entry is InventoryComponent.UpdateRecord) {
+                hitReact.setInventoryUpdate(entry as InventoryComponent.UpdateRecord?)
                 break
             }
         }
@@ -3397,27 +4214,51 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 16, 16))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.COLLECT
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.COLLECT
             val idle = SpriteAnimation(0, 8)
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.object_diary01),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary02),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume)
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary01),
-                    1.0f, null, basicVulnerabilityVolume))
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.object_diary01),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(R.drawable.object_diary02),
+                Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_diary01),
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
             idle.addFrame(frame2)
             idle.addFrame(frame1)
             idle.addFrame(frame2)
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary03),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary04),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary05),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(textureLibrary.allocateTexture(R.drawable.object_diary06),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_diary03),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_diary04),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_diary05),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.object_diary06),
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val addDiary = UpdateRecord()
+            val addDiary = InventoryComponent.UpdateRecord()
             addDiary.diaryCount = 1
             staticData.add(addDiary)
             staticData.add(idle)
@@ -3433,14 +4274,15 @@ class GameObjectFactory : BaseObject() {
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         hitReact!!.setDieWhenCollected(true)
         hitReact.setInvincible(true)
-        hitReact.setSpawnGameEventOnHit(HitType.COLLECT,
-                GameFlowEvent.EVENT_SHOW_DIARY, 0)
+        hitReact.setSpawnGameEventOnHit(
+            CollisionParameters.HitType.COLLECT,
+                GameFlowEvent.Companion.EVENT_SHOW_DIARY, 0)
         // TODO: this is pretty dumb.  The static data binding needs to be made generic.
         val staticDataSize = staticData.count
         for (x in 0 until staticDataSize) {
             val entry = staticData[x]
-            if (entry is UpdateRecord) {
-                hitReact.setInventoryUpdate(entry as UpdateRecord?)
+            if (entry is InventoryComponent.UpdateRecord) {
+                hitReact.setInventoryUpdate(entry as InventoryComponent.UpdateRecord?)
                 break
             }
         }
@@ -3490,21 +4332,31 @@ class GameObjectFactory : BaseObject() {
                 frames = blue_frames
             }
             val vulnerabilityVolume: FixedSizeArray<CollisionVolume>? = null
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(frames[0]),
-                    Utils.framesToTime(24, 1), null, vulnerabilityVolume)
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(frames[1]),
-                    Utils.framesToTime(24, 2))
-            val frame3 = AnimationFrame(textureLibrary.allocateTexture(frames[2]),
-                    Utils.framesToTime(24, 2))
-            val frame4 = AnimationFrame(textureLibrary.allocateTexture(frames[3]),
-                    Utils.framesToTime(24, 1))
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(frames[0]),
+                Utils.Companion.framesToTime(24, 1), null, vulnerabilityVolume
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(frames[1]),
+                Utils.Companion.framesToTime(24, 2)
+            )
+            val frame3 = AnimationFrame(
+                textureLibrary.allocateTexture(frames[2]),
+                Utils.Companion.framesToTime(24, 2)
+            )
+            val frame4 = AnimationFrame(
+                textureLibrary.allocateTexture(frames[3]),
+                Utils.Companion.framesToTime(24, 1)
+            )
 
             // one frame of closing is deadly
             val attackVolume = FixedSizeArray<CollisionVolume>(1)
             attackVolume.add(AABoxCollisionVolume(12, 8, 8, 56))
-            attackVolume[0]!!.hitType = HitType.DEATH
-            val closeFrame2 = AnimationFrame(textureLibrary.allocateTexture(frames[1]),
-                    Utils.framesToTime(24, 2), attackVolume, vulnerabilityVolume)
+            attackVolume[0]!!.hitType = CollisionParameters.HitType.DEATH
+            val closeFrame2 = AnimationFrame(
+                textureLibrary.allocateTexture(frames[1]),
+                Utils.Companion.framesToTime(24, 2), attackVolume, vulnerabilityVolume
+            )
             val idle_closed = SpriteAnimation(DoorAnimationComponent.Animation.CLOSED, 1)
             idle_closed.addFrame(frame1)
             val idle_open = SpriteAnimation(DoorAnimationComponent.Animation.OPEN, 1)
@@ -3616,11 +4468,15 @@ class GameObjectFactory : BaseObject() {
             }
             val vulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             vulnerabilityVolume.add(AABoxCollisionVolume(0, 0, 32, 16))
-            vulnerabilityVolume[0]!!.hitType = HitType.DEPRESS
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(frames[0]),
-                    Utils.framesToTime(24, 1), null, vulnerabilityVolume)
-            val frame2 = AnimationFrame(textureLibrary.allocateTexture(frames[1]),
-                    Utils.framesToTime(24, 1), null, vulnerabilityVolume)
+            vulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.DEPRESS
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(frames[0]),
+                Utils.Companion.framesToTime(24, 1), null, vulnerabilityVolume
+            )
+            val frame2 = AnimationFrame(
+                textureLibrary.allocateTexture(frames[1]),
+                Utils.Companion.framesToTime(24, 1), null, vulnerabilityVolume
+            )
             val idle = SpriteAnimation(ButtonAnimationComponent.Animation.UP, 1)
             idle.addFrame(frame1)
             val pressed = SpriteAnimation(ButtonAnimationComponent.Animation.DOWN, 1)
@@ -3654,7 +4510,7 @@ class GameObjectFactory : BaseObject() {
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         hitReact!!.setInvincible(false)
         dynamicCollision!!.setHitReactionComponent(hitReact)
-        thing.team = Team.NONE
+        thing.team = GameObject.Team.NONE
         thing.add(render)
         thing.add(sprite)
         thing.add(button)
@@ -3678,15 +4534,17 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val attackVolume = FixedSizeArray<CollisionVolume>(1)
             attackVolume.add(AABoxCollisionVolume(16, 16, 32, 80))
-            attackVolume[0]!!.hitType = HitType.LAUNCH
+            attackVolume[0]!!.hitType = CollisionParameters.HitType.LAUNCH
             val frame1 = AnimationFrame(
-                    textureLibrary!!.allocateTexture(R.drawable.object_cannon),
-                    1.0f, attackVolume, null)
+                textureLibrary!!.allocateTexture(R.drawable.object_cannon),
+                1.0f, attackVolume, null
+            )
             val idle = SpriteAnimation(GenericAnimationComponent.Animation.IDLE, 1)
             idle.addFrame(frame1)
             val frame1NoAttack = AnimationFrame(
-                    textureLibrary.allocateTexture(R.drawable.object_cannon),
-                    1.0f, null, null)
+                textureLibrary.allocateTexture(R.drawable.object_cannon),
+                1.0f, null, null
+            )
             val shoot = SpriteAnimation(GenericAnimationComponent.Animation.ATTACK, 1)
             shoot.addFrame(frame1NoAttack)
             staticData.add(idle)
@@ -3708,11 +4566,11 @@ class GameObjectFactory : BaseObject() {
         sprite.setCollisionComponent(dynamicCollision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         hitReact!!.setInvincible(false)
-        hitReact.setLauncherComponent(launcher, HitType.LAUNCH)
+        hitReact.setLauncherComponent(launcher, CollisionParameters.HitType.LAUNCH)
         dynamicCollision!!.setHitReactionComponent(hitReact)
         val anim = allocateComponent(GenericAnimationComponent::class.java) as GenericAnimationComponent?
         anim!!.setSprite(sprite)
-        thing.team = Team.NONE
+        thing.team = GameObject.Team.NONE
         thing.add(render)
         thing.add(sprite)
         thing.add(dynamicCollision)
@@ -3746,11 +4604,14 @@ class GameObjectFactory : BaseObject() {
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(32, 32, 32))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.POSSESS
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.POSSESS
             val idle = SpriteAnimation(0, 1)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_brobot_machine),
-                    1.0f, null, basicVulnerabilityVolume))
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
             val solidSurface = allocateComponent(SolidSurfaceComponent::class.java) as SolidSurfaceComponent?
             solidSurface!!.inititalize(3)
             /*
@@ -3797,7 +4658,7 @@ class GameObjectFactory : BaseObject() {
         gun.setVelocityX(100.0f)
         gun.setVelocityY(300.0f)
         gun.enableProjectileTracking(1)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         } else {
@@ -3849,23 +4710,47 @@ class GameObjectFactory : BaseObject() {
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(16, 32, 32))
             val idle = SpriteAnimation(GenericAnimationComponent.Animation.IDLE, 1)
-            idle.addFrame(AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.andou_stand),
-                    1.0f, null, basicVulnerabilityVolume))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.allocateTexture(R.drawable.andou_stand),
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
             val stompAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            stompAttackVolume.add(AABoxCollisionVolume(16f, -5.0f, 32f, 37f, HitType.HIT))
+            stompAttackVolume.add(
+                AABoxCollisionVolume(
+                    16f,
+                    -5.0f,
+                    32f,
+                    37f,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val stomp = SpriteAnimation(GenericAnimationComponent.Animation.ATTACK, 4)
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp01),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp01),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp02),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp02),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp03),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp03),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
             stomp.addFrame(
-                    AnimationFrame(textureLibrary.allocateTexture(R.drawable.andou_stomp04),
-                            Utils.framesToTime(24, 1), stompAttackVolume, null))
+                AnimationFrame(
+                    textureLibrary.allocateTexture(R.drawable.andou_stomp04),
+                    Utils.Companion.framesToTime(24, 1), stompAttackVolume, null
+                )
+            )
 
 
             // Save static data
@@ -3892,10 +4777,10 @@ class GameObjectFactory : BaseObject() {
         hitReact!!.setBounceOnHit(true)
         hitReact.setPauseOnAttack(true)
         hitReact.setInvincibleTime(3.0f)
-        hitReact.setSpawnOnDealHit(HitType.HIT, GameObjectType.CRUSH_FLASH, false, true)
+        hitReact.setSpawnOnDealHit(CollisionParameters.HitType.HIT, GameObjectType.CRUSH_FLASH, false, true)
         dynamicCollision!!.setHitReactionComponent(hitReact)
         thing.life = 1
-        thing.team = Team.PLAYER
+        thing.team = GameObject.Team.PLAYER
         thing.add(animation)
         thing.add(bgcollision)
         thing.add(render)
@@ -3934,11 +4819,22 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 2
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(7, 0, 32 - 7, 42, HitType.HIT))
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    7,
+                    0,
+                    32 - 7,
+                    42,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 1)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_debris_block),
-                    1.0f, null, basicVulnerabilityVolume))
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
             val solidSurface = allocateComponent(SolidSurfaceComponent::class.java) as SolidSurfaceComponent?
             solidSurface!!.inititalize(4)
 
@@ -3984,7 +4880,7 @@ class GameObjectFactory : BaseObject() {
             lifetime.setDeathSound(sound.load(R.raw.sound_break_block))
         }
         thing.life = 1
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         thing.add(render)
         thing.add(sprite)
         thing.add(collision)
@@ -4007,50 +4903,57 @@ class GameObjectFactory : BaseObject() {
         val layer1Fade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
         layer1Fade!!.setRenderComponent(layer1Render)
         layer1Fade.setTexture(textureLibrary!!.allocateTexture(R.drawable.enemy_source_spikes))
-        layer1Fade.setupFade(1.0f, 0.2f, 1.9f, FadeDrawableComponent.LOOP_TYPE_PING_PONG, FadeDrawableComponent.FADE_EASE, 0.0f)
+        layer1Fade.setupFade(1.0f, 0.2f, 1.9f, FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG, FadeDrawableComponent.Companion.FADE_EASE, 0.0f)
         val layer2Render = allocateComponent(RenderComponent::class.java) as RenderComponent?
         layer2Render!!.priority = SortConstants.THE_SOURCE_START + 1
         val layer2Fade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
         layer2Fade!!.setRenderComponent(layer2Render)
         layer2Fade.setTexture(textureLibrary.allocateTexture(R.drawable.enemy_source_body))
-        layer2Fade.setupFade(1.0f, 0.8f, 5.0f, FadeDrawableComponent.LOOP_TYPE_PING_PONG, FadeDrawableComponent.FADE_EASE, 0.0f)
+        layer2Fade.setupFade(1.0f, 0.8f, 5.0f, FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG, FadeDrawableComponent.Companion.FADE_EASE, 0.0f)
         val layer3Render = allocateComponent(RenderComponent::class.java) as RenderComponent?
         layer3Render!!.priority = SortConstants.THE_SOURCE_START + 2
         val layer3Fade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
         layer3Fade!!.setRenderComponent(layer3Render)
         layer3Fade.setTexture(textureLibrary.allocateTexture(R.drawable.enemy_source_black))
-        layer3Fade.setupFade(0.0f, 1.0f, 6.0f, FadeDrawableComponent.LOOP_TYPE_PING_PONG, FadeDrawableComponent.FADE_LINEAR, 0.0f)
+        layer3Fade.setupFade(0.0f, 1.0f, 6.0f, FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG, FadeDrawableComponent.Companion.FADE_LINEAR, 0.0f)
         val layer4Render = allocateComponent(RenderComponent::class.java) as RenderComponent?
         layer4Render!!.priority = SortConstants.THE_SOURCE_START + 3
         val layer4Fade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
         layer4Fade!!.setRenderComponent(layer4Render)
         layer4Fade.setTexture(textureLibrary.allocateTexture(R.drawable.enemy_source_spots))
-        layer4Fade.setupFade(0.0f, 1.0f, 2.3f, FadeDrawableComponent.LOOP_TYPE_PING_PONG, FadeDrawableComponent.FADE_EASE, 0.0f)
+        layer4Fade.setupFade(0.0f, 1.0f, 2.3f, FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG, FadeDrawableComponent.Companion.FADE_EASE, 0.0f)
         val layer5Render = allocateComponent(RenderComponent::class.java) as RenderComponent?
         layer5Render!!.priority = SortConstants.THE_SOURCE_START + 4
         val layer5Fade = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
         layer5Fade!!.setRenderComponent(layer5Render)
         layer5Fade.setTexture(textureLibrary.allocateTexture(R.drawable.enemy_source_core))
-        layer5Fade.setupFade(0.2f, 1.0f, 1.2f, FadeDrawableComponent.LOOP_TYPE_PING_PONG, FadeDrawableComponent.FADE_EASE, 0.0f)
+        layer5Fade.setupFade(0.2f, 1.0f, 1.2f, FadeDrawableComponent.Companion.LOOP_TYPE_PING_PONG, FadeDrawableComponent.Companion.FADE_EASE, 0.0f)
         val orbit = allocateComponent(OrbitalMagnetComponent::class.java) as OrbitalMagnetComponent?
         orbit!!.setup(320.0f, 220.0f)
         val collision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         val vulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-        vulnerabilityVolume.add(SphereCollisionVolume(256, 256, 256, HitType.HIT))
+        vulnerabilityVolume.add(
+            SphereCollisionVolume(
+                256,
+                256,
+                256,
+                CollisionParameters.HitType.HIT
+            )
+        )
         val attackVolume = FixedSizeArray<CollisionVolume>(1)
-        attackVolume.add(SphereCollisionVolume(256, 256, 256, HitType.HIT))
+        attackVolume.add(SphereCollisionVolume(256, 256, 256, CollisionParameters.HitType.HIT))
         collision!!.setCollisionVolumes(attackVolume, vulnerabilityVolume)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         collision.setHitReactionComponent(hitReact)
-        hitReact!!.setInvincibleTime(TheSourceComponent.SHAKE_TIME)
+        hitReact!!.setInvincibleTime(TheSourceComponent.Companion.SHAKE_TIME)
         val theSource = allocateComponent(TheSourceComponent::class.java) as TheSourceComponent?
         var surpriseChannel: ChannelSystem.Channel? = null
         val channelSystem = sSystemRegistry.channelSystem
         surpriseChannel = channelSystem!!.registerChannel(sSurprisedNPCChannel)
         theSource!!.setChannel(surpriseChannel)
-        theSource.setGameEvent(GameFlowEvent.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.WANDA_ENDING)
+        theSource.setGameEvent(GameFlowEvent.Companion.EVENT_SHOW_ANIMATION, AnimationPlayerActivity.Companion.WANDA_ENDING)
         thing.life = 3
-        thing.team = Team.PLAYER
+        thing.team = GameObject.Team.PLAYER
         thing.add(layer1Render)
         thing.add(layer2Render)
         thing.add(layer3Render)
@@ -4080,10 +4983,20 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
-            basicVulnerabilityVolume.add(AABoxCollisionVolume(8, 0, 24, 32, HitType.COLLECT))
+            basicVulnerabilityVolume.add(
+                AABoxCollisionVolume(
+                    8,
+                    0,
+                    24,
+                    32,
+                    CollisionParameters.HitType.COLLECT
+                )
+            )
             val idle = SpriteAnimation(0, 1)
-            val frame1 = AnimationFrame(textureLibrary!!.allocateTexture(R.drawable.object_sign),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume)
+            val frame1 = AnimationFrame(
+                textureLibrary!!.allocateTexture(R.drawable.object_sign),
+                Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+            )
             idle.addFrame(frame1)
             idle.loop = true
             staticData.add(idle)
@@ -4098,7 +5011,7 @@ class GameObjectFactory : BaseObject() {
         sprite.setCollisionComponent(dynamicCollision)
         val hitReact = allocateComponent(HitReactionComponent::class.java) as HitReactionComponent?
         dynamicCollision!!.setHitReactionComponent(hitReact)
-        hitReact!!.setSpawnGameEventOnHit(HitType.COLLECT, GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2, 0)
+        hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2, 0)
         val dialogSelect = allocateComponent(SelectDialogComponent::class.java) as SelectDialogComponent?
         dialogSelect!!.setHitReact(hitReact)
         thing.add(dialogSelect)
@@ -4130,32 +5043,50 @@ class GameObjectFactory : BaseObject() {
             // Animations
             val basicVulnerabilityVolume = FixedSizeArray<CollisionVolume>(1)
             basicVulnerabilityVolume.add(SphereCollisionVolume(32, 32, 32))
-            basicVulnerabilityVolume[0]!!.hitType = HitType.POSSESS
-            val idle = SpriteAnimation(EnemyAnimations.IDLE.ordinal, 2)
-            idle.addFrame(AnimationFrame(
+            basicVulnerabilityVolume[0]!!.hitType = CollisionParameters.HitType.POSSESS
+            val idle = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.IDLE.ordinal, 2)
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret01),
-                    1.0f, null, basicVulnerabilityVolume))
-            idle.addFrame(AnimationFrame(
+                    1.0f, null, basicVulnerabilityVolume
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret_idle),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             idle.loop = true
-            val attack = SpriteAnimation(EnemyAnimations.ATTACK.ordinal, 4)
-            attack.addFrame(AnimationFrame(
+            val attack = SpriteAnimation(EnemyAnimationComponent.EnemyAnimations.ATTACK.ordinal, 4)
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret02),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret03),
-                    Utils.framesToTime(24, 2), null, basicVulnerabilityVolume))
-            attack.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 2), null, basicVulnerabilityVolume
+                )
+            )
+            attack.addFrame(
+                AnimationFrame(
                     textureLibrary.allocateTexture(R.drawable.object_gunturret01),
-                    Utils.framesToTime(24, 1), null, basicVulnerabilityVolume))
+                    Utils.Companion.framesToTime(24, 1), null, basicVulnerabilityVolume
+                )
+            )
             attack.loop = true
             val ghost = allocateComponent(GhostComponent::class.java) as GhostComponent?
-            ghost!!.setTargetAction(ActionType.IDLE)
-            ghost.changeActionOnButton(ActionType.ATTACK)
+            ghost!!.setTargetAction(GameObject.ActionType.IDLE)
+            ghost.changeActionOnButton(GameObject.ActionType.ATTACK)
             staticData.add(idle)
             staticData.add(attack)
             staticData.add(ghost)
@@ -4184,7 +5115,7 @@ class GameObjectFactory : BaseObject() {
         gun.setObjectTypeToSpawn(GameObjectType.TURRET_BULLET)
         gun.setOffsetX(54f)
         gun.setOffsetY(13f)
-        gun.setRequiredAction(ActionType.ATTACK)
+        gun.setRequiredAction(GameObject.ActionType.ATTACK)
         gun.setVelocityX(300.0f)
         gun.setVelocityY(-300.0f)
         gun.setShootSound(sound!!.load(R.raw.sound_gun))
@@ -4194,7 +5125,7 @@ class GameObjectFactory : BaseObject() {
         componentSwap!!.addSwapOutComponent(attack)
         componentSwap.setPingPongBehavior(true)
         hitReact!!.setPossessionComponent(componentSwap)
-        thing.team = Team.ENEMY
+        thing.team = GameObject.Team.ENEMY
         if (flipHorizontal) {
             thing.facingDirection.x = -1.0f
         } else {
@@ -4232,16 +5163,36 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val idle = SpriteAnimation(0, 5)
-            idle.addFrame(AnimationFrame(textureLibrary!!.getTextureByResource(R.drawable.dust01),
-                    Utils.framesToTime(24, 1)))
-            idle.addFrame(AnimationFrame(textureLibrary.getTextureByResource(R.drawable.dust02),
-                    Utils.framesToTime(24, 1)))
-            idle.addFrame(AnimationFrame(textureLibrary.getTextureByResource(R.drawable.dust03),
-                    Utils.framesToTime(24, 1)))
-            idle.addFrame(AnimationFrame(textureLibrary.getTextureByResource(R.drawable.dust04),
-                    Utils.framesToTime(24, 1)))
-            idle.addFrame(AnimationFrame(textureLibrary.getTextureByResource(R.drawable.dust05),
-                    Utils.framesToTime(24, 1)))
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary!!.getTextureByResource(R.drawable.dust01),
+                    Utils.Companion.framesToTime(24, 1)
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.getTextureByResource(R.drawable.dust02),
+                    Utils.Companion.framesToTime(24, 1)
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.getTextureByResource(R.drawable.dust03),
+                    Utils.Companion.framesToTime(24, 1)
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.getTextureByResource(R.drawable.dust04),
+                    Utils.Companion.framesToTime(24, 1)
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
+                    textureLibrary.getTextureByResource(R.drawable.dust05),
+                    Utils.Companion.framesToTime(24, 1)
+                )
+            )
             staticData.add(idle)
             setStaticData(GameObjectType.DUST, staticData)
         }
@@ -4276,29 +5227,57 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(16, 16, 16, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    16,
+                    16,
+                    16,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 7)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.getTextureByResource(R.drawable.effect_explosion_small01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small05),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small06),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_small07),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             staticData.add(idle)
             setStaticData(GameObjectType.EXPLOSION_SMALL, staticData)
         }
@@ -4335,35 +5314,69 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 1
             staticData = FixedSizeArray(staticObjectCount)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(32, 32, 32, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    32,
+                    32,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 9)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.getTextureByResource(R.drawable.effect_explosion_big01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big05),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big06),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big07),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big08),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big09),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             staticData.add(idle)
             setStaticData(GameObjectType.EXPLOSION_LARGE, staticData)
         }
@@ -4403,55 +5416,97 @@ class GameObjectFactory : BaseObject() {
             val staticObjectCount = 4
             staticData = FixedSizeArray(staticObjectCount)
             val basicAttackVolume = FixedSizeArray<CollisionVolume>(1)
-            basicAttackVolume.add(SphereCollisionVolume(64, 32, 32, HitType.HIT))
+            basicAttackVolume.add(
+                SphereCollisionVolume(
+                    64,
+                    32,
+                    32,
+                    CollisionParameters.HitType.HIT
+                )
+            )
             val idle = SpriteAnimation(0, 9)
-            idle.addFrame(AnimationFrame(
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary!!.getTextureByResource(R.drawable.effect_explosion_big01),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big02),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big03),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big04),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big05),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big06),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big07),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big08),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
-            idle.addFrame(AnimationFrame(
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
+            idle.addFrame(
+                AnimationFrame(
                     textureLibrary.getTextureByResource(R.drawable.effect_explosion_big09),
-                    Utils.framesToTime(24, 1), basicAttackVolume, null))
+                    Utils.Companion.framesToTime(24, 1), basicAttackVolume, null
+                )
+            )
             val smallFrame1 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small01),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small01),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallFrame2 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small02),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small02),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallFrame3 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small03),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small03),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallFrame4 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small04),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small04),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallFrame5 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small05),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small05),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallFrame6 = AnimationFrame(
-                    textureLibrary.getTextureByResource(R.drawable.effect_explosion_small06),
-                    Utils.framesToTime(24, 1), null, null)
-            val smallFrame7 = AnimationFrame(textureLibrary.getTextureByResource(R.drawable.effect_explosion_small07),
-                    Utils.framesToTime(24, 1), null, null)
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small06),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
+            val smallFrame7 = AnimationFrame(
+                textureLibrary.getTextureByResource(R.drawable.effect_explosion_small07),
+                Utils.Companion.framesToTime(24, 1), null, null
+            )
             val smallBlast1 = SpriteAnimation(0, 7)
             smallBlast1.addFrame(smallFrame1)
             smallBlast1.addFrame(smallFrame2)
@@ -4461,7 +5516,14 @@ class GameObjectFactory : BaseObject() {
             smallBlast1.addFrame(smallFrame6)
             smallBlast1.addFrame(smallFrame7)
             val smallBlast2 = SpriteAnimation(0, 8)
-            smallBlast2.addFrame(AnimationFrame(null, Utils.framesToTime(24, 4), null, null))
+            smallBlast2.addFrame(
+                AnimationFrame(
+                    null,
+                    Utils.Companion.framesToTime(24, 4),
+                    null,
+                    null
+                )
+            )
             smallBlast2.addFrame(smallFrame1)
             smallBlast2.addFrame(smallFrame2)
             smallBlast2.addFrame(smallFrame3)
@@ -4470,7 +5532,14 @@ class GameObjectFactory : BaseObject() {
             smallBlast2.addFrame(smallFrame6)
             smallBlast2.addFrame(smallFrame7)
             val smallBlast3 = SpriteAnimation(0, 8)
-            smallBlast3.addFrame(AnimationFrame(null, Utils.framesToTime(24, 8), null, null))
+            smallBlast3.addFrame(
+                AnimationFrame(
+                    null,
+                    Utils.Companion.framesToTime(24, 8),
+                    null,
+                    null
+                )
+            )
             smallBlast3.addFrame(smallFrame1)
             smallBlast3.addFrame(smallFrame2)
             smallBlast3.addFrame(smallFrame3)
@@ -4523,16 +5592,20 @@ class GameObjectFactory : BaseObject() {
         blast3Sprite.addAnimation(smallBlast3)
         blast3Sprite.playAnimation(0)
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
-        lifetime!!.setTimeUntilDeath(max(
+        lifetime!!.setTimeUntilDeath(
+            max(
                 max(
-                        max(idle!!.length, smallBlast1!!.length),
-                        smallBlast2!!.length),
-                smallBlast3!!.length))
+                    max(idle!!.length, smallBlast1!!.length),
+                    smallBlast2!!.length
+                ),
+                smallBlast3!!.length
+            )
+        )
         val dynamicCollision = allocateComponent(DynamicCollisionComponent::class.java) as DynamicCollisionComponent?
         sprite.setCollisionComponent(dynamicCollision)
         val soundEffect = allocateComponent(PlaySingleSoundComponent::class.java) as PlaySingleSoundComponent?
         soundEffect!!.setSound(sSystemRegistry.soundSystem!!.load(R.raw.quick_explosion))
-        thing.team = Team.PLAYER // Maybe this should be an argument to this function.
+        thing.team = GameObject.Team.PLAYER // Maybe this should be an argument to this function.
         thing.add(dynamicCollision!!)
         thing.add(lifetime)
         thing.add(render)
@@ -4565,7 +5638,7 @@ class GameObjectFactory : BaseObject() {
         }
         val patrol = allocateComponent(NPCComponent::class.java) as NPCComponent?
         val life = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
-        thing.team = Team.NONE
+        thing.team = GameObject.Team.NONE
         thing.life = 1
         thing.add(patrol!!)
         thing.add(life!!)
@@ -4607,53 +5680,72 @@ class GameObjectFactory : BaseObject() {
                 staticData = FixedSizeArray(staticObjectCount)
                 val movement = allocateComponent(MovementComponent::class.java)
                 val frame2 = AnimationFrame(
-                        textureLibrary!!.getTextureByResource(R.drawable.effect_smoke_big02),
-                        Utils.framesToTime(24, 1), null, null)
+                    textureLibrary!!.getTextureByResource(R.drawable.effect_smoke_big02),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
                 val frame3 = AnimationFrame(
-                        textureLibrary.getTextureByResource(R.drawable.effect_smoke_big03),
-                        Utils.framesToTime(24, 1), null, null)
+                    textureLibrary.getTextureByResource(R.drawable.effect_smoke_big03),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
                 val frame4 = AnimationFrame(
-                        textureLibrary.getTextureByResource(R.drawable.effect_smoke_big04),
-                        Utils.framesToTime(24, 1), null, null)
+                    textureLibrary.getTextureByResource(R.drawable.effect_smoke_big04),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
                 val frame5 = AnimationFrame(
-                        textureLibrary.getTextureByResource(R.drawable.effect_smoke_big05),
-                        Utils.framesToTime(24, 1), null, null)
+                    textureLibrary.getTextureByResource(R.drawable.effect_smoke_big05),
+                    Utils.Companion.framesToTime(24, 1), null, null
+                )
                 val idle = SpriteAnimation(0, 5)
-                idle.addFrame(AnimationFrame(
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_big01),
-                        Utils.framesToTime(24, 10), null, null))
+                        Utils.Companion.framesToTime(24, 10), null, null
+                    )
+                )
                 idle.addFrame(frame2)
                 idle.addFrame(frame3)
                 idle.addFrame(frame4)
                 idle.addFrame(frame5)
                 val idle2 = SpriteAnimation(1, 5)
-                idle2.addFrame(AnimationFrame(
+                idle2.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_big01),
-                        Utils.framesToTime(24, 13), null, null))
+                        Utils.Companion.framesToTime(24, 13), null, null
+                    )
+                )
                 idle2.addFrame(frame2)
                 idle2.addFrame(frame3)
                 idle2.addFrame(frame4)
                 idle2.addFrame(frame5)
                 val idle3 = SpriteAnimation(2, 5)
-                idle3.addFrame(AnimationFrame(
+                idle3.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_big01),
-                        Utils.framesToTime(24, 8), null, null))
+                        Utils.Companion.framesToTime(24, 8), null, null
+                    )
+                )
                 idle3.addFrame(frame2)
                 idle3.addFrame(frame3)
                 idle3.addFrame(frame4)
                 idle3.addFrame(frame5)
                 val idle4 = SpriteAnimation(3, 5)
-                idle4.addFrame(AnimationFrame(
+                idle4.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_big01),
-                        Utils.framesToTime(24, 5), null, null))
+                        Utils.Companion.framesToTime(24, 5), null, null
+                    )
+                )
                 idle4.addFrame(frame2)
                 idle4.addFrame(frame3)
                 idle4.addFrame(frame4)
                 idle4.addFrame(frame5)
                 val idle5 = SpriteAnimation(4, 5)
-                idle5.addFrame(AnimationFrame(
+                idle5.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_big01),
-                        Utils.framesToTime(24, 15), null, null))
+                        Utils.Companion.framesToTime(24, 15), null, null
+                    )
+                )
                 idle5.addFrame(frame2)
                 idle5.addFrame(frame3)
                 idle5.addFrame(frame4)
@@ -4704,21 +5796,36 @@ class GameObjectFactory : BaseObject() {
                 staticData = FixedSizeArray(staticObjectCount)
                 val movement = allocateComponent(MovementComponent::class.java)
                 val idle = SpriteAnimation(0, 5)
-                idle.addFrame(AnimationFrame(
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary!!.getTextureByResource(R.drawable.effect_smoke_small01),
-                        Utils.framesToTime(24, 10), null, null))
-                idle.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 10), null, null
+                    )
+                )
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_small02),
-                        Utils.framesToTime(24, 1), null, null))
-                idle.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_small03),
-                        Utils.framesToTime(24, 1), null, null))
-                idle.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_small04),
-                        Utils.framesToTime(24, 1), null, null))
-                idle.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                idle.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_smoke_small05),
-                        Utils.framesToTime(24, 1), null, null))
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
                 staticData.add(idle)
                 staticData.add(movement)
                 setStaticData(GameObjectType.SMOKE_SMALL, staticData)
@@ -4759,37 +5866,67 @@ class GameObjectFactory : BaseObject() {
                 val staticObjectCount = 2
                 staticData = FixedSizeArray(staticObjectCount)
                 val back = SpriteAnimation(0, 3)
-                back.addFrame(AnimationFrame(
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary!!.getTextureByResource(R.drawable.effect_crush_back01),
-                        Utils.framesToTime(24, 1), null, null))
-                back.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_back02),
-                        Utils.framesToTime(24, 1), null, null))
-                back.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_back03),
-                        Utils.framesToTime(24, 1), null, null))
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
                 val front = SpriteAnimation(1, 7)
-                front.addFrame(AnimationFrame(
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front01),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front02),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front03),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front04),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front05),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front06),
-                        Utils.framesToTime(24, 1), null, null))
-                front.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                front.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_front07),
-                        Utils.framesToTime(24, 1), null, null))
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
                 staticData.add(back)
                 staticData.add(front)
                 setStaticData(GameObjectType.CRUSH_FLASH, staticData)
@@ -4837,15 +5974,24 @@ class GameObjectFactory : BaseObject() {
                 val staticObjectCount = 1
                 staticData = FixedSizeArray(staticObjectCount)
                 val back = SpriteAnimation(0, 3)
-                back.addFrame(AnimationFrame(
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary!!.getTextureByResource(R.drawable.effect_crush_back01),
-                        Utils.framesToTime(24, 1), null, null))
-                back.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_back02),
-                        Utils.framesToTime(24, 1), null, null))
-                back.addFrame(AnimationFrame(
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
+                back.addFrame(
+                    AnimationFrame(
                         textureLibrary.getTextureByResource(R.drawable.effect_crush_back03),
-                        Utils.framesToTime(24, 1), null, null))
+                        Utils.Companion.framesToTime(24, 1), null, null
+                    )
+                )
                 staticData.add(back)
                 setStaticData(GameObjectType.FLASH, staticData)
             }
@@ -4877,9 +6023,10 @@ class GameObjectFactory : BaseObject() {
         thing.width = params!!.gameWidth.toFloat()
         thing.height = params.gameHeight.toFloat()
         val indicator = DrawableBitmap(
-                textureLibrary!!.allocateTexture(R.drawable.framerate_warning),
-                thing.width.toInt(),
-                thing.height.toInt())
+            textureLibrary!!.allocateTexture(R.drawable.framerate_warning),
+            thing.width.toInt(),
+            thing.height.toInt()
+        )
         indicator.setCrop(0, 8, 8, 8) // hack!  this shouldn't be hard-coded.
         val render = allocateComponent(RenderComponent::class.java) as RenderComponent?
         render!!.priority = SortConstants.OVERLAY
@@ -4907,9 +6054,10 @@ class GameObjectFactory : BaseObject() {
             val physics = allocateComponent(SimplePhysicsComponent::class.java) as SimplePhysicsComponent?
             physics!!.setBounciness(0.3f)
             val piece = DrawableBitmap(
-                    textureLibrary!!.getTextureByResource(R.drawable.object_debris_piece),
-                    thing.width.toInt(),
-                    thing.height.toInt())
+                textureLibrary!!.getTextureByResource(R.drawable.object_debris_piece),
+                thing.width.toInt(),
+                thing.height.toInt()
+            )
             val render = allocateComponent(RenderComponent::class.java) as RenderComponent?
             render!!.priority = SortConstants.GENERAL_OBJECT
             render.drawable = piece
@@ -5017,7 +6165,7 @@ class GameObjectFactory : BaseObject() {
         val lifetime = allocateComponent(LifetimeComponent::class.java) as LifetimeComponent?
         lifetime!!.setTimeUntilDeath(0.5f)
         val fadeOut = allocateComponent(FadeDrawableComponent::class.java) as FadeDrawableComponent?
-        fadeOut!!.setupFade(1.0f, 0.0f, 0.5f, FadeDrawableComponent.LOOP_TYPE_NONE, FadeDrawableComponent.FADE_LINEAR, 0.0f)
+        fadeOut!!.setupFade(1.0f, 0.0f, 0.5f, FadeDrawableComponent.Companion.LOOP_TYPE_NONE, FadeDrawableComponent.Companion.FADE_LINEAR, 0.0f)
         fadeOut.setTexture(textureLibrary!!.allocateTexture(R.drawable.object_ruby01))
         fadeOut.setRenderComponent(render)
         thing.destroyOnDeactivation = true

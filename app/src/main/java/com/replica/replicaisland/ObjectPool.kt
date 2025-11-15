@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+
 /**
  * A general-purpose pool of objects.  Objects in the pool are allocated up front and then
  * passed out to requesting objects until the pool is exhausted (at which point an error is thrown).

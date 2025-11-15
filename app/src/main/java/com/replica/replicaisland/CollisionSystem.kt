@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import android.content.res.AssetManager.AssetInputStream
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.levels.TiledWorld
 import java.io.IOException
 import java.io.InputStream
@@ -94,7 +96,8 @@ class CollisionSystem : BaseObject() {
      */
     // TODO: switch to return data as a HitPoint.
     fun castRay(startPoint: Vector2, endPoint: Vector2, movementDirection: Vector2,
-                hitPoint: Vector2, hitNormal: Vector2, excludeObject: GameObject): Boolean {
+                hitPoint: Vector2, hitNormal: Vector2, excludeObject: GameObject
+    ): Boolean {
         var hit = false
         tileSegmentTester.setup(movementDirection, mTileWidth, mTileHeight)
         if (collisionTiles != null &&
@@ -202,7 +205,8 @@ class CollisionSystem : BaseObject() {
 
     /* Inserts a temporary surface into the collision world.  It will persist for one frame. */
     fun addTemporarySurface(startPoint: Vector2?, endPoint: Vector2?, normal: Vector2?,
-                            ownerObject: GameObject) {
+                            ownerObject: GameObject
+    ) {
         val newSegment = segmentPool.allocate()
         newSegment!![startPoint, endPoint] = normal
         newSegment.setTheOwner(ownerObject)
@@ -704,9 +708,9 @@ class CollisionSystem : BaseObject() {
         }
 
         private fun testBoxAgainstList(segments: FixedSizeArray<LineSegment?>,
-                                         left: Float, right: Float, top: Float, bottom: Float,
-                                         movementDirection: Vector2?, excludeObject: GameObject, outputOffset: Vector2?,
-                                         outputHitPoints: FixedSizeArray<HitPoint?>): Boolean {
+                                       left: Float, right: Float, top: Float, bottom: Float,
+                                       movementDirection: Vector2?, excludeObject: GameObject, outputOffset: Vector2?,
+                                       outputHitPoints: FixedSizeArray<HitPoint?>): Boolean {
             var hitCount = 0
             val maxSegments = outputHitPoints.getCapacity() - outputHitPoints.count
             val count = segments.count

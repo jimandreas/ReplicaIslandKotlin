@@ -18,7 +18,9 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 import kotlin.math.abs

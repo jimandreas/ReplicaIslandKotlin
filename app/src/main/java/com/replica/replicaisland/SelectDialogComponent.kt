@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.CollisionParameters.HitType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 
 class SelectDialogComponent : GameComponent() {
     private var hitReact: HitReactionComponent? = null

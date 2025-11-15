@@ -15,6 +15,9 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 class CrusherAndouComponent : GameComponent() {
     private var mSwap: ChangeComponentsComponent? = null
     override fun reset() {

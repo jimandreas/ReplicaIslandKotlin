@@ -1,25 +1,11 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-@file:Suppress("IfThenToSafeAccess")
+package com.replica.replicaisland.core
 
-package com.replica.replicaisland
-
-import com.replica.replicaisland.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.GhostComponent
+import com.replica.replicaisland.HotSpotSystem
+import com.replica.replicaisland.LaunchProjectileComponent
+import com.replica.replicaisland.Vector2
 import com.replica.replicaisland.sound.SoundSystem
-import com.replica.replicaisland.sound.SoundSystem.Sound
 import kotlin.math.abs
 
 /**
@@ -29,19 +15,19 @@ import kotlin.math.abs
 class LifetimeComponent : GameComponent() {
     private var dieWhenInvisible = false
     private var timeUntilDeath = 0f
-    private var spawnOnDeathType: GameObjectType? = null
+    private var spawnOnDeathType: GameObjectFactory.GameObjectType? = null
     private var trackingSpawner: LaunchProjectileComponent? = null
     private val hotSpotTestPoint: Vector2 = Vector2()
     private var releaseGhostOnDeath = false
     private var vulnerableToDeathTiles = false
     private var dieOnHitBackground = false
-    private var mDeathSound: Sound? = null
+    private var mDeathSound: SoundSystem.Sound? = null
     private var mIncrementEventCounter = false
     private var eventCounter = 0
     override fun reset() {
         dieWhenInvisible = false
         timeUntilDeath = -1f
-        spawnOnDeathType = GameObjectType.INVALID
+        spawnOnDeathType = GameObjectFactory.GameObjectType.INVALID
         trackingSpawner = null
         hotSpotTestPoint.zero()
         releaseGhostOnDeath = true
@@ -60,7 +46,7 @@ class LifetimeComponent : GameComponent() {
         timeUntilDeath = time
     }
 
-    fun setObjectToSpawnOnDeath(type: GameObjectType?) {
+    fun setObjectToSpawnOnDeath(type: GameObjectFactory.GameObjectType?) {
         spawnOnDeathType = type
     }
 
@@ -126,7 +112,7 @@ class LifetimeComponent : GameComponent() {
             val recorder = sSystemRegistry.eventRecorder
             recorder!!.incrementEventCounter(eventCounter)
         }
-        if (spawnOnDeathType != GameObjectType.INVALID) {
+        if (spawnOnDeathType != GameObjectFactory.GameObjectType.INVALID) {
             val `object` = factory!!.spawn(spawnOnDeathType!!, parentObject.position.x,
                     parentObject.position.y, parentObject.facingDirection.x < 0.0f)
             if (`object` != null && manager != null) {
@@ -139,7 +125,7 @@ class LifetimeComponent : GameComponent() {
         manager?.destroy(parentObject)
         if (mDeathSound != null) {
             val sound = sSystemRegistry.soundSystem
-            sound?.play(mDeathSound!!, false, SoundSystem.PRIORITY_NORMAL)
+            sound?.play(mDeathSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
         }
     }
 
@@ -159,7 +145,7 @@ class LifetimeComponent : GameComponent() {
         dieOnHitBackground = die
     }
 
-    fun setDeathSound(deathSound: Sound?) {
+    fun setDeathSound(deathSound: SoundSystem.Sound?) {
         mDeathSound = deathSound
     }
 

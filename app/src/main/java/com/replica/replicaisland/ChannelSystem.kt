@@ -15,6 +15,7 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
 import java.util.*
 
 class ChannelSystem : BaseObject() {

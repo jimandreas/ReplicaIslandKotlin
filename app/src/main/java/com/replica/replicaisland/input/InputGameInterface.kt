@@ -1,7 +1,7 @@
 package com.replica.replicaisland.input
 
 import android.view.KeyEvent
-import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.ButtonConstants
 import com.replica.replicaisland.Utils
 import kotlin.math.abs

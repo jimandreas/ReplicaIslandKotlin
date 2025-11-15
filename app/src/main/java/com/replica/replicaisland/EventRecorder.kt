@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+
 class EventRecorder : BaseObject() {
     private val mLastDeathPosition = Vector2()
 

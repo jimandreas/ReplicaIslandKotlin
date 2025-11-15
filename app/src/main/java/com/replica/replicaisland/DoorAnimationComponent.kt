@@ -18,6 +18,8 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.ChannelSystem.ChannelFloatValue
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 

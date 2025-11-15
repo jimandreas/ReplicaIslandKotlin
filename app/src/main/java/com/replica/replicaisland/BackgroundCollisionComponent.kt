@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import java.util.*
 import kotlin.math.abs
 
@@ -299,7 +301,8 @@ class BackgroundCollisionComponent : GameComponent {
     /* Sweeps the space between two points looking for surfaces that oppose horizontal movement. */
     private fun sweepHorizontal(previousPosition: Vector2?, currentPosition: Vector2, delta: Vector2,
                                   left: Int, right: Int, centerY: Float, hitPoint: Vector2, hitNormal: Vector2?,
-                                  parentObject: GameObject): Boolean {
+                                  parentObject: GameObject
+    ): Boolean {
         var hit = false
         if (!Utils.close(delta.x, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem
@@ -333,7 +336,8 @@ class BackgroundCollisionComponent : GameComponent {
     /* Sweeps the space between two points looking for surfaces that oppose vertical movement. */
     private fun sweepVertical(previousPosition: Vector2?, currentPosition: Vector2, delta: Vector2,
                                 bottom: Int, top: Int, centerX: Float, hitPoint: Vector2, hitNormal: Vector2?,
-                                parentObject: GameObject): Boolean {
+                                parentObject: GameObject
+    ): Boolean {
         var hit = false
         if (!Utils.close(delta.y, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem

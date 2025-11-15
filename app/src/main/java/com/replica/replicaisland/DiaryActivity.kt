@@ -27,6 +27,7 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.core.BaseObject
 import java.lang.reflect.InvocationTargetException
 
 class DiaryActivity : Activity() {

@@ -18,10 +18,12 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.GameObject.ActionType
-import com.replica.replicaisland.GameObject.Team
-import com.replica.replicaisland.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.Team
+import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
 import com.replica.replicaisland.InventoryComponent.UpdateRecord
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 

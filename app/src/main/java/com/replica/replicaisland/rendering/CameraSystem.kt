@@ -1,7 +1,7 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.BaseObject
-import com.replica.replicaisland.GameObject
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.Lerp
 import com.replica.replicaisland.Utils
 import com.replica.replicaisland.Vector2

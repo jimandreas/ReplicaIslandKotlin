@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+
 class InventoryComponent : GameComponent() {
     private val inventory: UpdateRecord
     private var inventoryChanged = false

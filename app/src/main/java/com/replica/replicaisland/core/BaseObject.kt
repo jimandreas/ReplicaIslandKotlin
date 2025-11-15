@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.replica.replicaisland
+package com.replica.replicaisland.core
+
+import com.replica.replicaisland.ObjectRegistry
 
 /**
  * The core object from which most other objects are derived.  Anything that will be managed by

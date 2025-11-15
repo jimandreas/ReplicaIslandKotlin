@@ -17,8 +17,11 @@
 
 package com.replica.replicaisland
 
-import com.replica.replicaisland.GameObject.ActionType
-import com.replica.replicaisland.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.GameObjectFactory.GameObjectType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.core.LifetimeComponent
 import com.replica.replicaisland.sound.SoundSystem
 import com.replica.replicaisland.sound.SoundSystem.Sound
 import kotlin.math.cos

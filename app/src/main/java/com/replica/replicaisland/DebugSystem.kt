@@ -17,6 +17,8 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+
 class DebugSystem(library: TextureLibrary?) : BaseObject() {
     private var redBoxTexture: Texture? = null
     private var blueBoxTexture: Texture? = null

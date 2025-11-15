@@ -20,6 +20,7 @@ package com.replica.replicaisland
 import com.replica.replicaisland.Grid.Companion.endDrawing
 import com.replica.replicaisland.OpenGLSystem.Companion.bindTexture
 import com.replica.replicaisland.OpenGLSystem.Companion.gL
+import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.levels.TiledWorld
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.ceil

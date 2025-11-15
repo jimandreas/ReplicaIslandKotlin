@@ -17,6 +17,9 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 class FixedAnimationComponent : GameComponent() {
     private var animationIndex = 0
     override fun reset() {

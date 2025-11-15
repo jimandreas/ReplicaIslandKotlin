@@ -15,6 +15,9 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 /**
  * A game component that implements velocity-based movement.
  */

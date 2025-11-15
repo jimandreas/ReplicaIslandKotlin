@@ -15,7 +15,8 @@
  */
 package com.replica.replicaisland
 
-import com.replica.replicaisland.HitReactionComponent
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 
 class HitPlayerComponent : GameComponent() {
     private var mDistance2 = 0f

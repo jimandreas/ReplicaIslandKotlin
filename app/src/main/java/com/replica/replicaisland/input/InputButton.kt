@@ -1,6 +1,6 @@
 package com.replica.replicaisland.input
 
-import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.core.BaseObject
 
 class InputButton {
     var pressed = false

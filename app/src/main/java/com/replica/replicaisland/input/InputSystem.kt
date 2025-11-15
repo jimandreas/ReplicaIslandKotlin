@@ -1,6 +1,6 @@
 package com.replica.replicaisland.input
 
-import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.core.BaseObject
 
 /**
  * Manages input from a roller wheel and touch screen.  Reduces frequent UI messages to

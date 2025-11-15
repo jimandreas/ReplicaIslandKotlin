@@ -1,8 +1,8 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.GameObject
+import com.replica.replicaisland.core.GameObject
 
 class CameraBiasComponent : GameComponent() {
     override fun reset() {}

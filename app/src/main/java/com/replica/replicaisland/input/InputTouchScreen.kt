@@ -1,7 +1,6 @@
 package com.replica.replicaisland.input
 
-import com.replica.replicaisland.BaseObject
-import com.replica.replicaisland.input.InputXY
+import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.Vector2
 
 class InputTouchScreen : BaseObject() {

@@ -17,6 +17,9 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 /**
  * A component that allows a game object to act like a solid object by submitting surfaces to the
  * background collision system every frame.

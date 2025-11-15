@@ -18,7 +18,10 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.ChannelSystem.ChannelBooleanValue
-import com.replica.replicaisland.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.core.GameObjectFactory
 import kotlin.math.sin
 
 class TheSourceComponent : GameComponent() {
@@ -78,7 +81,8 @@ class TheSourceComponent : GameComponent() {
                 if (factory != null) {
                     val x = (Math.random().toFloat() - 0.5f) * (parentObject.width * 0.75f)
                     val y = (Math.random().toFloat() - 0.5f) * (parentObject.height * 0.75f)
-                    val `object` = factory.spawn(GameObjectFactory.GameObjectType.EXPLOSION_GIANT,
+                    val `object` = factory.spawn(
+                        GameObjectFactory.GameObjectType.EXPLOSION_GIANT,
                             parentObject.centeredPositionX + x,
                             parentObject.centeredPositionY + y,
                             false)

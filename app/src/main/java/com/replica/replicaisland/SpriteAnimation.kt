@@ -15,6 +15,7 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.PhasedObject
 import java.util.*
 
 /**

@@ -3,7 +3,7 @@ package com.replica.replicaisland.sound
 import android.media.AudioAttributes
 import android.media.SoundPool
 import com.replica.replicaisland.AllocationGuard
-import com.replica.replicaisland.BaseObject
+import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.FixedSizeArray
 
 class SoundSystem : BaseObject() {

@@ -18,6 +18,7 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.Lerp.ease
+import com.replica.replicaisland.core.BaseObject
 
 /**
  * Maintains a canonical time step, in seconds, for the entire game engine.  This time step

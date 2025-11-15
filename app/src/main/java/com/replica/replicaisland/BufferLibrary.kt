@@ -15,6 +15,7 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
 import javax.microedition.khronos.opengles.GL10
 
 class BufferLibrary : BaseObject() {

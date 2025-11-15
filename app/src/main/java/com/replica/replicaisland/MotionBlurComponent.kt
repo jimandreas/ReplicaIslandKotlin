@@ -15,6 +15,8 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.rendering.RenderComponent
 
 class MotionBlurComponent : GameComponent() {

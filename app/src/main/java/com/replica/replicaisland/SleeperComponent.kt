@@ -15,7 +15,9 @@
  */
 package com.replica.replicaisland
 
-import com.replica.replicaisland.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 
 /**
  * A component that implements the "pop-out" AI behavior.  Pop-out characters alternate between

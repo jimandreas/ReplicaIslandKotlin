@@ -1,21 +1,9 @@
-/*
- * Copyright (C) 2010 The Android Open Source Project
- * Copyright (C) 2025 Jim Andreas kotlin conversion
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.replica.replicaisland
+package com.replica.replicaisland.core
 
-import com.replica.replicaisland.CollisionParameters.HitType
+import com.replica.replicaisland.CollisionParameters
+import com.replica.replicaisland.core.PhasedObjectManager
+import com.replica.replicaisland.Utils
+import com.replica.replicaisland.Vector2
 
 /**
  * GameObject defines any object that resides in the game world (character, background, special
@@ -83,7 +71,7 @@ class GameObject : PhasedObjectManager() {
         team = Team.NONE
         width = 0.0f
         height = 0.0f
-        lastReceivedHitType = HitType.INVALID
+        lastReceivedHitType = CollisionParameters.HitType.INVALID
     }
 
     // Utility functions
@@ -91,28 +79,28 @@ class GameObject : PhasedObjectManager() {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
         return gameTime > 0.1f &&
-                Utils.close(lastTouchedFloorTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
+                Utils.Companion.close(lastTouchedFloorTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
     }
 
     fun touchingCeiling(): Boolean {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
         return gameTime > 0.1f &&
-                Utils.close(lastTouchedCeilingTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
+                Utils.Companion.close(lastTouchedCeilingTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
     }
 
     fun touchingLeftWall(): Boolean {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
         return gameTime > 0.1f &&
-                Utils.close(lastTouchedLeftWallTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
+                Utils.Companion.close(lastTouchedLeftWallTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
     }
 
     fun touchingRightWall(): Boolean {
         val time = sSystemRegistry.timeSystem
         val gameTime = time!!.gameTime
         return gameTime > 0.1f &&
-                Utils.close(lastTouchedRightWallTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
+                Utils.Companion.close(lastTouchedRightWallTime, time.gameTime, COLLISION_SURFACE_DECAY_TIME)
     }
 
     var position: Vector2

@@ -18,7 +18,9 @@
 package com.replica.replicaisland
 
 import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.GameObject.ActionType
+import com.replica.replicaisland.core.GameObject.ActionType
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 
 class NPCComponent : GameComponent() {
     private var pauseTime = 0f

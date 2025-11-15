@@ -19,6 +19,8 @@ package com.replica.replicaisland
 
 import com.replica.replicaisland.CollisionParameters.HitType
 import com.replica.replicaisland.CollisionVolume.FlipInfo
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
 import java.util.*
 
 /**

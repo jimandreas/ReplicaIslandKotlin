@@ -15,6 +15,9 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
 /** A light-weight physics implementation for use with non-complex characters (enemies, etc).  */
 class SimplePhysicsComponent : GameComponent() {
     private var mBounciness = 0f

@@ -16,6 +16,7 @@
 package com.replica.replicaisland
 
 import android.content.Context
+import com.replica.replicaisland.core.BaseObject
 
 /** Contains global (but typically constant) parameters about the current operating context  */
 class ContextParameters : BaseObject() {
