@@ -20,10 +20,13 @@ package com.replica.replicaisland
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
-import com.replica.replicaisland.DrawableBitmap.Companion.beginDrawing
-import com.replica.replicaisland.DrawableBitmap.Companion.endDrawing
-import com.replica.replicaisland.OpenGLSystem.Companion.gL
-import com.replica.replicaisland.RenderSystem.RenderElement
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.rendering.DrawableBitmap
+import com.replica.replicaisland.rendering.OpenGLSystem
+import com.replica.replicaisland.rendering.RenderSystem
+import com.replica.replicaisland.rendering.TextureLibrary
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.utils.BufferLibrary
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -88,18 +91,18 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
         // No use using VBOs when software renderering, esp. since older versions of the software renderer
         // had a crash bug related to freeing VBOs.
         val supportsVBOs = !isSoftwareRenderer && (!isOpenGL10 || extensions.contains("vertex_buffer_object"))
-        val params = BaseObject.sSystemRegistry.contextParameters
+        val params = BaseObject.Companion.sSystemRegistry.contextParameters
         params!!.supportsDrawTexture = supportsDrawTexture
         params.supportsVBOs = supportsVBOs
         hackBrokenDevices()
-        DebugLog.i("Graphics Support", version + " (" + renderer + "): " + (if (supportsDrawTexture) "draw texture," else "") + if (supportsVBOs) "vbos" else "")
+        DebugLog.Companion.i("Graphics Support", version + " (" + renderer + "): " + (if (supportsDrawTexture) "draw texture," else "") + if (supportsVBOs) "vbos" else "")
         mGame.onSurfaceCreated()
     }
 
     private fun hackBrokenDevices() {
         // Some devices are broken.  Fix them here.  This is pretty much the only
         // device-specific code in the whole project.  Ugh.
-        val params = BaseObject.sSystemRegistry.contextParameters
+        val params = BaseObject.Companion.sSystemRegistry.contextParameters
         if (Build.PRODUCT.contains("morrison")) {
             // This is the Motorola Cliq.  This device LIES and says it supports
             // VBOs, which it actually does not (or, more likely, the extensions string
@@ -114,28 +117,28 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     override fun loadTextures(gl: GL10?, library: TextureLibrary?) {
         if (gl != null) {
             library!!.loadAll(mContext, gl)
-            DebugLog.d("AndouKun", "Textures Loaded.")
+            DebugLog.Companion.d("AndouKun", "Textures Loaded.")
         }
     }
 
     override fun flushTextures(gl: GL10?, library: TextureLibrary?) {
         if (gl != null) {
             library!!.deleteAll(gl)
-            DebugLog.d("AndouKun", "Textures Unloaded.")
+            DebugLog.Companion.d("AndouKun", "Textures Unloaded.")
         }
     }
 
     override fun loadBuffers(gl: GL10?, library: BufferLibrary?) {
         if (gl != null) {
             library!!.generateHardwareBuffers(gl)
-            DebugLog.d("AndouKun", "Buffers Created.")
+            DebugLog.Companion.d("AndouKun", "Buffers Created.")
         }
     }
 
     override fun flushBuffers(gl: GL10?, library: BufferLibrary?) {
         if (gl != null) {
             library!!.releaseHardwareBuffers(gl)
-            DebugLog.d("AndouKun", "Buffers Released.")
+            DebugLog.Companion.d("AndouKun", "Buffers Released.")
         }
     }
 
@@ -168,10 +171,10 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
             mGame.onSurfaceReady()
             callbackRequested = false
         }
-        beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
+        DrawableBitmap.Companion.beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
         synchronized(this) {
             if (drawQueue != null && drawQueue!!.fetchObjects().count > 0) {
-                gL = gl
+                OpenGLSystem.Companion.gL = gl
                 val objects = drawQueue!!.fetchObjects()
                 val objectArray: Array<Any?> = objects.array as Array<Any?>
                 val count = objects.count
@@ -181,7 +184,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                 val halfHeight = mHalfHeight.toFloat()
                 profileObjectCount += count
                 for (i in 0 until count) {
-                    val element = objectArray[i] as RenderElement?
+                    val element = objectArray[i] as RenderSystem.RenderElement?
                     var x = element!!.x
                     var y = element.y
                     if (element.cameraRelative) {
@@ -190,14 +193,14 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     }
                     element.mDrawable!!.draw(x, y, scaleX, scaleY)
                 }
-                gL = null
+                OpenGLSystem.Companion.gL = null
             } else if (drawQueue == null) {
                 // If we have no draw queue, clear the screen.  If we have a draw queue that
                 // is empty, we'll leave the frame buffer alone.
                 gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
             }
         }
-        endDrawing(gl)
+        DrawableBitmap.Companion.endDrawing(gl)
         val time2 = SystemClock.uptimeMillis()
         lastTime = time2
         profileFrameTime += time_delta
@@ -210,7 +213,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
             val averageSubmitTime = profileSubmitTime / validFrames
             val averageObjectsPerFrame = profileObjectCount.toFloat() / validFrames
             val averageWaitTime = profileWaitTime / validFrames
-            DebugLog.d("Render Profile",
+            DebugLog.Companion.d("Render Profile",
                     "Average Submit: " + averageSubmitTime
                             + "  Average Draw: " + averageFrameTime
                             + " Objects/Frame: " + averageObjectsPerFrame
@@ -223,7 +226,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        DebugLog.d("AndouKun", "Surface Size Change: $width, $height")
+        DebugLog.Companion.d("AndouKun", "Surface Size Change: $width, $height")
 
         //mWidth = w;0
         //mHeight = h;

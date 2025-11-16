@@ -24,6 +24,9 @@ import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.replica.replicaisland.GLSurfaceView.Renderer
+import com.replica.replicaisland.rendering.TextureLibrary
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.utils.BufferLibrary
 import java.io.Writer
 import java.util.*
 import javax.microedition.khronos.egl.*

@@ -2,6 +2,7 @@
 
 package com.replica.replicaisland
 
+import com.replica.replicaisland.ui.DebugLog
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder

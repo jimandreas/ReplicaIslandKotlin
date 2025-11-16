@@ -47,7 +47,7 @@
 
             <view
                 android:id="@+id/pearl_percent"
-                class="com.replica.replicaisland.GameOverActivity$IncrementingTextView"
+                class="com.replica.replicaisland.ui.GameOverActivity$IncrementingTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
@@ -76,7 +76,7 @@
 
             <view
                 android:id="@+id/enemy_percent"
-                class="com.replica.replicaisland.GameOverActivity$IncrementingTextView"
+                class="com.replica.replicaisland.ui.GameOverActivity$IncrementingTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
@@ -105,7 +105,7 @@
 
             <view
                 android:id="@+id/total_play_time"
-                class="com.replica.replicaisland.GameOverActivity$IncrementingTextView"
+                class="com.replica.replicaisland.ui.GameOverActivity$IncrementingTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"

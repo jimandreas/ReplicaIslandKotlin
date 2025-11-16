@@ -15,6 +15,11 @@
  */
 package com.replica.replicaisland
 
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.utils.Utils
+import com.replica.replicaisland.utils.Vector2
+
 // Simple collision detection component for objects not requiring complex collision (projectiles, etc)
 class SimpleCollisionComponent : GameComponent() {
     private val previousPosition: Vector2

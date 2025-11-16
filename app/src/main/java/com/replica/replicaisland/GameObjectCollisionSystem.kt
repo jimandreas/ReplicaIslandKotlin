@@ -17,8 +17,18 @@
 
 package com.replica.replicaisland
 
-import com.replica.replicaisland.CollisionParameters.HitType
-import com.replica.replicaisland.CollisionVolume.FlipInfo
+import com.replica.replicaisland.mechanics.CollisionParameters.HitType
+import com.replica.replicaisland.mechanics.CollisionVolume.FlipInfo
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+import com.replica.replicaisland.entities.HitReactionComponent
+import com.replica.replicaisland.mechanics.AABoxCollisionVolume
+import com.replica.replicaisland.mechanics.CollisionVolume
+import com.replica.replicaisland.ui.DebugSystem
+import com.replica.replicaisland.utils.AllocationGuard
+import com.replica.replicaisland.utils.FixedSizeArray
+import com.replica.replicaisland.utils.TObjectPool
+import com.replica.replicaisland.utils.Vector2
 import java.util.*
 
 /**
@@ -167,12 +177,12 @@ class GameObjectCollisionSystem : BaseObject() {
      * or HitType.INVALID if no intersections are found.
      */
     private fun testAttackAgainstVulnerability(
-            attackVolumes: FixedSizeArray<CollisionVolume>?,
-            vulnerabilityVolumes: FixedSizeArray<CollisionVolume>?,
-            attackPosition: Vector2?,
-            vulnerabilityPosition: Vector2?,
-            attackFlip: FlipInfo,
-            vulnerabilityFlip: FlipInfo): Int {
+        attackVolumes: FixedSizeArray<CollisionVolume>?,
+        vulnerabilityVolumes: FixedSizeArray<CollisionVolume>?,
+        attackPosition: Vector2?,
+        vulnerabilityPosition: Vector2?,
+        attackFlip: FlipInfo,
+        vulnerabilityFlip: FlipInfo): Int {
         var intersectionType = HitType.INVALID
         if (attackVolumes != null && vulnerabilityVolumes != null) {
             val attackCount = attackVolumes.count

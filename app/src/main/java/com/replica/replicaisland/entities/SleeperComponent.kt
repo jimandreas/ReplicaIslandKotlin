@@ -1,0 +1,90 @@
+package com.replica.replicaisland.entities
+
+import com.replica.replicaisland.GameComponent
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.core.GameObject
+
+/**
+ * A component that implements the "pop-out" AI behavior.  Pop-out characters alternate between
+ * hiding and appearing based on their distance from the player.  They do not move or normally
+ * attack.
+ */
+class SleeperComponent : GameComponent() {
+    private var wakeUpDuration = 0f
+    private var stateTime = 0f
+    private var state = 0
+    private var slamDuration = 0f
+    private var slamMagnitude = 0f
+    private var attackImpulseX = 0f
+    private var attackImpulseY = 0f
+    override fun reset() {
+        wakeUpDuration = DEFAULT_WAKE_UP_DURATION
+        state = STATE_SLEEPING
+        stateTime = 0.0f
+        slamDuration = 0.0f
+        slamMagnitude = 0.0f
+        attackImpulseX = 0.0f
+        attackImpulseY = 0.0f
+    }
+
+    override fun update(timeDelta: Float, parent: BaseObject?) {
+        val parentObject = parent as GameObject
+        if (parentObject.currentAction == GameObject.ActionType.INVALID) {
+            parentObject.currentAction = GameObject.ActionType.IDLE
+            state = STATE_SLEEPING
+        }
+        val camera = sSystemRegistry.cameraSystem
+        when (state) {
+            STATE_SLEEPING -> if (camera!!.shaking() && camera.pointVisible(parentObject.position, parentObject.width / 2.0f)) {
+                state = STATE_WAKING
+                stateTime = wakeUpDuration
+                parentObject.currentAction = GameObject.ActionType.MOVE
+            }
+            STATE_WAKING -> {
+                stateTime -= timeDelta
+                if (stateTime <= 0.0f) {
+                    state = STATE_ATTACKING
+                    parentObject.currentAction = GameObject.ActionType.ATTACK
+                    parentObject.impulse.x += attackImpulseX * parentObject.facingDirection.x
+                    parentObject.impulse.y += attackImpulseY
+                }
+            }
+            STATE_ATTACKING -> if (parentObject.touchingGround() && parentObject.velocity.y < 0.0f) {
+                state = STATE_SLAM
+                camera!!.shake(slamDuration, slamMagnitude)
+                parentObject.velocity.zero()
+            }
+            STATE_SLAM -> if (!camera!!.shaking()) {
+                state = STATE_SLEEPING
+                parentObject.currentAction = GameObject.ActionType.IDLE
+            }
+        }
+    }
+
+    fun setWakeUpDuration(duration: Float) {
+        wakeUpDuration = duration
+    }
+
+    fun setSlam(duration: Float, magnitude: Float) {
+        slamDuration = duration
+        slamMagnitude = magnitude
+    }
+
+    fun setAttackImpulse(x: Float, y: Float) {
+        attackImpulseX = x
+        attackImpulseY = y
+    }
+
+    companion object {
+        private const val STATE_SLEEPING = 0
+        private const val STATE_WAKING = 1
+        private const val STATE_ATTACKING = 2
+        private const val STATE_SLAM = 3
+        private const val DEFAULT_WAKE_UP_DURATION = 3.0f
+    }
+
+    init {
+        setPhaseToThis(ComponentPhases.THINK.ordinal)
+        reset()
+    }
+}

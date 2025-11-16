@@ -39,6 +39,16 @@ import android.widget.TextView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.levels.LevelTree
+import com.replica.replicaisland.mechanics.GameFlowEvent
+import com.replica.replicaisland.ui.AnimationPlayerActivity
+import com.replica.replicaisland.ui.ConversationDialogActivity
+import com.replica.replicaisland.ui.DebugLog
+import com.replica.replicaisland.ui.DiaryActivity
+import com.replica.replicaisland.ui.GameOverActivity
+import com.replica.replicaisland.ui.LevelSelectActivity
+import com.replica.replicaisland.ui.PreferenceConstants
+import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
 /**
@@ -135,14 +145,16 @@ class AndouKun : Activity(), SensorEventListener {
             prefsEditor!!.remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
             prefsEditor!!.commit()
         }
-        levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        //levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        levelRow = 10 // jimhack
         levelIndex = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
         var completed = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, 0)
         totalGameTime = prefs.getFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, 0.0f)
         robotsDestroyed = prefs.getInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, 0)
         pearlsCollected = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, 0)
         pearlsTotal = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, 0)
-        mLinearMode = prefs.getInt(PreferenceConstants.PREFERENCE_LINEAR_MODE,
+        mLinearMode = prefs.getInt(
+            PreferenceConstants.PREFERENCE_LINEAR_MODE,
                 if (intent.getBooleanExtra("linearMode", false)) 1 else 0)
         extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
         difficulty = prefs.getInt(PreferenceConstants.PREFERENCE_DIFFICULTY, intent.getIntExtra("difficulty", 1))

@@ -18,6 +18,9 @@
 package com.replica.replicaisland
 
 import android.os.SystemClock
+import com.replica.replicaisland.core.BaseObject
+import com.replica.replicaisland.GameRenderer
+import com.replica.replicaisland.ui.DebugLog
 
 /**
  * The GameThread contains the main loop for the game engine logic.  It invokes the game graph,
