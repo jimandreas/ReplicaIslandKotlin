@@ -6,7 +6,7 @@ package com.replica.replicaisland.core
  */
 open class PhasedObject  // so that the function overhead of an getter is non-trivial.
     : BaseObject() {
-    @JvmField
+    
     var phase // This is public because the phased is accessed extremely often, so much
             = 0
 

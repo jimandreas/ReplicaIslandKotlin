@@ -7,9 +7,9 @@ import kotlin.math.sqrt
  * Simple 2D vector class.  Handles basic vector math for 2D vectors.
  */
 class Vector2 : AllocationGuard {
-    @JvmField
+    
     var x = 0f
-    @JvmField
+    
     var y = 0f
 
     constructor() : super() {}
@@ -109,7 +109,7 @@ class Vector2 : AllocationGuard {
     }
 
     companion object {
-        @JvmField
+        
         val ZERO = Vector2(0f, 0f)
     }
 }

@@ -6,7 +6,7 @@ import java.lang.reflect.Method
 object UIConstants {
     // Some versions of Android can support custom Activity transitions.
     // If this method isn't null, we can use them.
-    @JvmField
+    
     var mOverridePendingTransition: Method? = null
 
     init {

@@ -27,7 +27,7 @@ import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.utils.TObjectPool
 
 class GameComponentPool : TObjectPool<GameComponent?> {
-    @JvmField
+    
     var objectClass: Class<*>?
 
     constructor(type: Class<*>?, size: Int) : super(size) {

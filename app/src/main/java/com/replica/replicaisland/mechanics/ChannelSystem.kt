@@ -37,17 +37,17 @@ class ChannelSystem : BaseObject() {
 
     class Channel {
         var name: String? = null
-        @JvmField
+        
         var value: Any? = null
     }
 
     class ChannelFloatValue {
-        @JvmField
+        
         var value = 0f
     }
 
     class ChannelBooleanValue {
-        @JvmField
+        
         var value = false
     }
 

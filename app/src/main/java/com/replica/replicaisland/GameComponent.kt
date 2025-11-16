@@ -40,6 +40,6 @@ abstract class GameComponent : PhasedObject() {
         // final cleanup before the next update
     }
 
-    @JvmField
+    
     var shared = false
 }

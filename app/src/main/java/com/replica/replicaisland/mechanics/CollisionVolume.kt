@@ -76,13 +76,13 @@ abstract class CollisionVolume : AllocationGuard {
     abstract fun fetchMinY(): Float
     abstract fun fetchMaxY(): Float
     class FlipInfo {
-        @JvmField
+        
         var flipX = false
-        @JvmField
+        
         var flipY = false
-        @JvmField
+        
         var parentWidth = 0f
-        @JvmField
+        
         var parentHeight = 0f
     }
 }

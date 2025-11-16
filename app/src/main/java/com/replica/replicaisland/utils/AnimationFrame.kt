@@ -12,13 +12,13 @@ import com.replica.replicaisland.rendering.Texture
  * prevent the sprite from drawing.
  */
 class AnimationFrame : AllocationGuard {
-    @JvmField
+    
     var texture: Texture? = null
-    @JvmField
+    
     var holdTime: Float
-    @JvmField
+    
     var attackVolumes: FixedSizeArray<CollisionVolume>? = null
-    @JvmField
+    
     var vulnerabilityVolumes: FixedSizeArray<CollisionVolume>? = null
 
     constructor(textureObject: Texture?, animationHoldTime: Float) : super() {

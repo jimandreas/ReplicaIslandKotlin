@@ -38,7 +38,7 @@ abstract class BaseObject : Base<BaseObject> {
     abstract fun reset()
 
     companion object {
-        @JvmField
+        
         var sSystemRegistry = ObjectRegistry()
     }
 }

@@ -10,7 +10,7 @@ import com.replica.replicaisland.ui.DebugLog
  */
 open class AllocationGuard {
     companion object {
-        @JvmField
+        
         var sGuardActive = false
     }
 

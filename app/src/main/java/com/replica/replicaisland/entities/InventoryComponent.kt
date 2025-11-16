@@ -33,11 +33,11 @@ class InventoryComponent : GameComponent() {
     }
 
     class UpdateRecord : BaseObject() {
-        @JvmField
+        
         var rubyCount = 0
-        @JvmField
+        
         var coinCount = 0
-        @JvmField
+        
         var diaryCount = 0
         override fun reset() {
             rubyCount = 0

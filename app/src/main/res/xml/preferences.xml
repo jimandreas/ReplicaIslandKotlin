@@ -42,7 +42,7 @@
                 android:persistent="true"
                 />
                 
-            <com.replica.replicaisland.KeyboardConfigDialogPreference
+            <com.replica.replicaisland.ui.KeyboardConfigDialogPreference
        			android:key="keyconfig"
                 android:title="@string/preference_key_config"
                 android:summary="@string/preference_key_config_summary"
@@ -56,7 +56,7 @@
                 replica:attackKey="keyAttack"
                 />
                 
-           	<com.replica.replicaisland.SliderPreference
+           	<com.replica.replicaisland.ui.SliderPreference
                 android:key="movementSensitivity"
                 android:defaultValue="100"
                 android:title="@string/preference_movement_sensitivity" 
@@ -85,7 +85,7 @@
                 android:dependency="enableScreenControls"
                 />
                 
-             <com.replica.replicaisland.SliderPreference
+             <com.replica.replicaisland.ui.SliderPreference
                 android:key="tiltSensitivity"
                 android:defaultValue="50"
                 android:title="@string/preference_tilt_sensitivity" 
@@ -111,7 +111,7 @@
      <PreferenceCategory
             android:title="@string/preference_save_game">
             
-       <com.replica.replicaisland.YesNoDialogPreference
+       <com.replica.replicaisland.ui.YesNoDialogPreference
        			android:key="erasegame"
                 android:title="@string/preference_erase_save_game"
                 android:dialogMessage="@string/preference_erase_save_game_dialog" 

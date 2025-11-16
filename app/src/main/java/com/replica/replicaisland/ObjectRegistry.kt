@@ -53,59 +53,59 @@ import java.util.*
  */
 // TODO: fixup null references before converting
 class ObjectRegistry : BaseObject() {
-    @JvmField
+    
     var bufferLibrary: BufferLibrary? = null
-    @JvmField
+    
     var cameraSystem: CameraSystem? = null
-    @JvmField
+    
     var channelSystem: ChannelSystem? = null
-    @JvmField
+    
     var collisionSystem: CollisionSystem? = null
-    @JvmField
+    
     var contextParameters: ContextParameters? = null
-    @JvmField
+    
     var customToastSystem: CustomToastSystem? = null
-    @JvmField
+    
     var debugSystem: DebugSystem? = null
-    @JvmField
+    
     var drawableFactory: DrawableFactory? = null
-    @JvmField
+    
     var eventRecorder: EventRecorder? = null
-    @JvmField
+    
     var gameObjectCollisionSystem: GameObjectCollisionSystem? = null
-    @JvmField
+    
     var gameObjectFactory: GameObjectFactory? = null
-    @JvmField
+    
     var gameObjectManager: GameObjectManager? = null
-    @JvmField
+    
     var hitPointPool: HitPointPool? = null
-    @JvmField
+    
     var hotSpotSystem: HotSpotSystem? = null
-    @JvmField
+    
     var hudSystem: HudSystem? = null
-    @JvmField
+    
     var inputGameInterface: InputGameInterface? = null
-    @JvmField
+    
     var inputSystem: InputSystem? = null
-    @JvmField
+    
     var levelBuilder: LevelBuilder? = null
-    @JvmField
+    
     var levelSystem: LevelSystem? = null
-    @JvmField
+    
     var openGLSystem: OpenGLSystem? = null
-    @JvmField
+    
     var soundSystem: SoundSystem? = null
-    @JvmField
+    
     var shortTermTextureLibrary: TextureLibrary? = null
-    @JvmField
+    
     var longTermTextureLibrary: TextureLibrary? = null
-    @JvmField
+    
     var timeSystem: TimeSystem? = null
-    @JvmField
+    
     var renderSystem: RenderSystem? = null
-    @JvmField
+    
     var vectorPool: VectorPool? = null
-    @JvmField
+    
     var vibrationSystem: VibrationSystem? = null
     private val itemsNeedingReset = ArrayList<BaseObject>()
     fun registerForReset(`object`: BaseObject) {

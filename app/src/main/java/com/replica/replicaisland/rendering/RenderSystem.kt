@@ -90,13 +90,13 @@ class RenderSystem : BaseObject() {
             cameraRelative = false
         }
 
-        @JvmField
+        
         var mDrawable: DrawableObject? = null
-        @JvmField
+        
         var x = 0f
-        @JvmField
+        
         var y = 0f
-        @JvmField
+        
         var cameraRelative = false
     }
 

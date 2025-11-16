@@ -9,15 +9,15 @@ import com.replica.replicaisland.utils.AllocationGuard
  * name itself, as it may change at any time.
  */
 class Texture : AllocationGuard() {
-    @JvmField
+    
     var resource = 0
-    @JvmField
+    
     var name = 0
-    @JvmField
+    
     var width = 0
-    @JvmField
+    
     var height = 0
-    @JvmField
+    
     var loaded = false
     fun reset() {
         resource = -1

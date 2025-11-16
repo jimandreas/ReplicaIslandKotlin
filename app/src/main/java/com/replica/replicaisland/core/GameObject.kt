@@ -39,22 +39,22 @@ class GameObject : PhasedObjectManager() {
     var lastTouchedCeilingTime = 0f
     var lastTouchedLeftWallTime = 0f
     var lastTouchedRightWallTime = 0f
-    @JvmField
+    
     var positionLocked = false
-    @JvmField
+    
     var activationRadius = 0f
-    @JvmField
+    
     var destroyOnDeactivation = false
-    @JvmField
+    
     var life = 0
-    @JvmField
+    
     var lastReceivedHitType = 0
-    @JvmField
+    
     var facingDirection: Vector2 = Vector2(1f, 0f)
 
-    @JvmField
+    
     var width = 0f
-    @JvmField
+    
     var height = 0f
 
     enum class ActionType {
@@ -67,7 +67,7 @@ class GameObject : PhasedObjectManager() {
         NONE, PLAYER, ENEMY
     }
 
-    @JvmField
+    
     var team: Team? = null
     override fun reset() {
         removeAll()
