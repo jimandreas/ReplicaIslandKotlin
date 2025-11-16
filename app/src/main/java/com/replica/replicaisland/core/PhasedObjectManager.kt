@@ -69,7 +69,7 @@ open class PhasedObjectManager : ObjectManager {
                 result = (object1 as PhasedObject).phase - (object2 as PhasedObject).phase
             } else if (object1 == null && object2 != null) {
                 result = 1
-            } else if (object2 == null && object1 != null) {
+            } else if (/*object2 == null && */ object1 != null) {
                 result = -1
             }
             return result

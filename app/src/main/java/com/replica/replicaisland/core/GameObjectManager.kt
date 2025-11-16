@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.replica.replicaisland.core
 
 import com.replica.replicaisland.utils.FixedSizeArray
@@ -18,7 +34,7 @@ import java.util.Comparator
  * deactivated.
  */
 class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(MAX_GAME_OBJECTS) {
-    private val inactiveObjects: FixedSizeArray<BaseObject?>
+    private val inactiveObjects: FixedSizeArray<BaseObject?> = FixedSizeArray(MAX_GAME_OBJECTS)
     private val markedForDeathObjects: FixedSizeArray<GameObject?>
     var player: GameObject? = null
     private var visitingGraph: Boolean
@@ -152,7 +168,6 @@ class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(
     }
 
     init {
-        inactiveObjects = FixedSizeArray(MAX_GAME_OBJECTS)
         inactiveObjects.setComparator(sGameObjectComparator)
         markedForDeathObjects = FixedSizeArray(MAX_GAME_OBJECTS)
         visitingGraph = false

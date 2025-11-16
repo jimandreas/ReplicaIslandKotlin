@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("UNUSED_PARAMETER", "unused")
+@file:Suppress("unused")
 
 package com.replica.replicaisland
 
@@ -60,8 +60,8 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
     }
 
     private fun setVertex(i: Int, j: Int, x: Float, y: Float, z: Float, u: Float, v: Float) {
-        require(!(i < 0 || i >= mVertsAcross)) { "i" }
-        require(!(j < 0 || j >= mVertsDown)) { "j" }
+        require(i in 0..<mVertsAcross) { "i" }
+        require(j in 0..<mVertsDown) { "j" }
         val index = mVertsAcross * j + i
         val posIndex = index * 3
         val texIndex = index * 2
@@ -250,8 +250,8 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
     init {
         val vertsAcross = quadsAcross * 2
         val vertsDown = quadsDown * 2
-        require(!(vertsAcross < 0 || vertsAcross >= 65536)) { "quadsAcross" }
-        require(!(vertsDown < 0 || vertsDown >= 65536)) { "quadsDown" }
+        require(vertsAcross in 0..<65536) { "quadsAcross" }
+        require(vertsDown in 0..<65536) { "quadsDown" }
         require(vertsAcross * vertsDown < 65536) { "quadsAcross * quadsDown >= 32768" }
         useHardwareBuffers = false
         mVertsAcross = vertsAcross
