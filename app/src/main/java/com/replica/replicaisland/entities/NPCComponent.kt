@@ -1,3 +1,27 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+@file:Suppress("unused",
+    "UNUSED_ANONYMOUS_PARAMETER",
+    "DEPRECATION",
+    "SimplifyBooleanWithConstants",
+    "KotlinConstantConditions", "ControlFlowWithEmptyBody"
+)
+
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.mechanics.CollisionParameters
@@ -67,11 +91,11 @@ class NPCComponent : GameComponent() {
         if (reactToHits && pauseTime <= 0.0f && parentObject!!.currentAction === GameObject.ActionType.HIT_REACT) {
             pauseTime = PAUSE_TIME_HIT_REACT
             pauseMovement(parentObject)
-            parentObject!!.velocity.x = -parentObject.facingDirection.x * HIT_IMPULSE
+            parentObject.velocity.x = -parentObject.facingDirection.x * HIT_IMPULSE
             parentObject.acceleration.x = HIT_ACCELERATION
         } else if (parentObject!!.currentAction === GameObject.ActionType.DEATH) {
             if (spawnGameEventOnDeath && gameEvent != -1) {
-                if (Utils.close(parentObject!!.velocity.x, 0.0f)
+                if (Utils.close(parentObject.velocity.x, 0.0f)
                         && parentObject.touchingGround()) {
                     if (deathTime < deathFadeDelay && deathTime + timeDelta >= deathFadeDelay) {
                         val hud = sSystemRegistry.hudSystem
@@ -86,7 +110,7 @@ class NPCComponent : GameComponent() {
             }
             // nothing else to do.
             return
-        } else if (parentObject!!.life <= 0) {
+        } else if (parentObject.life <= 0) {
             parentObject.currentAction = GameObject.ActionType.DEATH
             parentObject.targetVelocity.x = 0f
             return
