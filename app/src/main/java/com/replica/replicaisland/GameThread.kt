@@ -19,7 +19,6 @@ package com.replica.replicaisland
 
 import android.os.SystemClock
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.ui.DebugLog
 
 /**
@@ -87,7 +86,7 @@ class GameThread(renderer: GameRenderer) : Runnable {
                 if (finalDelta < 16) {
                     try {
                         Thread.sleep(16 - finalDelta)
-                    } catch (e: InterruptedException) {
+                    } catch (_: InterruptedException) {
                         // Interruptions here are no big deal.
                     }
                 }
@@ -101,7 +100,7 @@ class GameThread(renderer: GameRenderer) : Runnable {
                         while (paused) {
                             try {
                                 pauseLock.wait()
-                            } catch (e: InterruptedException) {
+                            } catch (_: InterruptedException) {
                                 // No big deal if this wait is interrupted.
                             }
                         }

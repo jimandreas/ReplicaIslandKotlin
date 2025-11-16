@@ -43,16 +43,17 @@ import java.util.*
  * HitReactionComponent, if one has been specified.
  */
 class GameObjectCollisionSystem : BaseObject() {
-    private var mObjects: FixedSizeArray<CollisionVolumeRecord>
+    private var objectsArray: FixedSizeArray<CollisionVolumeRecord>
+            = FixedSizeArray(MAX_COLLIDING_OBJECTS)
     private var recordPool: CollisionVolumeRecordPool
     private var drawDebugBoundingVolume = false
     private var drawDebugCollisionVolumes = false
     override fun reset() {
-        val count = mObjects.count
+        val count = objectsArray.count
         for (x in 0 until count) {
-            recordPool.release(mObjects[x]!!)
+            recordPool.release(objectsArray[x]!!)
         }
-        mObjects.clear()
+        objectsArray.clear()
         drawDebugBoundingVolume = false
         drawDebugCollisionVolumes = false
     }
@@ -82,16 +83,16 @@ class GameObjectCollisionSystem : BaseObject() {
             record.attackVolumes = attackVolumes
             record.vulnerabilityVolumes = vulnerabilityVolumes
             record.reactionComponent = reactionComponent
-            mObjects.add(record)
+            objectsArray.add(record)
         }
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
         // Sort the objects by their x position.
-        mObjects.sort(true)
-        val count = mObjects.count
+        objectsArray.sort(true)
+        val count = objectsArray.count
         for (x in 0 until count) {
-            val record = mObjects[x]
+            val record = objectsArray[x]
             val position = record!!.gameObject!!.position
             sFlip.flipX = record.gameObject!!.facingDirection.x < 0.0f
             sFlip.flipY = record.gameObject!!.facingDirection.y < 0.0f
@@ -102,7 +103,7 @@ class GameObjectCollisionSystem : BaseObject() {
             }
             val maxX = record.boundingVolume!!.maxXPosition(sFlip) + position.x
             for (y in x + 1 until count) {
-                val other = mObjects[y]
+                val other = objectsArray[y]
                 val otherPosition = other!!.gameObject!!.position
                 sOtherFlip.flipX = other.gameObject!!.facingDirection.x < 0.0f
                 sOtherFlip.flipY = other.gameObject!!.facingDirection.y < 0.0f
@@ -164,7 +165,7 @@ class GameObjectCollisionSystem : BaseObject() {
             // iterate over the object list twice.
             recordPool.release(record)
         }
-        mObjects.clear()
+        objectsArray.clear()
     }
 
     /** Compares the passed list of attack volumes against the passed list of vulnerability volumes
@@ -272,7 +273,7 @@ class GameObjectCollisionSystem : BaseObject() {
     }
 
     /** A pool of collision volume records.   */
-    inner class CollisionVolumeRecordPool(count: Int) : TObjectPool<CollisionVolumeRecord?>(count) {
+    class CollisionVolumeRecordPool(count: Int) : TObjectPool<CollisionVolumeRecord?>(count) {
         override fun fill() {
             for (x in 0 until fetchSize()) {
                 fetchAvailable()!!.add(CollisionVolumeRecord())
@@ -332,8 +333,7 @@ class GameObjectCollisionSystem : BaseObject() {
     }
 
     init {
-        mObjects = FixedSizeArray(MAX_COLLIDING_OBJECTS)
-        mObjects.setComparator(sCollisionVolumeComparator)
+        objectsArray.setComparator(sCollisionVolumeComparator)
         //mObjects.setSorter(new ShellSorter<CollisionVolumeRecord>());
         recordPool = CollisionVolumeRecordPool(COLLISION_RECORD_POOL_SIZE)
     }

@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("unused", "SameParameterValue", "DEPRECATION", "PrivatePropertyName", "LocalVariableName", "ConvertTwoComparisonsToRangeCheck", "UNUSED_VARIABLE")
+@file:Suppress("unused",
+    "SameParameterValue",
+    "DEPRECATION",
+    "PrivatePropertyName",
+    "LocalVariableName",
+    "ConvertTwoComparisonsToRangeCheck",
+    "UNUSED_VARIABLE",
+    "KotlinConstantConditions")
 
 package com.replica.replicaisland
 
@@ -23,13 +30,16 @@ import android.opengl.GLDebugHelper
 import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.replica.replicaisland.GLSurfaceView.Renderer
 import com.replica.replicaisland.rendering.TextureLibrary
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.utils.BufferLibrary
 import java.io.Writer
-import java.util.*
-import javax.microedition.khronos.egl.*
+import javax.microedition.khronos.egl.EGL10
+import javax.microedition.khronos.egl.EGL11
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.egl.EGLContext
+import javax.microedition.khronos.egl.EGLDisplay
+import javax.microedition.khronos.egl.EGLSurface
 import javax.microedition.khronos.opengles.GL
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.abs
@@ -1141,7 +1151,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
                         }
                     } // end of synchronized(sGLThreadManager)
                     if (event != null) {
-                        event!!.run()
+                        event.run()
                         event = null
                         continue
                     }
@@ -1506,7 +1516,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         fun checkGLDriver(gl: GL10?) {
             if (!gLESDriverCheckComplete) {
                 checkGLESVersion()
-                if (gLESVersion < kGLES_20) {
+                if (gLESVersion < KGLES20) {
                     val renderer = gl!!.glGetString(GL10.GL_RENDERER)
                     multipleGLESContextsAllowed = false
                     notifyAll()
@@ -1518,7 +1528,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         private fun checkGLESVersion() {
             if (!gLESVersionCheckComplete) {
                 gLESVersion = ConfigurationInfo.GL_ES_VERSION_UNDEFINED
-                if (gLESVersion >= kGLES_20) {
+                if (gLESVersion >= KGLES20) {
                     multipleGLESContextsAllowed = true
                 }
                 gLESVersionCheckComplete = true
@@ -1533,7 +1543,7 @@ class GLSurfaceView : SurfaceView, SurfaceHolder.Callback {
         private var eglOwner: GLThread? = null
 
         companion object {
-            private const val kGLES_20 = 0x20000
+            private const val KGLES20 = 0x20000
         }
     }
 

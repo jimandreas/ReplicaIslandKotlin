@@ -91,18 +91,18 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
         // No use using VBOs when software renderering, esp. since older versions of the software renderer
         // had a crash bug related to freeing VBOs.
         val supportsVBOs = !isSoftwareRenderer && (!isOpenGL10 || extensions.contains("vertex_buffer_object"))
-        val params = BaseObject.Companion.sSystemRegistry.contextParameters
+        val params = BaseObject.sSystemRegistry.contextParameters
         params!!.supportsDrawTexture = supportsDrawTexture
         params.supportsVBOs = supportsVBOs
         hackBrokenDevices()
-        DebugLog.Companion.i("Graphics Support", version + " (" + renderer + "): " + (if (supportsDrawTexture) "draw texture," else "") + if (supportsVBOs) "vbos" else "")
+        DebugLog.i("Graphics Support", version + " (" + renderer + "): " + (if (supportsDrawTexture) "draw texture," else "") + if (supportsVBOs) "vbos" else "")
         mGame.onSurfaceCreated()
     }
 
     private fun hackBrokenDevices() {
         // Some devices are broken.  Fix them here.  This is pretty much the only
         // device-specific code in the whole project.  Ugh.
-        val params = BaseObject.Companion.sSystemRegistry.contextParameters
+        val params = BaseObject.sSystemRegistry.contextParameters
         if (Build.PRODUCT.contains("morrison")) {
             // This is the Motorola Cliq.  This device LIES and says it supports
             // VBOs, which it actually does not (or, more likely, the extensions string
@@ -117,28 +117,28 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     override fun loadTextures(gl: GL10?, library: TextureLibrary?) {
         if (gl != null) {
             library!!.loadAll(mContext, gl)
-            DebugLog.Companion.d("AndouKun", "Textures Loaded.")
+            DebugLog.d("AndouKun", "Textures Loaded.")
         }
     }
 
     override fun flushTextures(gl: GL10?, library: TextureLibrary?) {
         if (gl != null) {
             library!!.deleteAll(gl)
-            DebugLog.Companion.d("AndouKun", "Textures Unloaded.")
+            DebugLog.d("AndouKun", "Textures Unloaded.")
         }
     }
 
     override fun loadBuffers(gl: GL10?, library: BufferLibrary?) {
         if (gl != null) {
             library!!.generateHardwareBuffers(gl)
-            DebugLog.Companion.d("AndouKun", "Buffers Created.")
+            DebugLog.d("AndouKun", "Buffers Created.")
         }
     }
 
     override fun flushBuffers(gl: GL10?, library: BufferLibrary?) {
         if (gl != null) {
             library!!.releaseHardwareBuffers(gl)
-            DebugLog.Companion.d("AndouKun", "Buffers Released.")
+            DebugLog.d("AndouKun", "Buffers Released.")
         }
     }
 
@@ -159,7 +159,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                 while (!drawQueueChanged) {
                     try {
                         drawLock.wait()
-                    } catch (e: InterruptedException) {
+                    } catch (_: InterruptedException) {
                         // No big deal if this wait is interrupted.
                     }
                 }
@@ -171,10 +171,10 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
             mGame.onSurfaceReady()
             callbackRequested = false
         }
-        DrawableBitmap.Companion.beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
+        DrawableBitmap.beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
         synchronized(this) {
             if (drawQueue != null && drawQueue!!.fetchObjects().count > 0) {
-                OpenGLSystem.Companion.gL = gl
+                OpenGLSystem.gL = gl
                 val objects = drawQueue!!.fetchObjects()
                 val objectArray: Array<Any?> = objects.array as Array<Any?>
                 val count = objects.count
@@ -193,14 +193,14 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     }
                     element.mDrawable!!.draw(x, y, scaleX, scaleY)
                 }
-                OpenGLSystem.Companion.gL = null
+                OpenGLSystem.gL = null
             } else if (drawQueue == null) {
                 // If we have no draw queue, clear the screen.  If we have a draw queue that
                 // is empty, we'll leave the frame buffer alone.
                 gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
             }
         }
-        DrawableBitmap.Companion.endDrawing(gl)
+        DrawableBitmap.endDrawing(gl)
         val time2 = SystemClock.uptimeMillis()
         lastTime = time2
         profileFrameTime += time_delta
@@ -213,7 +213,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
             val averageSubmitTime = profileSubmitTime / validFrames
             val averageObjectsPerFrame = profileObjectCount.toFloat() / validFrames
             val averageWaitTime = profileWaitTime / validFrames
-            DebugLog.Companion.d("Render Profile",
+            DebugLog.d("Render Profile",
                     "Average Submit: " + averageSubmitTime
                             + "  Average Draw: " + averageFrameTime
                             + " Objects/Frame: " + averageObjectsPerFrame
@@ -226,7 +226,7 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        DebugLog.Companion.d("AndouKun", "Surface Size Change: $width, $height")
+        DebugLog.d("AndouKun", "Surface Size Change: $width, $height")
 
         //mWidth = w;0
         //mHeight = h;
