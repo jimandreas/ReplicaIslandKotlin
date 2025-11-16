@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("CascadeIf")
+@file:Suppress("CascadeIf",
+    "DEPRECATION",
+    "KotlinConstantConditions",
+    "SimplifyBooleanWithConstants"
+)
 
 package com.replica.replicaisland
 
@@ -41,7 +45,6 @@ import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.CameraSystem
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.rendering.DrawableFactory
-import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.rendering.TextureLibrary
@@ -60,6 +63,7 @@ import com.replica.replicaisland.utils.VectorPool
  * This class sets up the core game engine objects and threads.  It also passes events to the
  * game thread from the main UI thread.
  */
+
 class Game : AllocationGuard() {
     private var gameThread: GameThread? = null
     private var mGame: Thread? = null
@@ -254,9 +258,11 @@ class Game : AllocationGuard() {
                 )
             )
             BaseObject.sSystemRegistry.hudSystem = hud
+
             if (AndouKun.VERSION < 0) {
                 hud.setShowFPS(true)
             }
+
             gameRoot.add(hud)
             BaseObject.sSystemRegistry.vibrationSystem = VibrationSystem()
             val eventRecorder = EventRecorder()
@@ -399,7 +405,7 @@ class Game : AllocationGuard() {
             gameThread!!.stopGame()
             try {
                 mGame!!.join()
-            } catch (e: InterruptedException) {
+            } catch (_: InterruptedException) {
                 mGame!!.interrupt()
             }
             mGame = null

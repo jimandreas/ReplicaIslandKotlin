@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("unused", "UNUSED_ANONYMOUS_PARAMETER", "DEPRECATION", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "SimplifyBooleanWithConstants")
+
+@file:Suppress("unused",
+    "UNUSED_ANONYMOUS_PARAMETER",
+    "DEPRECATION",
+    "SimplifyBooleanWithConstants",
+    "KotlinConstantConditions"
+)
 
 package com.replica.replicaisland
 
@@ -285,12 +291,10 @@ class AndouKun : Activity(), SensorEventListener {
         if (sensorManager != null) {
             val orientation = sensorManager!!.getDefaultSensor(Sensor.TYPE_ORIENTATION)
             if (orientation != null) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    sensorManager!!.registerListener(this,
-                            orientation,
-                            SensorManager.SENSOR_DELAY_GAME,
-                            0)
-                }
+                sensorManager!!.registerListener(this,
+                        orientation,
+                        SensorManager.SENSOR_DELAY_GAME,
+                        0)
             }
         }
     }
@@ -762,6 +766,7 @@ class AndouKun : Activity(), SensorEventListener {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateDialog(id: Int): Dialog {
         var dialog: Dialog? = null
         if (id == QUIT_GAME_DIALOG) {
