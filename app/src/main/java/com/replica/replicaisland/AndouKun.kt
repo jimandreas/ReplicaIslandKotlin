@@ -145,7 +145,8 @@ class AndouKun : Activity(), SensorEventListener {
             prefsEditor!!.remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
             prefsEditor!!.commit()
         }
-        levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        //levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        levelRow = 10 // jimhack
         levelIndex = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
         var completed = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, 0)
         totalGameTime = prefs.getFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, 0.0f)

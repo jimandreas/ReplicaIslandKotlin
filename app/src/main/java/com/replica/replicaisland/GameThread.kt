@@ -19,7 +19,7 @@ package com.replica.replicaisland
 
 import android.os.SystemClock
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.rendering.GameRenderer
+import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.ui.DebugLog
 
 /**

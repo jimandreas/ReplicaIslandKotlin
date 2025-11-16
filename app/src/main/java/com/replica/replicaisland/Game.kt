@@ -41,7 +41,7 @@ import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.rendering.CameraSystem
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.rendering.DrawableFactory
-import com.replica.replicaisland.rendering.GameRenderer
+import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
 import com.replica.replicaisland.rendering.TextureLibrary
