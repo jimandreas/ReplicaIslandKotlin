@@ -18,13 +18,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.AndouKun
-import com.replica.replicaisland.ui.DebugLog
-import com.replica.replicaisland.ui.DifficultyMenuActivity
-import com.replica.replicaisland.ui.ExtrasMenuActivity
-import com.replica.replicaisland.ui.PreferenceConstants
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.SetPreferencesActivity
-import com.replica.replicaisland.ui.UIConstants
 import com.replica.replicaisland.input.MultiTouchFilter
 import com.replica.replicaisland.input.SingleTouchFilter
 import com.replica.replicaisland.input.TouchFilter
@@ -209,7 +203,7 @@ class MainMenuActivity : Activity() {
                     }
                 }
             }
-            if (abs(lastVersion) < abs(AndouKun.Companion.VERSION)) {
+            if (abs(lastVersion) < abs(AndouKun.VERSION)) {
                 // This is a new install or an upgrade.
 
                 // Check the safe mode option.
@@ -237,7 +231,7 @@ class MainMenuActivity : Activity() {
                 }
 
                 // show what's new message
-                editor.putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, AndouKun.Companion.VERSION)
+                editor.putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, AndouKun.VERSION)
                 editor.commit()
                 showDialog(WHATS_NEW_DIALOG)
 
@@ -324,7 +318,7 @@ class MainMenuActivity : Activity() {
         return dialog
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val intent: Intent) :
+    private inner class StartActivityAfterAnimation(private val intent: Intent) :
         Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             startActivity(intent)
@@ -332,9 +326,9 @@ class MainMenuActivity : Activity() {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@MainMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         }

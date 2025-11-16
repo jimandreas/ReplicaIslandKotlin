@@ -1,7 +1,6 @@
 package com.replica.replicaisland.ui
 
 import com.replica.replicaisland.entities.InventoryComponent
-import com.replica.replicaisland.ui.SortConstants
 import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.mechanics.GameFlowEvent
@@ -93,7 +92,7 @@ class HudSystem : BaseObject() {
             digitDrawables[x] = null
         }
         xDrawable = null
-        fadePendingEventType = GameFlowEvent.Companion.EVENT_INVALID
+        fadePendingEventType = GameFlowEvent.EVENT_INVALID
         fadePendingEventIndex = 0
         movementSliderBaseDrawable = null
         movementSliderButtonDrawable = null
@@ -352,13 +351,13 @@ class HudSystem : BaseObject() {
                 bitmap.texture = fadeTexture
                 bitmap.setCrop(0, fadeTexture!!.height, fadeTexture!!.width, fadeTexture!!.height)
                 bitmap.setOpacity(opacityValue)
-                render!!.scheduleForDraw(bitmap, Vector2.Companion.ZERO, SortConstants.FADE, false)
+                render!!.scheduleForDraw(bitmap, Vector2.ZERO, SortConstants.FADE, false)
             }
-            if (percentComplete >= 1.0f && fadePendingEventType != GameFlowEvent.Companion.EVENT_INVALID) {
+            if (percentComplete >= 1.0f && fadePendingEventType != GameFlowEvent.EVENT_INVALID) {
                 val level = sSystemRegistry.levelSystem
                 if (level != null) {
                     level.sendGameEvent(fadePendingEventType, fadePendingEventIndex, false)
-                    fadePendingEventType = GameFlowEvent.Companion.EVENT_INVALID
+                    fadePendingEventType = GameFlowEvent.EVENT_INVALID
                     fadePendingEventIndex = 0
                 }
             }

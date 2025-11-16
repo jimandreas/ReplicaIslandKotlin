@@ -102,7 +102,7 @@ class AnimationComponent : GameComponent() {
                 if (rocketSound != null) {
                     if (boosting) {
                         if (rocketSoundStream == -1) {
-                            rocketSoundStream = sound.play(rocketSound!!, true, SoundSystem.Companion.PRIORITY_HIGH)
+                            rocketSoundStream = sound.play(rocketSound!!, true, SoundSystem.PRIORITY_HIGH)
                             rocketSoundPaused = false
                         } else if (rocketSoundPaused) {
                             sound.resume(rocketSoundStream)
@@ -124,9 +124,9 @@ class AnimationComponent : GameComponent() {
                 if (rubyCount != lastRubyCount) {
                     lastRubyCount = rubyCount
                     when (rubyCount) {
-                        1 -> sound.play(rubySound1!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
-                        2 -> sound.play(rubySound2!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
-                        3 -> sound.play(rubySound3!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                        1 -> sound.play(rubySound1!!, false, SoundSystem.PRIORITY_NORMAL)
+                        2 -> sound.play(rubySound2!!, false, SoundSystem.PRIORITY_NORMAL)
+                        3 -> sound.play(rubySound3!!, false, SoundSystem.PRIORITY_NORMAL)
                     }
                 }
             }
@@ -192,7 +192,7 @@ class AnimationComponent : GameComponent() {
                 if (touchingGround && gameTime > landThumpDelay) {
                     if (landThump != null && sound != null) {
                         // modulate the sound slightly to avoid sounding too similar
-                        sound.play(landThump!!, false, SoundSystem.Companion.PRIORITY_HIGH, 1.0f,
+                        sound.play(landThump!!, false, SoundSystem.PRIORITY_HIGH, 1.0f,
                                 (Math.random() * 0.5f).toFloat() + 0.75f)
                         landThumpDelay = gameTime + LAND_THUMP_DELAY
                     }
@@ -210,7 +210,7 @@ class AnimationComponent : GameComponent() {
             } else if (currentAction == GameObject.ActionType.DEATH) {
                 if (previousAction != currentAction) {
                     if (explosionSound != null) {
-                        sound.play(explosionSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                        sound.play(explosionSound!!, false, SoundSystem.PRIORITY_NORMAL)
                     }
                     // by default, explode when hit with the DEATH hit type.
                     var explodingDeath = parentObject.lastReceivedHitType == CollisionParameters.HitType.DEATH

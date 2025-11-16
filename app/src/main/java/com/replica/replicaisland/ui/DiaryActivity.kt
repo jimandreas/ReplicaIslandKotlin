@@ -12,9 +12,7 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.UIConstants
 import com.replica.replicaisland.core.BaseObject
 import java.lang.reflect.InvocationTargetException
 
@@ -25,9 +23,9 @@ class DiaryActivity : Activity() {
             try {
                 UIConstants.mOverridePendingTransition!!.invoke(this@DiaryActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
             } catch (ite: InvocationTargetException) {
-                DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                DebugLog.d("Activity Transition", "Invocation Target Exception")
             } catch (ie: IllegalAccessException) {
-                DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                DebugLog.d("Activity Transition", "Illegal Access Exception")
             }
         }
     }
@@ -60,6 +58,6 @@ class DiaryActivity : Activity() {
         okArrow.setBackgroundResource(R.drawable.ui_button)
         val anim = okArrow.background as AnimationDrawable
         anim.start()
-        BaseObject.Companion.sSystemRegistry.customToastSystem!!.toast(getString(R.string.diary_found), Toast.LENGTH_SHORT)
+        BaseObject.sSystemRegistry.customToastSystem!!.toast(getString(R.string.diary_found), Toast.LENGTH_SHORT)
     }
 }

@@ -36,10 +36,10 @@ class SelectDialogComponent : GameComponent() {
                     HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_4,
                     HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_5 -> {
 
-                        var event = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER1
+                        var event = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
                         var index = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1
                         if (hitSpot >= HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1) {
-                            event = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2
+                            event = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
                             index = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
                         }
                         hitReact!!.setSpawnGameEventOnHit(CollisionParameters.HitType.COLLECT, event, index)

@@ -8,10 +8,7 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ui.KeyboardConfigDialogPreference
-import com.replica.replicaisland.ui.PreferenceConstants
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.YesNoDialogPreference
 
 class SetPreferencesActivity : PreferenceActivity(), YesNoDialogPreference.YesNoDialogListener {
     override fun onCreate(savedInstanceState: Bundle?) {

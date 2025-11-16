@@ -56,8 +56,8 @@ class InputGameInterface : BaseObject() {
                 val center = ButtonConstants.MOVEMENT_SLIDER_X + halfWidth
                 val offset = sliderTouch.retreiveXaxisMagnitude() - center
                 val magnitudeRamp = if (abs(offset) > halfWidth) 1.0f else abs(offset) / halfWidth
-                val magnitude = magnitudeRamp * Utils.Companion.sign(offset) * SLIDER_FILTER * movementSensitivity
-                sliderOffset = magnitudeRamp * Utils.Companion.sign(offset)
+                val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * movementSensitivity
+                sliderOffset = magnitudeRamp * Utils.sign(offset)
                 directionalPad.press(gameTime, magnitude, 0.0f)
             } else {
                 directionalPad.release()
@@ -101,16 +101,16 @@ class InputGameInterface : BaseObject() {
                     var x = directionalPad.retreiveXaxisMagnitude()
                     var y = directionalPad.retreiveYaxisMagnitude()
                     if (x != 0.0f) {
-                        val sign = Utils.Companion.sign(x)
+                        val sign = Utils.sign(x)
                         x -= sign * ROLL_DECAY * timeDelta
-                        if (Utils.Companion.sign(x) != sign) {
+                        if (Utils.sign(x) != sign) {
                             x = 0.0f
                         }
                     }
                     if (y != 0.0f) {
-                        val sign = Utils.Companion.sign(y)
+                        val sign = Utils.sign(y)
                         y -= sign * ROLL_DECAY * timeDelta
-                        if (Utils.Companion.sign(x) != sign) {
+                        if (Utils.sign(x) != sign) {
                             y = 0.0f
                         }
                     }

@@ -17,7 +17,7 @@ open class AllocationGuard {
     init {
         if (sGuardActive) {
             // An allocation has occurred while the guard is active!  Report it.
-            DebugLog.Companion.e("AllocGuard", "An allocation of type " + this.javaClass.name
+            DebugLog.e("AllocGuard", "An allocation of type " + this.javaClass.name
                     + " occurred while the AllocGuard is active.")
         }
     }

@@ -3,7 +3,6 @@ package com.replica.replicaisland.entities
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
-import com.replica.replicaisland.entities.HitReactionComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2
@@ -41,7 +40,7 @@ class NPCComponent : GameComponent() {
         targetXVelocity = 0.0f
         lastHitTileX = 0
         lastHitTileY = 0
-        dialogEvent = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER1
+        dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
         dialogIndex = 0
         hitReactComponent = null
         queueTop = 0
@@ -72,7 +71,7 @@ class NPCComponent : GameComponent() {
             parentObject.acceleration.x = HIT_ACCELERATION
         } else if (parentObject!!.currentAction === GameObject.ActionType.DEATH) {
             if (spawnGameEventOnDeath && gameEvent != -1) {
-                if (Utils.Companion.close(parentObject!!.velocity.x, 0.0f)
+                if (Utils.close(parentObject!!.velocity.x, 0.0f)
                         && parentObject.touchingGround()) {
                     if (deathTime < deathFadeDelay && deathTime + timeDelta >= deathFadeDelay) {
                         val hud = sSystemRegistry.hudSystem
@@ -185,10 +184,10 @@ class NPCComponent : GameComponent() {
                     parentObject.lastReceivedHitType = CollisionParameters.HitType.INVALID
                 }
             }
-            HotSpotSystem.HotSpotType.WALK_AND_TALK -> if (dialogEvent != GameFlowEvent.Companion.EVENT_INVALID) {
+            HotSpotSystem.HotSpotType.WALK_AND_TALK -> if (dialogEvent != GameFlowEvent.EVENT_INVALID) {
                 val level = sSystemRegistry.levelSystem
                 level!!.sendGameEvent(dialogEvent, dialogIndex, true)
-                dialogEvent = GameFlowEvent.Companion.EVENT_INVALID
+                dialogEvent = GameFlowEvent.EVENT_INVALID
             }
             HotSpotSystem.HotSpotType.TAKE_CAMERA_FOCUS -> if (camera != null) {
                 camera.target = parentObject
@@ -201,7 +200,7 @@ class NPCComponent : GameComponent() {
                 val hud = sSystemRegistry.hudSystem
                 if (hud != null) {
                     hud.startFade(false, 1.5f)
-                    hud.sendGameEventOnFadeComplete(GameFlowEvent.Companion.EVENT_GO_TO_NEXT_LEVEL, 0)
+                    hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0)
                 }
             }
             HotSpotSystem.HotSpotType.GAME_EVENT -> if (gameEvent != -1) {
@@ -285,7 +284,7 @@ class NPCComponent : GameComponent() {
                 if (manager != null) {
                     val player = manager.player
                     if (player != null) {
-                        direction = Utils.Companion.sign(
+                        direction = Utils.sign(
                                 player.centeredPositionX -
                                         parentObject!!.centeredPositionX)
                     }
@@ -307,7 +306,7 @@ class NPCComponent : GameComponent() {
                 parentObject!!.targetVelocity.x = 0.0f
                 parentObject.velocity.x = 0.0f
             }
-            HotSpotSystem.HotSpotType.NPC_SLOW -> parentObject!!.targetVelocity.x = mSlowHorizontalImpulse * Utils.Companion.sign(parentObject.targetVelocity.x)
+            HotSpotSystem.HotSpotType.NPC_SLOW -> parentObject!!.targetVelocity.x = mSlowHorizontalImpulse * Utils.sign(parentObject.targetVelocity.x)
             HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_2, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_3, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_4, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_5, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_2, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_3, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_4, HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_5 -> selectDialog(hotSpot)
             HotSpotSystem.HotSpotType.NONE -> {
                 if (parentObject!!.touchingGround() && parentObject.velocity.y <= 0.0f) {
@@ -331,10 +330,10 @@ class NPCComponent : GameComponent() {
     }
 
     private fun selectDialog(hitSpot: Int) {
-        dialogEvent = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER1
+        dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1
         dialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_1_1
         if (hitSpot >= HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1) {
-            dialogEvent = GameFlowEvent.Companion.EVENT_SHOW_DIALOG_CHARACTER2
+            dialogEvent = GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2
             dialogIndex = hitSpot - HotSpotSystem.HotSpotType.NPC_SELECT_DIALOG_2_1
         }
     }

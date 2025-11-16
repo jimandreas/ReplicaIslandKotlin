@@ -54,7 +54,7 @@ class EnemyAnimationComponent : GameComponent() {
                 AnimationState.MOVING -> {
                     mSprite!!.playAnimation(EnemyAnimations.MOVE.ordinal)
                     val targetVelocityX = parentObject.targetVelocity.x
-                    if (!Utils.Companion.close(velocityX, 0.0f)) {
+                    if (!Utils.close(velocityX, 0.0f)) {
                         if (velocityX < 0.0f && targetVelocityX < 0.0f) {
                             parentObject.facingDirection.x = -1.0f
                         } else if (velocityX > 0.0f && targetVelocityX > 0.0f) {

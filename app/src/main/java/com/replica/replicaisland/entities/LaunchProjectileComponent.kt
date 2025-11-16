@@ -120,7 +120,7 @@ class LaunchProjectileComponent : GameComponent() {
                     val angle = (Math.random() * thetaError * Math.PI * 2.0f).toFloat()
                     workingVector.x = sin(angle.toDouble()).toFloat()
                     workingVector.y = cos(angle.toDouble()).toFloat()
-                    if (Utils.Companion.close(workingVector.length2(), 0.0f)) {
+                    if (Utils.close(workingVector.length2(), 0.0f)) {
                         workingVector[1.0f] = 1.0f
                     }
                 }
@@ -142,7 +142,7 @@ class LaunchProjectileComponent : GameComponent() {
                 manager.add(thing)
                 if (shootSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(shootSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                    sound?.play(shootSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }

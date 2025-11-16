@@ -22,7 +22,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/ui_bad_ending_rokudou_bg"
 
-                ></View>
+                />
         </FrameLayout>
 
         <FrameLayout
@@ -36,7 +36,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/ui_bad_ending_rokudou_sphere"
 
-                ></View>
+                />
         </FrameLayout>
 
         <FrameLayout
@@ -50,7 +50,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/ui_bad_ending_rokudou_cliffs"
 
-                ></View>
+                />
         </FrameLayout>
 
         <FrameLayout
@@ -64,7 +64,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/ui_bad_ending_rokudou_rokudou"
 
-                ></View>
+                />
         </FrameLayout>
 
         <AbsoluteLayout

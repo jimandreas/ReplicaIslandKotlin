@@ -16,9 +16,7 @@ import android.widget.ImageView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
 class AnimationPlayerActivity : Activity() {
@@ -37,9 +35,9 @@ class AnimationPlayerActivity : Activity() {
                             R.anim.activity_fade_in,
                             R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         }

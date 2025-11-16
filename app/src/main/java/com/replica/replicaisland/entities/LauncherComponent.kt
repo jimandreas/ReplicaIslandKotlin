@@ -87,7 +87,7 @@ class LauncherComponent : GameComponent() {
         thing.velocity = launchDirection
         if (launchSound != null) {
             val sound = sSystemRegistry.soundSystem
-            sound?.play(launchSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+            sound?.play(launchSound!!, false, SoundSystem.PRIORITY_NORMAL)
         }
         if (launchEffect !== GameObjectFactory.GameObjectType.INVALID) {
             val factory = sSystemRegistry.gameObjectFactory

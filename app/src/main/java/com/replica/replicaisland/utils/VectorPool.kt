@@ -1,7 +1,5 @@
 package com.replica.replicaisland.utils
 
-import com.replica.replicaisland.utils.TObjectPool
-
 /**
  * A pool of 2D vectors.
  */

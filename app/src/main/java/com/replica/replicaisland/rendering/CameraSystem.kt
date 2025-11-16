@@ -105,7 +105,7 @@ class CameraSystem : BaseObject() {
                 }
                 val xDelta: Float = targetPosition.x - currentCameraPosition.x
                 if (abs(xDelta) > X_FOLLOW_DISTANCE) {
-                    currentCameraPosition.x = targetPosition.x - X_FOLLOW_DISTANCE * Utils.Companion.sign(xDelta)
+                    currentCameraPosition.x = targetPosition.x - X_FOLLOW_DISTANCE * Utils.sign(xDelta)
                 }
                 val yDelta: Float = targetPosition.y - currentCameraPosition.y
                 if (yDelta > Y_UP_FOLLOW_DISTANCE) {

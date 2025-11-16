@@ -15,7 +15,7 @@ import javax.microedition.khronos.opengles.GL11Ext
 
 // unused so far
 class GLErrorLogger : GLSurfaceView.GLWrapper {
-    override fun wrap(gl: GL?): GL? {
+    override fun wrap(gl: GL?): GL {
         return ErrorLoggingGL(gl)
     }
 
@@ -24,7 +24,7 @@ class GLErrorLogger : GLSurfaceView.GLWrapper {
             val error = (mGL as GL10?)!!.glGetError()
             if (error != GL10.GL_NO_ERROR) {
                 val method = Thread.currentThread().stackTrace[3].methodName
-                DebugLog.Companion.d("GL ERROR", "Error: " + error + " (" + GLU.gluErrorString(error) + "): " + method)
+                DebugLog.d("GL ERROR", "Error: " + error + " (" + GLU.gluErrorString(error) + "): " + method)
             }
             //TODO 2 fix: assert(error == GL10.GL_NO_ERROR)
         }

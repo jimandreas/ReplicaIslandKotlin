@@ -21,9 +21,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.AndouKun
-import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.UIConstants
 import com.replica.replicaisland.levels.LevelTree
 import java.lang.reflect.InvocationTargetException
 import java.util.ArrayList
@@ -64,14 +62,14 @@ class LevelSelectActivity : ListActivity() {
         }
 
         override fun getItemViewType(position: Int): Int {
-            var type = Companion.TYPE_ENABLED
+            var type = TYPE_ENABLED
             val level = levelData!![position]
             if (level != null) {
                 if (!level.enabled) {
                     type = if (level.level!!.completed) {
-                        Companion.TYPE_COMPLETED
+                        TYPE_COMPLETED
                     } else {
-                        Companion.TYPE_DISABLED
+                        TYPE_DISABLED
                     }
                 }
             }
@@ -79,7 +77,7 @@ class LevelSelectActivity : ListActivity() {
         }
 
         override fun getViewTypeCount(): Int {
-            return Companion.TYPE_COUNT
+            return TYPE_COUNT
         }
 
         override fun hasStableIds(): Boolean {
@@ -229,9 +227,9 @@ class LevelSelectActivity : ListActivity() {
                         try {
                             UIConstants.mOverridePendingTransition!!.invoke(this@LevelSelectActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                         } catch (ite: InvocationTargetException) {
-                            DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                            DebugLog.d("Activity Transition", "Invocation Target Exception")
                         } catch (ie: IllegalAccessException) {
-                            DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                            DebugLog.d("Activity Transition", "Illegal Access Exception")
                         }
                     }
                 }
@@ -251,7 +249,7 @@ class LevelSelectActivity : ListActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         var handled = false
-        if (AndouKun.Companion.VERSION < 0) {
+        if (AndouKun.VERSION < 0) {
             menu.add(0, UNLOCK_NEXT_LEVEL_ID, 0, R.string.unlock_next_level)
             menu.add(0, UNLOCK_ALL_LEVELS_ID, 0, R.string.unlock_levels)
             handled = true
@@ -323,8 +321,7 @@ class LevelSelectActivity : ListActivity() {
         }
     }
 
-    private inner class EndActivityAfterAnimation
-        constructor(private val mIntent: Intent) : Animation.AnimationListener {
+    private inner class EndActivityAfterAnimation(private val mIntent: Intent) : Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             setResult(RESULT_OK, mIntent)
             finish()

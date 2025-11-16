@@ -13,9 +13,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.AndouKun
-import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
 class DifficultyMenuActivity : Activity() {
@@ -110,9 +108,9 @@ class DifficultyMenuActivity : Activity() {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@DifficultyMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         } else {
@@ -121,7 +119,7 @@ class DifficultyMenuActivity : Activity() {
         return result
     }
 
-    private inner class StartActivityAfterAnimation constructor(private val mIntent: Intent) :
+    private inner class StartActivityAfterAnimation(private val mIntent: Intent) :
         Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
             mBabyButton!!.visibility = View.INVISIBLE
@@ -136,9 +134,9 @@ class DifficultyMenuActivity : Activity() {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@DifficultyMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
                 } catch (ite: InvocationTargetException) {
-                    DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                    DebugLog.d("Activity Transition", "Invocation Target Exception")
                 } catch (ie: IllegalAccessException) {
-                    DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                    DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }
         }

@@ -2,7 +2,6 @@ package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.GameRenderer
 import com.replica.replicaisland.core.BaseObject
-import com.replica.replicaisland.rendering.DrawableObject
 import com.replica.replicaisland.utils.FixedSizeArray
 import com.replica.replicaisland.ObjectManager
 import com.replica.replicaisland.core.PhasedObject
@@ -66,7 +65,7 @@ class RenderSystem : BaseObject() {
         }
     }
 
-    inner class RenderElement : PhasedObject() {
+    class RenderElement : PhasedObject() {
         operator fun set(drawable: DrawableObject?, position: Vector2, priority: Int, isCameraRelative: Boolean) {
             mDrawable = drawable
             x = position.x
@@ -77,7 +76,7 @@ class RenderSystem : BaseObject() {
             if (drawable != null) {
                 val tex = drawable.texture
                 if (tex != null) {
-                    sortOffset = tex.resource % TEXTURE_SORT_BUCKET_SIZE * Utils.Companion.sign(priority.toFloat())
+                    sortOffset = tex.resource % TEXTURE_SORT_BUCKET_SIZE * Utils.sign(priority.toFloat())
                 }
             }
             setPhaseToThis(sortBucket + sortOffset)
@@ -100,8 +99,7 @@ class RenderSystem : BaseObject() {
         var cameraRelative = false
     }
 
-    private inner class RenderElementPool
-        constructor(max: Int) : TObjectPool<RenderElement?>(max) {
+    private inner class RenderElementPool(max: Int) : TObjectPool<RenderElement?>(max) {
         override fun release(entry: Any) {
             val renderable = entry as RenderElement
             // if this drawable came out of a pool, make sure it is returned to that pool.

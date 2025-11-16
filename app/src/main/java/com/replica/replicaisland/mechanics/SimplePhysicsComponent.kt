@@ -24,14 +24,14 @@ class SimplePhysicsComponent : GameComponent() {
         if (parentObject.touchingCeiling() && velocityY > 0.0f
                 || parentObject.touchingGround() && velocityY < 0.0f) {
             velocityY = -velocityY * mBounciness
-            if (Utils.Companion.close(velocityY, 0.0f)) {
+            if (Utils.close(velocityY, 0.0f)) {
                 velocityY = 0.0f
             }
         }
         if (parentObject.touchingRightWall() && velocityX > 0.0f
                 || parentObject.touchingLeftWall() && velocityX < 0.0f) {
             velocityX = -velocityX * mBounciness
-            if (Utils.Companion.close(velocityX, 0.0f)) {
+            if (Utils.close(velocityX, 0.0f)) {
                 velocityX = 0.0f
             }
         }

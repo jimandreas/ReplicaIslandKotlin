@@ -120,7 +120,7 @@ class BackgroundCollisionComponent : GameComponent {
      */
     override fun update(timeDelta: Float, parent: BaseObject?) {
         val parentObject = parent as GameObject
-        parentObject.backgroundCollisionNormal = Vector2.Companion.ZERO
+        parentObject.backgroundCollisionNormal = Vector2.ZERO
         if (mPreviousPosition.length2() != 0f) {
             val collision = sSystemRegistry.collisionSystem
             if (collision != null) {
@@ -168,11 +168,11 @@ class BackgroundCollisionComponent : GameComponent {
                     if (mCurrentPosition.x + left < 0.0f) {
                         mCurrentPosition.x = (-left + 1).toFloat()
                         horizontalHit = true
-                        horizontalHitNormal.x = horizontalHitNormal.x + 1.0f
+                        horizontalHitNormal.x += 1.0f
                         horizontalHitNormal.normalize()
                     } else if (mCurrentPosition.x + right > level.levelWidth) {
                         mCurrentPosition.x = level.levelWidth - right - 1
-                        horizontalHitNormal.x = horizontalHitNormal.x - 1.0f
+                        horizontalHitNormal.x -= 1.0f
                         horizontalHitNormal.normalize()
                         horizontalHit = true
                     }
@@ -184,7 +184,7 @@ class BackgroundCollisionComponent : GameComponent {
                         verticalHitNormal.normalize();
                     } else*/if (mCurrentPosition.y + top > level.levelHeight) {
                         mCurrentPosition.y = level.levelHeight - top - 1
-                        verticalHitNormal.y = verticalHitNormal.y - 1.0f
+                        verticalHitNormal.y -= 1.0f
                         verticalHitNormal.normalize()
                         verticalHit = true
                     }
@@ -291,7 +291,7 @@ class BackgroundCollisionComponent : GameComponent {
                                 parentObject: GameObject
     ): Boolean {
         var hit = false
-        if (!Utils.Companion.close(delta.x, 0.0f)) {
+        if (!Utils.close(delta.x, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem
 
             // Shoot a ray from the center of the previous frame's box to the edge (left or right,
@@ -326,7 +326,7 @@ class BackgroundCollisionComponent : GameComponent {
                               parentObject: GameObject
     ): Boolean {
         var hit = false
-        if (!Utils.Companion.close(delta.y, 0.0f)) {
+        if (!Utils.close(delta.y, 0.0f)) {
             val collision = sSystemRegistry.collisionSystem
             // Shoot a ray from the center of the previous frame's box to the edge (top or bottom,
             // depending on the direction of movement) of the current box.

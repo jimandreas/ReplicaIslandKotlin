@@ -33,7 +33,7 @@ class ButtonAnimationComponent : GameComponent() {
                     parentObject.lastReceivedHitType == CollisionParameters.HitType.DEPRESS) {
                 if (mSprite!!.currentAnimation == Animation.UP) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(depressSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                    sound?.play(depressSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
                 mSprite!!.playAnimation(Animation.DOWN)
                 parentObject.currentAction = GameObject.ActionType.IDLE

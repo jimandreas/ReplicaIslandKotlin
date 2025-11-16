@@ -70,7 +70,7 @@ class TextureLibrary : BaseObject() {
                 gl.glDeleteTextures(1, textureNameWorkspace, 0)
                 val error = gl.glGetError()
                 if (error != GL10.GL_NO_ERROR) {
-                    DebugLog.Companion.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
+                    DebugLog.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
                 }
                 //TODO: assert(error == GL10.GL_NO_ERROR)
             }
@@ -88,7 +88,7 @@ class TextureLibrary : BaseObject() {
     }
 
     /** Loads a bitmap into OpenGL and sets up the common parameters for 2D texture maps.  */
-    private fun loadBitmap(context: Context?, gl: GL10?, texture: Texture?): Texture? {
+    private fun loadBitmap(context: Context?, gl: GL10?, texture: Texture?): Texture {
         //TODO: assert(gl != null)
         //TODO: assert(context != null)
         //TODO: assert(texture != null)
@@ -96,14 +96,14 @@ class TextureLibrary : BaseObject() {
             gl!!.glGenTextures(1, textureNameWorkspace, 0)
             var error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.Companion.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             val textureName = textureNameWorkspace[0]
             gl.glBindTexture(GL10.GL_TEXTURE_2D, textureName)
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.Companion.d("Texture Load 2", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.d("Texture Load 2", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST.toFloat())
@@ -126,7 +126,7 @@ class TextureLibrary : BaseObject() {
             GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0)
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.Companion.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             cropWorkspace[0] = 0
@@ -142,7 +142,7 @@ class TextureLibrary : BaseObject() {
             bitmap.recycle()
             error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
-                DebugLog.Companion.d("Texture Load 4", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+                DebugLog.d("Texture Load 4", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
             }
             //TODO: assert(error == GL10.GL_NO_ERROR)
             texture.loaded = true

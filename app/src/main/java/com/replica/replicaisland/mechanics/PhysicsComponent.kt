@@ -1,7 +1,6 @@
 package com.replica.replicaisland.mechanics
 
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.mechanics.GravityComponent
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2
 import com.replica.replicaisland.core.BaseObject
@@ -67,7 +66,7 @@ class PhysicsComponent internal constructor() : GameComponent() {
                 newVelocity.x = 0.0f
             } else {
                 newVelocity.x = (newVelocity.x
-                        - maxFriction * Utils.Companion.sign(newVelocity.x))
+                        - maxFriction * Utils.sign(newVelocity.x))
             }
         }
         if (abs(newVelocity.x) < 0.01f) {
@@ -82,8 +81,8 @@ class PhysicsComponent internal constructor() : GameComponent() {
         if (physicsCausesMovement) {
             parentObject.velocity = newVelocity
             parentObject.targetVelocity = newVelocity
-            parentObject.acceleration = Vector2.Companion.ZERO
-            parentObject.impulse = Vector2.Companion.ZERO
+            parentObject.acceleration = Vector2.ZERO
+            parentObject.impulse = Vector2.ZERO
         }
         vectorPool.release(newVelocity)
     }

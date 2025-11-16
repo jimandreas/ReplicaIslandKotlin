@@ -23,7 +23,7 @@ class DynamicCollisionComponent : GameComponent() {
     override fun reset() {
         mAttackVolumes = null
         vulnerabilityVolumes = null
-        boundingVolume.center = Vector2.Companion.ZERO
+        boundingVolume.center = Vector2.ZERO
         boundingVolume.radius = 0.0f
         hitReactionComponent = null
     }

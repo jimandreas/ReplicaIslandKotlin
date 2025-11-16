@@ -62,7 +62,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.currentAnimationTime = timeOffset
                 if (mOpenSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mOpenSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                    sound?.play(mOpenSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }
@@ -88,7 +88,7 @@ class DoorAnimationComponent : GameComponent() {
                 mSprite!!.currentAnimationTime = timeOffset
                 if (mCloseSound != null) {
                     val sound = sSystemRegistry.soundSystem
-                    sound?.play(mCloseSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                    sound?.play(mCloseSound!!, false, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }

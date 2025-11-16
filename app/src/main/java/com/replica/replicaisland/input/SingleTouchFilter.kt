@@ -1,7 +1,6 @@
 package com.replica.replicaisland.input
 
 import android.view.MotionEvent
-import com.replica.replicaisland.input.TouchFilter
 
 open class SingleTouchFilter : TouchFilter() {
     override fun updateTouch(event: MotionEvent?) {

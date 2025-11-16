@@ -96,6 +96,7 @@ import kotlin.math.sqrt
  * patch pointers between objects, but in the future those functions should either be
  * a) generated from data at compile time, or b) described by data at runtime.
  */
+
 class GameObjectFactory : BaseObject() {
     private val staticBaseObjectArray: FixedSizeArray<FixedSizeArray<BaseObject?>?>
     private val componentPools: FixedSizeArray<GameComponentPool>

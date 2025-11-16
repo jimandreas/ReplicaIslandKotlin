@@ -1,7 +1,6 @@
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.GameComponent
-import com.replica.replicaisland.rendering.SpriteAnimation
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
 import com.replica.replicaisland.core.PhasedObjectManager

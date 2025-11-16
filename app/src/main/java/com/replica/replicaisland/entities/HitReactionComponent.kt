@@ -1,6 +1,5 @@
 package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.entities.ChangeComponentsComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
@@ -89,7 +88,7 @@ class HitReactionComponent : GameComponent() {
                     (hitType == dealHitSoundHitType ||
                             dealHitSoundHitType == CollisionParameters.HitType.INVALID)) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(dealHitSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                sound?.play(dealHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
             }
             if (spawnOnDealHitObjectType != GameObjectFactory.GameObjectType.INVALID &&
                     hitType == spawnOnDealHitHitType) {
@@ -138,7 +137,7 @@ class HitReactionComponent : GameComponent() {
                         val pool = sSystemRegistry.vectorPool
                         val newVelocity = pool!!.allocate(parent.position)
                         newVelocity.subtract(attacker.position)
-                        newVelocity[0.5f * Utils.Companion.sign(newVelocity.x)] = 0.5f * Utils.Companion.sign(newVelocity.y)
+                        newVelocity[0.5f * Utils.sign(newVelocity.x)] = 0.5f * Utils.sign(newVelocity.y)
                         newVelocity.multiply(bounceMagnitude)
                         parent.velocity = newVelocity
                         parent.targetVelocity.zero()
@@ -180,7 +179,7 @@ class HitReactionComponent : GameComponent() {
         if (hitType != CollisionParameters.HitType.INVALID) {
             if (takeHitSound != null && hitType == takeHitSoundHitType) {
                 val sound = sSystemRegistry.soundSystem
-                sound?.play(takeHitSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+                sound?.play(takeHitSound!!, false, SoundSystem.PRIORITY_NORMAL)
             }
             lastHitTime = gameTime
             parent.currentAction = GameObject.ActionType.HIT_REACT

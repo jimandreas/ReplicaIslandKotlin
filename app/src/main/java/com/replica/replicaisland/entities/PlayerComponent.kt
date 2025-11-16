@@ -2,15 +2,12 @@ package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.utils.AdultsDifficultyConstants
 import com.replica.replicaisland.utils.BabyDifficultyConstants
-import com.replica.replicaisland.entities.ChangeComponentsComponent
 import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.utils.DifficultyConstants
 import com.replica.replicaisland.utils.FadeDrawableComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.mechanics.GameFlowEvent
-import com.replica.replicaisland.entities.HitReactionComponent
 import com.replica.replicaisland.mechanics.HotSpotSystem
-import com.replica.replicaisland.entities.InventoryComponent
 import com.replica.replicaisland.utils.KidsDifficultyConstants
 import com.replica.replicaisland.utils.Utils
 import com.replica.replicaisland.utils.Vector2
@@ -116,13 +113,13 @@ class PlayerComponent : GameComponent() {
                 val newSpeed = abs(currentSpeed + impulse.x)
                 if (newSpeed > maxHorizontalSpeed) {
                     if (abs(currentSpeed) < maxHorizontalSpeed) {
-                        currentSpeed = maxHorizontalSpeed * Utils.Companion.sign(impulse.x)
+                        currentSpeed = maxHorizontalSpeed * Utils.sign(impulse.x)
                         parentObject.velocity.x = currentSpeed
                     }
                     impulse.x = 0.0f
                 }
                 if (parentObject.velocity.y + impulse.y > MAX_UPWARD_SPEED
-                        && Utils.Companion.sign(impulse.y) > 0) {
+                        && Utils.sign(impulse.y) > 0) {
                     impulse.y = 0.0f
                     if (parentObject.velocity.y < MAX_UPWARD_SPEED) {
                         parentObject.velocity.y = MAX_UPWARD_SPEED
@@ -132,11 +129,11 @@ class PlayerComponent : GameComponent() {
                     // Apply drag while in the air.
                     if (abs(currentSpeed) > maxHorizontalSpeed) {
                         var postDragSpeed = currentSpeed -
-                                AIR_DRAG_SPEED * timeDelta * Utils.Companion.sign(currentSpeed)
-                        if (Utils.Companion.sign(currentSpeed) != Utils.Companion.sign(postDragSpeed)) {
+                                AIR_DRAG_SPEED * timeDelta * Utils.sign(currentSpeed)
+                        if (Utils.sign(currentSpeed) != Utils.sign(postDragSpeed)) {
                             postDragSpeed = 0.0f
                         } else if (abs(postDragSpeed) < maxHorizontalSpeed) {
-                            postDragSpeed = maxHorizontalSpeed * Utils.Companion.sign(postDragSpeed)
+                            postDragSpeed = maxHorizontalSpeed * Utils.sign(postDragSpeed)
                         }
                         parentObject.velocity.x = postDragSpeed
                     }
@@ -360,7 +357,7 @@ class PlayerComponent : GameComponent() {
             if (hud != null && !hud.isFading) {
                 if (elapsed > 2.0f) {
                     hud.startFade(false, 1.5f)
-                    hud.sendGameEventOnFadeComplete(GameFlowEvent.Companion.EVENT_RESTART_LEVEL, 0)
+                    hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_RESTART_LEVEL, 0)
                     val recorder = sSystemRegistry.eventRecorder
                     if (recorder != null) {
                         recorder.lastDeathPosition = parentObject.position
@@ -385,7 +382,7 @@ class PlayerComponent : GameComponent() {
             if (hud != null && !hud.isFading) {
                 if (elapsed > 2.0f) {
                     hud.startFade(false, 1.5f)
-                    hud.sendGameEventOnFadeComplete(GameFlowEvent.Companion.EVENT_GO_TO_NEXT_LEVEL, 0)
+                    hud.sendGameEventOnFadeComplete(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0)
                 }
             }
         }

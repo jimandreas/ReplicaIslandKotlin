@@ -30,8 +30,8 @@ class AttackAtDistanceComponent : GameComponent() {
                 mDistance.subtract(parentObject.position)
                 val time = sSystemRegistry.timeSystem
                 val currentTime = time!!.gameTime
-                val facingPlayer = (Utils.Companion.sign(player.position.x - parentObject.position.x)
-                        == Utils.Companion.sign(parentObject.facingDirection.x))
+                val facingPlayer = (Utils.sign(player.position.x - parentObject.position.x)
+                        == Utils.sign(parentObject.facingDirection.x))
                 val facingDirectionCorrect = (mRequireFacing && facingPlayer
                         || !mRequireFacing)
                 if (parentObject.currentAction == GameObject.ActionType.ATTACK) {

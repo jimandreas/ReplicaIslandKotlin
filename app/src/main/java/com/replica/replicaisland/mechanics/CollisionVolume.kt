@@ -1,7 +1,6 @@
 package com.replica.replicaisland.mechanics
 
 import com.replica.replicaisland.utils.AllocationGuard
-import com.replica.replicaisland.mechanics.CollisionParameters
 import com.replica.replicaisland.utils.Vector2
 
 /**

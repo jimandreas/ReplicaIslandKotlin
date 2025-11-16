@@ -75,14 +75,14 @@ class PatrolComponent : GameComponent() {
                 if (turnToFacePlayer && player != null && player.life > 0) {
                     val horizontalDelta = (player.centeredPositionX
                             - parentObject.centeredPositionX)
-                    val targetFacingDirection = Utils.Companion.sign(horizontalDelta)
+                    val targetFacingDirection = Utils.sign(horizontalDelta)
                     val closestDistance = player.width / 2.0f
                     if (targetFacingDirection < 0.0f) { // we want to turn to the left
                         if (goRight) {
                             goRight = false
                             pause = true
                         } else if (targetFacingDirection
-                                != Utils.Companion.sign(parentObject.facingDirection.x)) {
+                                != Utils.sign(parentObject.facingDirection.x)) {
                             goLeft = true
                         }
                     } else if (targetFacingDirection > 0.0f) { // we want to turn to the right
@@ -90,7 +90,7 @@ class PatrolComponent : GameComponent() {
                             goLeft = false
                             pause = true
                         } else if (targetFacingDirection
-                                != Utils.Companion.sign(parentObject.facingDirection.x)) {
+                                != Utils.sign(parentObject.facingDirection.x)) {
                             goRight = true
                         }
                     }
@@ -148,7 +148,7 @@ class PatrolComponent : GameComponent() {
             }
         } else if (!mFlying && !parentObject.touchingGround() && parentObject.life > 0) {
             // A non-flying unit is in the air.  In this case, just watch for bounces off walls.
-            if (Utils.Companion.sign(parentObject.targetVelocity.x) != Utils.Companion.sign(parentObject.velocity.x)) {
+            if (Utils.sign(parentObject.targetVelocity.x) != Utils.sign(parentObject.velocity.x)) {
                 // Todo: maybe the physics code should adjust target velocity instead in this case?
                 parentObject.targetVelocity.x *= -1.0f
             }
@@ -171,8 +171,8 @@ class PatrolComponent : GameComponent() {
             val timeToAttack = gameTime - lastAttackTime > attackDelay
             if (attackAtDistance > 0 && player != null && player.life > 0 && timeToAttack) {
                 // only attack if we are facing the player
-                if (Utils.Companion.sign(player.position.x - parentObject.position.x)
-                        == Utils.Companion.sign(parentObject.facingDirection.x)) {
+                if (Utils.sign(player.position.x - parentObject.position.x)
+                        == Utils.sign(parentObject.facingDirection.x)) {
                     workingVector.set(parentObject.position)
                     workingVector.x = parentObject.centeredPositionX
                     workingVector2.set(player.position)
@@ -199,7 +199,7 @@ class PatrolComponent : GameComponent() {
             if (gameTime - lastAttackTime > attackDuration) {
                 parentObject.currentAction = GameObject.ActionType.MOVE
                 if (attackStopsMovement) {
-                    parentObject.targetVelocity.x = maxSpeed * Utils.Companion.sign(parentObject.facingDirection.x)
+                    parentObject.targetVelocity.x = maxSpeed * Utils.sign(parentObject.facingDirection.x)
                     parentObject.acceleration.x = mAcceleration
                 }
             }

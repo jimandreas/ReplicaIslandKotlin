@@ -59,9 +59,9 @@ class TiledWorld : AllocationGuard {
             signature = byteStream.read()
             if (signature == 42) {
                 byteStream.read(workspaceBytes, 0, 4)
-                val width = Utils.Companion.byteArrayToInt(workspaceBytes)
+                val width = Utils.byteArrayToInt(workspaceBytes)
                 byteStream.read(workspaceBytes, 0, 4)
-                val height = Utils.Companion.byteArrayToInt(workspaceBytes)
+                val height = Utils.byteArrayToInt(workspaceBytes)
                 val totalTiles = width * height
                 val bytesRemaining = byteStream.available()
                 //TODO 2 fix: assert(bytesRemaining >= totalTiles)

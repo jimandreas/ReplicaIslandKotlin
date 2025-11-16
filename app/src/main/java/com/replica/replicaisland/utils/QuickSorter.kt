@@ -1,6 +1,5 @@
 package com.replica.replicaisland.utils
 
-import com.replica.replicaisland.utils.Sorter
 import java.util.Comparator
 
 class QuickSorter<Type> : Sorter<Type>() {

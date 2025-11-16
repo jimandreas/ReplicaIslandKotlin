@@ -1,7 +1,5 @@
 package com.replica.replicaisland.rendering
 
-import com.replica.replicaisland.rendering.ScrollableBitmap
-
 class TiledBackgroundVertexGrid : ScrollableBitmap(null, 0, 0) {
     private var mGrid: TiledVertexGrid? = null
     override fun reset() {

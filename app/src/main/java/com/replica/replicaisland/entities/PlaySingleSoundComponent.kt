@@ -19,7 +19,7 @@ class PlaySingleSoundComponent : GameComponent() {
     override fun update(timeDelta: Float, parent: BaseObject?) {
         if (soundHandle == -1 && mSound != null) {
             val sound = sSystemRegistry.soundSystem
-            soundHandle = sound!!.play(mSound!!, false, SoundSystem.Companion.PRIORITY_NORMAL)
+            soundHandle = sound!!.play(mSound!!, false, SoundSystem.PRIORITY_NORMAL)
         }
     }
 

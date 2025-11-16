@@ -148,10 +148,10 @@ class CollisionSystem : BaseObject() {
                     yIncrement = -1
                 }
             }
-            val startTileX = Utils.Companion.clamp((startX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
-            val endTileX = Utils.Companion.clamp((endX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
-            val startTileY = Utils.Companion.clamp((startY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
-            val endTileY = Utils.Companion.clamp((endY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
+            val startTileX = Utils.clamp((startX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
+            val endTileX = Utils.clamp((endX / mTileWidth).toInt(), 0, mWorld!!.fetchWidth() - 1)
+            val startTileY = Utils.clamp((startY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
+            val endTileY = Utils.clamp((endY / mTileHeight).toInt(), 0, mWorld!!.fetchHeight() - 1)
             val vectorPool = sSystemRegistry.vectorPool
             val worldTileOffset = vectorPool!!.allocate()
             val tileArray = mWorld!!.fetchTiles()
@@ -185,7 +185,7 @@ class CollisionSystem : BaseObject() {
         // temporary segments
         val tempHit = testBoxAgainstList(temporarySegments,
                 left, right, top, bottom,
-                movementDirection, excludeObject, Vector2.Companion.ZERO, hitPoints)
+                movementDirection, excludeObject, Vector2.ZERO, hitPoints)
         if (tempHit) {
             foundHit = true
         }
@@ -244,10 +244,10 @@ class CollisionSystem : BaseObject() {
         var distance = 0
         if (deltaX != 0) {
             distance = abs(deltaX) + 1
-            xIncrement = Utils.Companion.sign(deltaX.toFloat())
+            xIncrement = Utils.sign(deltaX.toFloat())
         } else if (deltaY != 0) {
             distance = abs(deltaY) + 1
-            yIncrement = Utils.Companion.sign(deltaY.toFloat())
+            yIncrement = Utils.sign(deltaY.toFloat())
         }
         var hitTile = -1
         val worldHeight = mWorld!!.fetchHeight() - 1
@@ -297,8 +297,8 @@ class CollisionSystem : BaseObject() {
             hitTile = executeStraigtRay(startPoint, endPoint, startTileX, startTileY,
                     endTileX, endTileY, deltaX, deltaY, hitPoint, hitNormal, visitor)
         } else {
-            val xIncrement = if (deltaX != 0) Utils.Companion.sign(deltaX.toFloat()) else 0
-            val yIncrement = if (deltaY != 0) Utils.Companion.sign(deltaY.toFloat()) else 0
+            val xIncrement = if (deltaX != 0) Utils.sign(deltaX.toFloat()) else 0
+            val yIncrement = if (deltaY != 0) Utils.sign(deltaY.toFloat()) else 0
 
             // Note: I'm deviating from the Bresenham algorithm here by adding one to force the end
             // tile to be visited.
@@ -356,11 +356,11 @@ class CollisionSystem : BaseObject() {
     }
 
     private fun worldToTileColumn(x: Float, width: Int): Int {
-        return Utils.Companion.clamp(floor(x / mTileWidth.toDouble()).toInt(), 0, width - 1)
+        return Utils.clamp(floor(x / mTileWidth.toDouble()).toInt(), 0, width - 1)
     }
 
     private fun worldToTileRow(y: Float, height: Int): Int {
-        return Utils.Companion.clamp(floor(y / mTileHeight.toDouble()).toInt(), 0, height - 1)
+        return Utils.clamp(floor(y / mTileHeight.toDouble()).toInt(), 0, height - 1)
     }
 
     /*
@@ -397,17 +397,17 @@ class CollisionSystem : BaseObject() {
                         }
                         for (y in 0 until segmentCount) {
                             byteStream.read(workspaceBytes, 0, 4)
-                            val startX = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val startX = Utils.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val startY = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val startY = Utils.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val endX = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val endX = Utils.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val endY = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val endY = Utils.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val normalX = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val normalX = Utils.byteArrayToFloat(workspaceBytes)
                             byteStream.read(workspaceBytes, 0, 4)
-                            val normalY = Utils.Companion.byteArrayToFloat(workspaceBytes)
+                            val normalY = Utils.byteArrayToFloat(workspaceBytes)
 
                             // TODO: it might be wise to pool line segments.  I don't think that
                             // this data will be loaded very often though, so this is ok for now.
@@ -619,9 +619,9 @@ class CollisionSystem : BaseObject() {
     /**
      * A pool of line segments.
      */
-    private inner class LineSegmentPool : TObjectPool<LineSegment?> {
-        constructor() : super() {}
-        constructor(count: Int) : super(count) {}
+    private class LineSegmentPool : TObjectPool<LineSegment?> {
+        constructor() : super()
+        constructor(count: Int) : super(count)
 
         override fun reset() {}
         override fun fill() {
@@ -639,7 +639,7 @@ class CollisionSystem : BaseObject() {
     /**
      * A single collision tile.  Manages a list of line segments.
      */
-    inner class CollisionTile(maxSegments: Int) : AllocationGuard() {
+    class CollisionTile(maxSegments: Int) : AllocationGuard() {
         var segments: FixedSizeArray<LineSegment?> = FixedSizeArray(maxSegments)
         fun addSegment(segment: LineSegment?): Boolean {
             var success = false

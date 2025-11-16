@@ -23,7 +23,7 @@ class InputButton {
     }
 
     fun getTriggered(currentTime: Float): Boolean {
-        return pressed && currentTime - downTime <= BaseObject.Companion.sSystemRegistry.timeSystem!!.frameDelta * 2.0f
+        return pressed && currentTime - downTime <= BaseObject.sSystemRegistry.timeSystem!!.frameDelta * 2.0f
     }
 
     fun getPressedDuration(currentTime: Float): Float {

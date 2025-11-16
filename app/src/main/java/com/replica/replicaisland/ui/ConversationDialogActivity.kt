@@ -19,7 +19,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ui.ConversationUtils
 import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
 import java.util.ArrayList
@@ -197,9 +196,9 @@ class ConversationDialogActivity : Activity() {
         private var parentActivity // This really sucks.
                 : ConversationDialogActivity? = null
 
-        constructor(context: Context) : super(context) {}
-        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
-        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {}
+        constructor(context: Context) : super(context)
+        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
 
         fun setParentActivity(parent: ConversationDialogActivity?) {
             parentActivity = parent

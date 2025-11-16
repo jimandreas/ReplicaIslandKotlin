@@ -58,7 +58,7 @@ class SliderPreference : Preference, SeekBar.OnSeekBarChangeListener {
     override fun onStartTrackingTouch(seekBar: SeekBar) {}
     override fun onStopTrackingTouch(seekBar: SeekBar) {}
     override fun onGetDefaultValue(ta: TypedArray, index: Int): Any {
-        return Utils.Companion.clamp(ta.getInt(index, INITIAL_VALUE), 0, MAX_SLIDER_VALUE)
+        return Utils.clamp(ta.getInt(index, INITIAL_VALUE), 0, MAX_SLIDER_VALUE)
     }
 
     override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {

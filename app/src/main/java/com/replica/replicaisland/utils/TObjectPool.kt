@@ -7,8 +7,8 @@ package com.replica.replicaisland.utils
  * @param <T> The type of object managed by the pool.
 </T> */
 abstract class TObjectPool<T> : ObjectPool {
-    constructor() : super() {}
-    constructor(size: Int) : super(size) {}
+    constructor() : super()
+    constructor(size: Int) : super(size)
 
     public override fun allocate(): T {
         return super.allocate() as T

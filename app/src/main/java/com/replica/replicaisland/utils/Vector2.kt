@@ -1,6 +1,5 @@
 package com.replica.replicaisland.utils
 
-import com.replica.replicaisland.utils.AllocationGuard
 import kotlin.math.sqrt
 
 /**
@@ -12,7 +11,7 @@ class Vector2 : AllocationGuard {
     
     var y = 0f
 
-    constructor() : super() {}
+    constructor() : super()
     constructor(xValue: Float, yValue: Float) {
         set(xValue, yValue)
     }

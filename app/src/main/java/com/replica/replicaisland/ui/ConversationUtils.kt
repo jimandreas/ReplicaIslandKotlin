@@ -1,7 +1,6 @@
 package com.replica.replicaisland.ui
 
 import android.content.Context
-import com.replica.replicaisland.ui.DebugLog
 import org.xmlpull.v1.XmlPullParser
 import java.util.ArrayList
 
@@ -45,7 +44,7 @@ object ConversationUtils {
                 eventType = parser.next()
             }
         } catch (e: Exception) {
-            DebugLog.Companion.e("LoadDialog", e.stackTrace.toString())
+            DebugLog.e("LoadDialog", e.stackTrace.toString())
         } finally {
             parser.close()
         }

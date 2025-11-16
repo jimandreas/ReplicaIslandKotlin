@@ -13,11 +13,7 @@ import android.widget.TextView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.replica.replicaisland.ui.AnimationPlayerActivity
-import com.replica.replicaisland.ui.DebugLog
-import com.replica.replicaisland.ui.PreferenceConstants
 import com.replica.replicaisland.R
-import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.floor
 import kotlin.math.min
@@ -26,7 +22,7 @@ class GameOverActivity : Activity() {
     private val pearlPercent = 100.0f
     private val enemiesDestroyedPercent = 100.0f
     private val mPlayTime = 0.0f
-    private val mEnding = AnimationPlayerActivity.Companion.KABOCHA_ENDING
+    private val mEnding = AnimationPlayerActivity.KABOCHA_ENDING
     private var pearlView: IncrementingTextView? = null
     private var enemiesDestroyedView: IncrementingTextView? = null
     private var playTimeView: IncrementingTextView? = null
@@ -39,9 +35,9 @@ class GameOverActivity : Activity() {
         private val lastTime: Long = 0
         private var mMode = MODE_NONE
 
-        constructor(context: Context?) : super(context) {}
-        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
-        constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {}
+        constructor(context: Context?) : super(context)
+        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+        constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
 
         fun setTargetValue(target: Float) {
             targetValue = target
@@ -101,9 +97,9 @@ class GameOverActivity : Activity() {
             try {
                 UIConstants.mOverridePendingTransition!!.invoke(this@GameOverActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
             } catch (ite: InvocationTargetException) {
-                DebugLog.Companion.d("Activity Transition", "Invocation Target Exception")
+                DebugLog.d("Activity Transition", "Invocation Target Exception")
             } catch (ie: IllegalAccessException) {
-                DebugLog.Companion.d("Activity Transition", "Illegal Access Exception")
+                DebugLog.d("Activity Transition", "Illegal Access Exception")
             }
         }
     }
@@ -143,9 +139,9 @@ class GameOverActivity : Activity() {
         playTimeView!!.setTargetValue(playTime)
         playTimeView!!.setIncrement(90.0f)
         playTimeView!!.setMode(IncrementingTextView.MODE_TIME)
-        if (ending == AnimationPlayerActivity.Companion.KABOCHA_ENDING) {
+        if (ending == AnimationPlayerActivity.KABOCHA_ENDING) {
             endingView!!.setText(R.string.game_results_kabocha_ending)
-        } else if (ending == AnimationPlayerActivity.Companion.ROKUDOU_ENDING) {
+        } else if (ending == AnimationPlayerActivity.ROKUDOU_ENDING) {
             endingView!!.setText(R.string.game_results_rokudou_ending)
         } else {
             endingView!!.setText(R.string.game_results_wanda_ending)

@@ -116,7 +116,7 @@ object LevelTree {
                 eventType = parser.next()
             }
         } catch (e: Exception) {
-            DebugLog.Companion.e("LevelTree", e.stackTrace.toString())
+            DebugLog.e("LevelTree", e.stackTrace.toString())
         } finally {
             parser.close()
         }

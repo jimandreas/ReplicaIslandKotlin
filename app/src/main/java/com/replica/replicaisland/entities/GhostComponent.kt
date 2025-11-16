@@ -1,6 +1,5 @@
 package com.replica.replicaisland.entities
 
-import com.replica.replicaisland.entities.ChangeComponentsComponent
 import com.replica.replicaisland.GameComponent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.core.GameObject
@@ -92,7 +91,7 @@ class GhostComponent : GameComponent() {
             if (!timeToRelease && ambientSound != null && ambientSoundStream == -1) {
                 val sound = sSystemRegistry.soundSystem
                 if (sound != null) {
-                    ambientSoundStream = sound.play(ambientSound!!, true, SoundSystem.Companion.PRIORITY_NORMAL)
+                    ambientSoundStream = sound.play(ambientSound!!, true, SoundSystem.PRIORITY_NORMAL)
                 }
             }
         }

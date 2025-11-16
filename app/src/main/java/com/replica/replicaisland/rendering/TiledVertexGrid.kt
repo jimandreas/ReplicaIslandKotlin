@@ -89,7 +89,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
 
     fun draw(x: Float, y: Float, scrollOriginX: Float, scrollOriginY: Float) {
         val world = mWorld
-        val gl = OpenGLSystem.Companion.gL
+        val gl = OpenGLSystem.gL
         if (!generated && world != null && gl != null && mTexture != null) {
             val tilesAcross = mWorld!!.fetchWidth()
             val tilesDown = mWorld!!.fetchHeight()
@@ -128,7 +128,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                 // calculate any sub-tile slop that our scroll position may require.
                 val horizontalSlop = if ((tileSpaceX - leftTile) * mTileWidth > 0) 1 else 0
                 val verticalSlop = if ((tileSpaceY - bottomTile) * mTileHeight > 0) 1 else 0
-                OpenGLSystem.Companion.bindTexture(GL10.GL_TEXTURE_2D, texture.name)
+                OpenGLSystem.bindTexture(GL10.GL_TEXTURE_2D, texture.name)
                 tileMap.beginDrawingStrips(gl, true)
                 val horzTileCount = ceil(mWidth.toFloat() / mTileWidth.toDouble()).toInt()
                 val vertTileCount = ceil(mHeight.toFloat() / mTileHeight.toDouble()).toInt()
@@ -152,7 +152,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                     tileY++
                 }
                 gl.glPopMatrix()
-                Grid.Companion.endDrawing(gl)
+                Grid.endDrawing(gl)
             }
         }
     }

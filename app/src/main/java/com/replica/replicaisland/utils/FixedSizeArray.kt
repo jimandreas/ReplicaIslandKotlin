@@ -1,9 +1,6 @@
 package com.replica.replicaisland.utils
 
-import com.replica.replicaisland.utils.AllocationGuard
 import com.replica.replicaisland.BuildConfig
-import com.replica.replicaisland.utils.Sorter
-import com.replica.replicaisland.utils.StandardSorter
 import com.replica.replicaisland.ui.DebugLog
 import java.util.Arrays
 import java.util.Comparator
@@ -232,7 +229,7 @@ class FixedSizeArray<T> : AllocationGuard {
             if (mComparator != null) {
                 mSorter.sort(mContents, count, mComparator!!)
             } else {
-                DebugLog.Companion.d("FixedSizeArray", "No comparator specified for this type, using Arrays.sort().")
+                DebugLog.d("FixedSizeArray", "No comparator specified for this type, using Arrays.sort().")
                 Arrays.sort(mContents, 0, count)
             }
             mSorted = true
