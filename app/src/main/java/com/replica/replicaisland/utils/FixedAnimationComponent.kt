@@ -33,9 +33,7 @@ class FixedAnimationComponent : GameComponent() {
         // We look up the sprite component each frame so that this component can be shared.
         val parentObject = parent as GameObject
         val sprite = parentObject.findByClass(SpriteComponent::class.java)
-        if (sprite != null) {
-            sprite.playAnimation(animationIndex)
-        }
+        sprite?.playAnimation(animationIndex)
     }
 
     fun setAnimation(index: Int) {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.GameComponent

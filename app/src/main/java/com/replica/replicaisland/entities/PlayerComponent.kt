@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("UnusedVariable", "unused")
+
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.utils.AdultsDifficultyConstants

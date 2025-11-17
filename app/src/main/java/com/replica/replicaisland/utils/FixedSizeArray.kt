@@ -164,7 +164,7 @@ class FixedSizeArray<T> : AllocationGuard {
     operator fun get(index: Int): T? {
         //assert(index < count)
         var result: T? = null
-        if (index < count && index >= 0) {
+        if (index in 0..<count) {
             result = mContents[index]
         }
         return result

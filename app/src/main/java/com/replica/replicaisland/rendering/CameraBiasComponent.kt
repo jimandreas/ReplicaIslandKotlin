@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+@file:Suppress("EmptyMethod", "EmptyMethod", "EmptyMethod", "EmptyMethod", "EmptyMethod",
+    "EmptyMethod"
+)
+
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.core.BaseObject

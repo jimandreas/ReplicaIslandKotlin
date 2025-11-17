@@ -38,7 +38,9 @@ import com.replica.replicaisland.utils.Vector2
  */
 class RenderSystem : BaseObject() {
     private val mElementPool: RenderElementPool
+        = RenderElementPool(MAX_RENDER_OBJECTS)
     private val renderQueues: Array<ObjectManager?>
+        = arrayOfNulls(DRAW_QUEUE_COUNT)
     private var queueIndex: Int
     override fun reset() {}
     fun scheduleForDraw(`object`: DrawableObject?, position: Vector2, priority: Int, cameraRelative: Boolean) {
@@ -117,7 +119,7 @@ class RenderSystem : BaseObject() {
         var cameraRelative = false
     }
 
-    private inner class RenderElementPool(max: Int) : TObjectPool<RenderElement?>(max) {
+    private class RenderElementPool(max: Int) : TObjectPool<RenderElement?>(max) {
         override fun release(entry: Any) {
             val renderable = entry as RenderElement
             // if this drawable came out of a pool, make sure it is returned to that pool.
@@ -143,8 +145,6 @@ class RenderSystem : BaseObject() {
     }
 
     init {
-        mElementPool = RenderElementPool(MAX_RENDER_OBJECTS)
-        renderQueues = arrayOfNulls(DRAW_QUEUE_COUNT)
         for (x in 0 until DRAW_QUEUE_COUNT) {
             renderQueues[x] = PhasedObjectManager(MAX_RENDER_OBJECTS_PER_FRAME)
         }

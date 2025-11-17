@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -13,7 +14,7 @@
         android:gravity="right"
         android:scaleType="fitXY"
         android:src="@drawable/title_background"
-        android:tint="#88FFFFFF" />
+        app:tint="#88FFFFFF" />
 
     <LinearLayout
         android:layout_width="fill_parent"

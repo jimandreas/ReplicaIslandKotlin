@@ -22,7 +22,7 @@ import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.utils.Vector2
 
 class InputTouchScreen : BaseObject() {
-    private val touchPoints: Array<InputXY?>
+    private val touchPoints: Array<InputXY?> = arrayOfNulls(MAX_TOUCH_POINTS)
     override fun reset() {
         for (x in 0 until MAX_TOUCH_POINTS) {
             touchPoints[x]!!.reset()
@@ -122,7 +122,6 @@ class InputTouchScreen : BaseObject() {
     }
 
     init {
-        touchPoints = arrayOfNulls(MAX_TOUCH_POINTS)
         for (x in 0 until MAX_TOUCH_POINTS) {
             touchPoints[x] = InputXY()
         }

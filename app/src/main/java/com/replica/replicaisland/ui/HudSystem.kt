@@ -66,8 +66,8 @@ class HudSystem : BaseObject() {
     private var mRubyCount = 0
     private val coinLocation: Vector2 = Vector2()
     private val rubyLocation: Vector2 = Vector2()
-    private val coinDigits: IntArray
-    private val rubyDigits: IntArray
+    private val coinDigits: IntArray = IntArray(MAX_DIGITS)
+    private val rubyDigits: IntArray = IntArray(MAX_DIGITS)
     private var coinDigitsChanged = false
     private var rubyDigitsChanged = false
     private var fPS = 0
@@ -466,8 +466,6 @@ class HudSystem : BaseObject() {
     }
 
     init {
-        coinDigits = IntArray(MAX_DIGITS)
-        rubyDigits = IntArray(MAX_DIGITS)
         fPSDigits = IntArray(MAX_DIGITS)
         movementSliderBaseLocation = Vector2()
         movementSliderButtonLocation = Vector2()

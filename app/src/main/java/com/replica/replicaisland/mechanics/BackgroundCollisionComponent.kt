@@ -389,7 +389,7 @@ class BackgroundCollisionComponent : GameComponent {
                 result = if (distanceDelta < 0.0f) -1 else 1
             } else if (object1 == null && object2 != null) {
                 result = 1
-            } else if (object2 == null && object1 != null) {
+            } else if (object1 != null) {
                 result = -1
             }
             return result
