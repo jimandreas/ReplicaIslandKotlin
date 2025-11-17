@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("KotlinConstantConditions")
+
 package com.replica.replicaisland.mechanics
 
 import com.replica.replicaisland.utils.FixedSizeArray
@@ -6,6 +24,7 @@ import java.util.Comparator
 
 class ChannelSystem : BaseObject() {
     private val mChannels: FixedSizeArray<Channel>
+        = FixedSizeArray(CHANNEL_COUNT)
     private val searchDummy: Channel
     private var registeredChannelCount: Int
     override fun reset() {
@@ -78,7 +97,6 @@ class ChannelSystem : BaseObject() {
     }
 
     init {
-        mChannels = FixedSizeArray(CHANNEL_COUNT)
         mChannels.setComparator(sChannelComparator)
         searchDummy = Channel()
         for (x in 0 until CHANNEL_COUNT) {

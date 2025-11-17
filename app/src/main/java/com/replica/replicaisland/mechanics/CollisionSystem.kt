@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("unused", "UNCHECKED_CAST")
+
 package com.replica.replicaisland.mechanics
 
 import android.content.res.AssetManager
@@ -297,8 +315,12 @@ class CollisionSystem : BaseObject() {
             hitTile = executeStraigtRay(startPoint, endPoint, startTileX, startTileY,
                     endTileX, endTileY, deltaX, deltaY, hitPoint, hitNormal, visitor)
         } else {
-            val xIncrement = if (deltaX != 0) Utils.sign(deltaX.toFloat()) else 0
-            val yIncrement = if (deltaY != 0) Utils.sign(deltaY.toFloat()) else 0
+//            val xIncrement = if (deltaX != 0) Utils.sign(deltaX.toFloat()) else 0
+//            val yIncrement = if (deltaY != 0) Utils.sign(deltaY.toFloat()) else 0
+            // linting
+            val xIncrement = Utils.sign(deltaX.toFloat())
+            val yIncrement = Utils.sign(deltaY.toFloat())
+
 
             // Note: I'm deviating from the Bresenham algorithm here by adding one to force the end
             // tile to be visited.
@@ -332,7 +354,7 @@ class CollisionSystem : BaseObject() {
                     error += deltaY2
                     currentX += xIncrement
                 }
-            } else if (verticalDelta >= lateralDelta) {
+            } else {
                 var error = deltaX2 - verticalDelta
                 for (i in 0 until verticalDelta) {
                     val tileIndex = tileArray[currentX][worldHeightMinusOne - currentY]
@@ -431,7 +453,7 @@ class CollisionSystem : BaseObject() {
      * can be passed to executeRay(); the visit() function will be invoked for each tile touched by
      * the ray until the traversal is completed or visit() returns false.
      */
-    abstract inner class TileVisitor : AllocationGuard() {
+    abstract class TileVisitor : AllocationGuard() {
 
         // If true is returned, tile scanning continues.  Otherwise it stops.
 
@@ -444,7 +466,7 @@ class CollisionSystem : BaseObject() {
      * segment in any tile of the ray's path is found to be intersecting with the ray, traversal
      * stops and intersection information is recorded.
      */
-    private inner class TileTestVisitor : TileVisitor() {
+    private class TileTestVisitor : TileVisitor() {
         // These vectors are all temporary storage variables allocated as class members to avoid
         // runtime allocation.
         private val mDelta: Vector2 = Vector2()
@@ -536,7 +558,7 @@ class CollisionSystem : BaseObject() {
             if (denom != 0f) {
                 val uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom
                 val uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom
-                if (uA >= 0.0f && uA <= 1.0f && uB >= 0.0f && uB <= 1.0f) {
+                if (uA in 0.0f..1.0f && uB >= 0.0f && uB <= 1.0f) {
                     val hitX = x1 + uA * (x2 - x1)
                     val hitY = y1 + uA * (y2 - y1)
                     hitPoint!![hitX] = hitY
@@ -720,8 +742,8 @@ class CollisionSystem : BaseObject() {
                 // surfaces.
                 val dot = if (movementDirection!!.length2() > 0.0f) movementDirection.dot(segment!!.mNormal) else -1.0f
                 if (dot < 0.0f &&
-                        (excludeObject == null || segment!!.owner !== excludeObject) &&
-                        segment!!.calculateIntersectionBox(left, right, top, bottom, tempHitPoint)) {
+                        (segment!!.owner !== excludeObject) &&
+                        segment.calculateIntersectionBox(left, right, top, bottom, tempHitPoint)) {
                     val hitPoint = vectorPool.allocate(tempHitPoint)
                     val hitNormal = vectorPool.allocate(segment.mNormal)
                     hitPoint.add(outputOffset!!)

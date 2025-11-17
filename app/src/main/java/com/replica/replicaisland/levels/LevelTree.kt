@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.replica.replicaisland.levels
 
 import android.content.Context
@@ -21,7 +37,7 @@ object LevelTree {
 
     @JvmStatic
 	fun loadLevelTree(resource: Int, context: Context) {
-        if (levels.size > 0 && loadedResource == resource) {
+        if (levels.isNotEmpty() && loadedResource == resource) {
             // already loaded
             return
         }
@@ -132,7 +148,7 @@ object LevelTree {
             val levelCount = row.size
             for (y in 0 until levelCount) {
                 val level = row[y]
-                if (level != null && level.dialogResources != null) {
+                if (level.dialogResources != null) {
                     val dialog = level.dialogResources
                     if (dialog!!.character1Entry != 0) {
                         dialog.character1Conversations =
