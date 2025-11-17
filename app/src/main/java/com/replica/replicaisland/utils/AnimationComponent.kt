@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.replica.replicaisland.utils
 
 import com.replica.replicaisland.entities.ChangeComponentsComponent
@@ -190,7 +206,7 @@ class AnimationComponent : GameComponent() {
             } else if (currentAction == GameObject.ActionType.ATTACK) {
                 mSprite!!.playAnimation(PlayerAnimations.STOMP.ordinal)
                 if (touchingGround && gameTime > landThumpDelay) {
-                    if (landThump != null && sound != null) {
+                    if (landThump != null) {
                         // modulate the sound slightly to avoid sounding too similar
                         sound.play(landThump!!, false, SoundSystem.PRIORITY_HIGH, 1.0f,
                                 (Math.random() * 0.5f).toFloat() + 0.75f)
@@ -229,9 +245,7 @@ class AnimationComponent : GameComponent() {
                         val manager = sSystemRegistry.gameObjectManager
                         if (factory != null && manager != null) {
                             val explosion = factory.spawnEffectExplosionGiant(parentObject.position.x, parentObject.position.y)
-                            if (explosion != null) {
-                                manager.add(explosion)
-                            }
+                            manager.add(explosion)
                         }
                     } else {
                         mSprite!!.playAnimation(PlayerAnimations.DEATH.ordinal)
