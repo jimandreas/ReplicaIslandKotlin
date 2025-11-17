@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused", "unused", "unused", "unused")
+
 package com.replica.replicaisland.entities
 
 import com.replica.replicaisland.mechanics.ChannelSystem
