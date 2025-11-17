@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("unused", "SameParameterValue")
+
 package com.replica.replicaisland.rendering
 
 import android.content.Context
@@ -22,7 +40,7 @@ import javax.microedition.khronos.opengles.GL11Ext
 class TextureLibrary : BaseObject() {
     // Textures are stored in a simple hash.  This class implements its own array-based hash rather
     // than using HashMap for performance.
-    private var textureHash: Array<Texture?>
+    private var textureHash: Array<Texture?> = arrayOfNulls(DEFAULT_SIZE)
     private var textureNameWorkspace: IntArray
     private var cropWorkspace: IntArray
     override fun reset() {
@@ -44,7 +62,7 @@ class TextureLibrary : BaseObject() {
     }
 
     /** Loads a single texture into memory.  Does nothing if the texture is already loaded.  */
-    fun loadTexture(context: Context?, gl: GL10?, resourceID: Int): Texture? {
+    fun loadTexture(context: Context?, gl: GL10?, resourceID: Int): Texture {
         var texture = allocateTexture(resourceID)
         texture = loadBitmap(context, gl, texture)
         return texture
@@ -53,7 +71,7 @@ class TextureLibrary : BaseObject() {
     /** Loads all unloaded textures into OpenGL memory.  Already-loaded textures are ignored.  */
     fun loadAll(context: Context?, gl: GL10?) {
         for (x in textureHash.indices) {
-            if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded == false) {
+            if (textureHash[x]!!.resource != -1 && !textureHash[x]!!.loaded) {
                 loadBitmap(context, gl, textureHash[x])
             }
         }
@@ -92,7 +110,7 @@ class TextureLibrary : BaseObject() {
         //TODO: assert(gl != null)
         //TODO: assert(context != null)
         //TODO: assert(texture != null)
-        if (texture!!.loaded == false && texture.resource != -1) {
+        if (!texture!!.loaded && texture.resource != -1) {
             gl!!.glGenTextures(1, textureNameWorkspace, 0)
             var error = gl.glGetError()
             if (error != GL10.GL_NO_ERROR) {
@@ -112,8 +130,7 @@ class TextureLibrary : BaseObject() {
             gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE.toFloat())
             gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE.toFloat()) //GL10.GL_REPLACE);
             val `is` = context!!.resources.openRawResource(texture.resource)
-            val bitmap: Bitmap
-            bitmap = try {
+            val bitmap: Bitmap = try {
                 BitmapFactory.decodeStream(`is`)
             } finally {
                 try {
@@ -224,7 +241,6 @@ class TextureLibrary : BaseObject() {
     }
 
     init {
-        textureHash = arrayOfNulls(DEFAULT_SIZE)
         for (x in textureHash.indices) {
             textureHash[x] = Texture()
         }

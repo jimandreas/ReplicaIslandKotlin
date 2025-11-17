@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.utils.TObjectPool
@@ -9,7 +25,7 @@ import com.replica.replicaisland.core.BaseObject
  * pools of objects so no actual allocations occur after bootstrap.
  */
 class DrawableFactory : BaseObject() {
-    private val bitmapPool: DrawableBitmapPool
+    private val bitmapPool: DrawableBitmapPool = DrawableBitmapPool(BITMAP_POOL_SIZE)
     private val scrollableBitmapPool: ScrollableBitmapPool
     private val tiledBackgroundVertexGridPool: TiledBackgroundVertexGridPool
     override fun reset() {}
@@ -50,7 +66,7 @@ class DrawableFactory : BaseObject() {
         override fun allocate(): DrawableBitmap {
             val result = super.allocate()!!
             val params = sSystemRegistry.contextParameters
-            if (result != null && params != null) {
+            if (params != null) {
                 result.setViewSize(params.gameWidth, params.gameHeight)
             }
             return result
@@ -98,7 +114,6 @@ class DrawableFactory : BaseObject() {
 
     // This class wraps several object pools and provides a type-sensitive release function.
     init {
-        bitmapPool = DrawableBitmapPool(BITMAP_POOL_SIZE)
         tiledBackgroundVertexGridPool = TiledBackgroundVertexGridPool()
         scrollableBitmapPool = ScrollableBitmapPool()
     }
