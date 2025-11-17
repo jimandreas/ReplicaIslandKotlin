@@ -136,7 +136,7 @@ open class DrawableBitmap internal constructor(override var texture: Texture?, v
          * @param viewWidth  The width of the screen.
          * @param viewHeight  The height of the screen.
          */
-        @JvmStatic
+        
         fun beginDrawing(gl: GL10, viewWidth: Float, viewHeight: Float) {
             gl.glShadeModel(GL10.GL_FLAT)
             gl.glEnable(GL10.GL_BLEND)
@@ -157,7 +157,7 @@ open class DrawableBitmap internal constructor(override var texture: Texture?, v
          *
          * @param gl  A pointer to the OpenGL context.
          */
-        @JvmStatic
+        
         fun endDrawing(gl: GL10) {
             gl.glDisable(GL10.GL_BLEND)
             gl.glMatrixMode(GL10.GL_PROJECTION)

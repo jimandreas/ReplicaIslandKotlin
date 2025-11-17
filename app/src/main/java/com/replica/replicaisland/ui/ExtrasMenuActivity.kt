@@ -1,5 +1,24 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("DEPRECATION", "unused")
+
 package com.replica.replicaisland.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -107,6 +126,7 @@ class ExtrasMenuActivity : Activity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         var result = true
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -114,9 +134,9 @@ class ExtrasMenuActivity : Activity() {
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@ExtrasMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                } catch (ite: InvocationTargetException) {
+                } catch (_: InvocationTargetException) {
                     DebugLog.d("Activity Transition", "Invocation Target Exception")
-                } catch (ie: IllegalAccessException) {
+                } catch (_: IllegalAccessException) {
                     DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }
@@ -175,9 +195,9 @@ class ExtrasMenuActivity : Activity() {
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@ExtrasMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                } catch (ite: InvocationTargetException) {
+                } catch (_: InvocationTargetException) {
                     DebugLog.d("Activity Transition", "Invocation Target Exception")
-                } catch (ie: IllegalAccessException) {
+                } catch (_: IllegalAccessException) {
                     DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }

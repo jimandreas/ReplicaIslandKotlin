@@ -1,7 +1,7 @@
 package com.replica.replicaisland.utils
 
 object Lerp {
-    @JvmStatic
+    
     fun lerp(start: Float, target: Float, duration: Float, timeSinceStart: Float): Float {
         var value = start
         if (timeSinceStart > 0.0f && timeSinceStart < duration) {
@@ -14,7 +14,7 @@ object Lerp {
         return value
     }
 
-    @JvmStatic
+    
     fun ease(start: Float, target: Float, duration: Float, timeSinceStart: Float): Float {
         var value = start
         if (timeSinceStart > 0.0f && timeSinceStart < duration) {

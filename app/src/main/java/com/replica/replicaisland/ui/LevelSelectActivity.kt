@@ -1,5 +1,27 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("DEPRECATION",
+    "SimplifyBooleanWithConstants",
+    "KotlinConstantConditions", "UNCHECKED_CAST"
+)
+
 package com.replica.replicaisland.ui
 
+import android.annotation.SuppressLint
 import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
@@ -23,9 +45,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.AndouKun
 import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
-import java.lang.reflect.InvocationTargetException
-import java.util.ArrayList
-import java.util.Comparator
 
 class LevelSelectActivity : ListActivity() {
     private var levelData: ArrayList<LevelMetaData>? = null
@@ -64,13 +83,11 @@ class LevelSelectActivity : ListActivity() {
         override fun getItemViewType(position: Int): Int {
             var type = TYPE_ENABLED
             val level = levelData!![position]
-            if (level != null) {
-                if (!level.enabled) {
-                    type = if (level.level!!.completed) {
-                        TYPE_COMPLETED
-                    } else {
-                        TYPE_DISABLED
-                    }
+            if (!level.enabled) {
+                type = if (level.level!!.completed) {
+                    TYPE_COMPLETED
+                } else {
+                    TYPE_DISABLED
                 }
             }
             return type
@@ -85,7 +102,7 @@ class LevelSelectActivity : ListActivity() {
         }
 
         override fun isEmpty(): Boolean {
-            return levelData!!.size > 0
+            return levelData!!.isNotEmpty()
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -112,13 +129,9 @@ class LevelSelectActivity : ListActivity() {
                 }
             }
             val view = sourceView!!.findViewById<View>(textViewResource) as TextView
-            if (view != null) {
-                view.text = levelData!![position].level!!.name
-            }
+            view.text = levelData!![position].level!!.name
             val view2 = sourceView.findViewById<View>(textViewResource2) as TextView
-            if (view2 != null) {
-                view2.text = levelData!![position].level!!.timeStamp
-            }
+            view2.text = levelData!![position].level!!.timeStamp
             return sourceView
         }
 
@@ -182,7 +195,7 @@ class LevelSelectActivity : ListActivity() {
                     enabled = true
                     anyUnlocksThisBranch = true
                 }
-                if (enabled || level.completed || !onlyAllowThePast || onlyAllowThePast && level.inThePast) {
+                if (enabled || level.completed || !onlyAllowThePast || level.inThePast) {
                     addItem(level, x, y, enabled)
                 }
             }
@@ -206,6 +219,7 @@ class LevelSelectActivity : ListActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         if (!levelSelected) {
             super.onListItemClick(l, v, position, id)
@@ -217,22 +231,8 @@ class LevelSelectActivity : ListActivity() {
                 intent.putExtra("row", selectedLevel.x)
                 intent.putExtra("index", selectedLevel.y)
                 val text = v.findViewById<View>(R.id.title) as TextView
-                if (text != null) {
-                    text.startAnimation(buttonFlickerAnimation)
-                    buttonFlickerAnimation!!.setAnimationListener(EndActivityAfterAnimation(intent))
-                } else {
-                    setResult(RESULT_OK, intent)
-                    finish()
-                    if (UIConstants.mOverridePendingTransition != null) {
-                        try {
-                            UIConstants.mOverridePendingTransition!!.invoke(this@LevelSelectActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                        } catch (ite: InvocationTargetException) {
-                            DebugLog.d("Activity Transition", "Invocation Target Exception")
-                        } catch (ie: IllegalAccessException) {
-                            DebugLog.d("Activity Transition", "Illegal Access Exception")
-                        }
-                    }
-                }
+                text.startAnimation(buttonFlickerAnimation)
+                buttonFlickerAnimation!!.setAnimationListener(EndActivityAfterAnimation(intent))
             }
         }
     }
@@ -290,6 +290,7 @@ class LevelSelectActivity : ListActivity() {
         return super.onMenuItemSelected(featureId, item)
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         var result = false
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -298,6 +299,7 @@ class LevelSelectActivity : ListActivity() {
         return result
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         var result = false
         if (keyCode == KeyEvent.KEYCODE_BACK) {

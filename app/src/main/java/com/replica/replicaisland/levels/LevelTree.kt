@@ -30,12 +30,12 @@ object LevelTree {
         return levels[row].levels[index]
     }
 
-    @JvmStatic
+    
 	fun isLoaded(resource: Int): Boolean {
         return mLoaded && loadedResource == resource
     }
 
-    @JvmStatic
+    
 	fun loadLevelTree(resource: Int, context: Context) {
         if (levels.isNotEmpty() && loadedResource == resource) {
             // already loaded
@@ -140,7 +140,7 @@ object LevelTree {
         loadedResource = resource
     }
 
-    @JvmStatic
+    
 	fun loadAllDialog(context: Context?) {
         val levelGroupCount = levels.size
         for (x in 0 until levelGroupCount) {

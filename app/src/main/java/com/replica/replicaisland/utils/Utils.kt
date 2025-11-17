@@ -38,7 +38,7 @@ class Utils {
             return result
         }
 
-        @JvmStatic
+        
         fun byteArrayToInt(bIn: ByteArray): Int {
             if (bIn.size != 4) {
                 return 0

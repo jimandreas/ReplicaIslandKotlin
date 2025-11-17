@@ -1,5 +1,24 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("unused", "CascadeIf")
+
 package com.replica.replicaisland.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -28,6 +47,7 @@ class GameOverActivity : Activity() {
     private var playTimeView: IncrementingTextView? = null
     private var endingView: TextView? = null
 
+    @SuppressLint("AppCompatCustomView")
     class IncrementingTextView : TextView {
         private var targetValue = 0f
         private var mIncrement = 1.0f
@@ -59,8 +79,7 @@ class GameOverActivity : Activity() {
                 if (currentValue < targetValue) {
                     currentValue += mIncrement
                     currentValue = min(currentValue, targetValue)
-                    val value: String
-                    value = if (mMode == MODE_PERCENT) {
+                    val value: String = if (mMode == MODE_PERCENT) {
                         "$currentValue%"
                     } else if (mMode == MODE_TIME) {
                         val seconds = currentValue

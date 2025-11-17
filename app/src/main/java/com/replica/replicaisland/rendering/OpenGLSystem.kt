@@ -43,7 +43,7 @@ class OpenGLSystem : BaseObject {
         private var sGL: GL10? = null
         private var sLastBoundTexture = 0
         private var sLastSetCropSignature = 0
-        @JvmStatic
+        
         var gL: GL10?
             get() = sGL
             set(gl) {
@@ -52,7 +52,7 @@ class OpenGLSystem : BaseObject {
                 sLastSetCropSignature = 0
             }
 
-        @JvmStatic
+        
         fun bindTexture(target: Int, texture: Int) {
             if (sLastBoundTexture != texture) {
                 sGL!!.glBindTexture(target, texture)

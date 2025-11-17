@@ -498,7 +498,7 @@ class PlayerComponent : GameComponent() {
             KidsDifficultyConstants(),
             AdultsDifficultyConstants()
         )
-        @JvmStatic
+        
         val difficultyConstants: DifficultyConstants
             get() = sDifficultyArray[sSystemRegistry.contextParameters!!.difficulty]
     }

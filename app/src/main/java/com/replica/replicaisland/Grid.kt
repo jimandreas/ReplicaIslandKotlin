@@ -241,7 +241,7 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
             }
         }
 
-        @JvmStatic
+        
         fun endDrawing(gl: GL10) {
             gl.glDisableClientState(GL10.GL_VERTEX_ARRAY)
         }

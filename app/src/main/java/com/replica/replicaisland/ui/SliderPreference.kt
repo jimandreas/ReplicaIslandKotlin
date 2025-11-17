@@ -1,5 +1,24 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("DEPRECATION", "unused")
+
 package com.replica.replicaisland.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.preference.Preference
@@ -23,6 +42,7 @@ class SliderPreference : Preference, SeekBar.OnSeekBarChangeListener {
         widgetLayoutResource = R.layout.slider_preference
     }
 
+    @SuppressLint("UseKtx")
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
         val a = context.obtainStyledAttributes(attrs,
                 R.styleable.SliderPreference, defStyle, 0)
@@ -32,6 +52,7 @@ class SliderPreference : Preference, SeekBar.OnSeekBarChangeListener {
         widgetLayoutResource = R.layout.slider_preference
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBindView(view: View) {
         super.onBindView(view)
         if (mMinText != null) {
@@ -57,10 +78,12 @@ class SliderPreference : Preference, SeekBar.OnSeekBarChangeListener {
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {}
     override fun onStopTrackingTouch(seekBar: SeekBar) {}
+    @Deprecated("Deprecated in Java")
     override fun onGetDefaultValue(ta: TypedArray, index: Int): Any {
         return Utils.clamp(ta.getInt(index, INITIAL_VALUE), 0, MAX_SLIDER_VALUE)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
         value = if (defaultValue != null) defaultValue as Int else INITIAL_VALUE
         if (!restoreValue) {

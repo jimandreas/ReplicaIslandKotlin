@@ -1,5 +1,24 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("DEPRECATION")
+
 package com.replica.replicaisland.ui
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.preference.PreferenceActivity
@@ -11,6 +30,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.R
 
 class SetPreferencesActivity : PreferenceActivity(), YesNoDialogPreference.YesNoDialogListener {
+    @Deprecated("Deprecated in Java")
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             super.onCreate(savedInstanceState)
@@ -43,12 +63,11 @@ class SetPreferencesActivity : PreferenceActivity(), YesNoDialogPreference.YesNo
         }
         if (intent.getBooleanExtra("controlConfig", false)) {
             val controlConfig = preferenceManager.findPreference("controlConfigScreen") as PreferenceScreen
-            if (controlConfig != null) {
-                preferenceScreen = controlConfig
-            }
+            preferenceScreen = controlConfig
         }
     }
 
+    @SuppressLint("UseKtx")
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
             val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
@@ -62,7 +81,7 @@ class SetPreferencesActivity : PreferenceActivity(), YesNoDialogPreference.YesNo
             editor.remove(PreferenceConstants.PREFERENCE_PEARLS_TOTAL)
             editor.remove(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED)
             editor.remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
-            editor.commit()
+            editor.apply()
             Toast.makeText(this, R.string.saved_game_erased_notification,
                     Toast.LENGTH_SHORT).show()
         }

@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:Suppress("DEPRECATION", "unused", "CascadeIf")
+
 package com.replica.replicaisland.ui
 
 import android.annotation.SuppressLint
@@ -145,7 +163,8 @@ class MainMenuActivity : Activity() {
         paused = true
     }
 
-    @SuppressLint("ApplySharedPref")
+    @SuppressLint("ApplySharedPref",
+        "UseCompatLoadingForDrawables", "UseKtx")
     override fun onResume() {
         super.onResume()
         paused = false
@@ -179,28 +198,26 @@ class MainMenuActivity : Activity() {
                 // way to do custom device profiles.
                 val navType = getString(R.string.nav_type)
                 selectedControlsString = getString(R.string.control_setup_dialog_trackball)
-                if (navType != null) {
-                    if (navType.equals("DPad", ignoreCase = true)) {
-                        // Turn off the click-to-attack pref on devices that have a dpad.
-                        val editor = prefs.edit()
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, false)
-                        editor.commit()
-                        selectedControlsString = getString(R.string.control_setup_dialog_dpad)
-                    } else if (navType.equals("None", ignoreCase = true)) {
-                        val editor = prefs.edit()
+                if (navType.equals("DPad", ignoreCase = true)) {
+                    // Turn off the click-to-attack pref on devices that have a dpad.
+                    val editor = prefs.edit()
+                    editor.putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, false)
+                    editor.commit()
+                    selectedControlsString = getString(R.string.control_setup_dialog_dpad)
+                } else if (navType.equals("None", ignoreCase = true)) {
+                    val editor = prefs.edit()
 
-                        // This test relies on the PackageManager if api version >= 5.
-                        selectedControlsString = if (touch.supportsMultitouch(this)) {
-                            // Default to screen controls.
-                            editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
-                            getString(R.string.control_setup_dialog_screen)
-                        } else {
-                            // Turn on tilt controls if there's nothing else.
-                            editor.putBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, true)
-                            getString(R.string.control_setup_dialog_tilt)
-                        }
-                        editor.commit()
+                    // This test relies on the PackageManager if api version >= 5.
+                    selectedControlsString = if (touch.supportsMultitouch(this)) {
+                        // Default to screen controls.
+                        editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
+                        getString(R.string.control_setup_dialog_screen)
+                    } else {
+                        // Turn on tilt controls if there's nothing else.
+                        editor.putBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, true)
+                        getString(R.string.control_setup_dialog_tilt)
                     }
+                    editor.commit()
                 }
             }
             if (abs(lastVersion) < abs(AndouKun.VERSION)) {
@@ -223,7 +240,7 @@ class MainMenuActivity : Activity() {
                     editor.commit()
                 }
                 val editor = prefs.edit()
-                if (lastVersion > 0 && lastVersion < 14) {
+                if (lastVersion in 1..<14) {
                     // if the user has beat the game once, go ahead and unlock stuff for them.
                     if (prefs.getInt(PreferenceConstants.PREFERENCE_LAST_ENDING, -1) != -1) {
                         editor.putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, true)
@@ -236,7 +253,7 @@ class MainMenuActivity : Activity() {
                 showDialog(WHATS_NEW_DIALOG)
 
                 // screen controls were added in version 14
-                if (lastVersion > 0 && lastVersion < 14 &&
+                if (lastVersion in 1..<14 &&
                         prefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)) {
                     if (touch.supportsMultitouch(this)) {
                         // show message about switching from tilt to screen controls
@@ -277,10 +294,10 @@ class MainMenuActivity : Activity() {
         }
     }
 
-    @SuppressLint("ApplySharedPref")
+    @Deprecated("Deprecated in Java")
+    @SuppressLint("ApplySharedPref", "UseKtx")
     override fun onCreateDialog(id: Int): Dialog {
-        val dialog: Dialog
-        dialog = if (id == WHATS_NEW_DIALOG) {
+        val dialog: Dialog = if (id == WHATS_NEW_DIALOG) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.whats_new_dialog_title)
                     .setPositiveButton(R.string.whats_new_dialog_ok, null)
@@ -325,9 +342,9 @@ class MainMenuActivity : Activity() {
             if (UIConstants.mOverridePendingTransition != null) {
                 try {
                     UIConstants.mOverridePendingTransition!!.invoke(this@MainMenuActivity, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                } catch (ite: InvocationTargetException) {
+                } catch (_: InvocationTargetException) {
                     DebugLog.d("Activity Transition", "Invocation Target Exception")
-                } catch (ie: IllegalAccessException) {
+                } catch (_: IllegalAccessException) {
                     DebugLog.d("Activity Transition", "Illegal Access Exception")
                 }
             }

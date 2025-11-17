@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2025 Jim Andreas kotlin conversion
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.replica.replicaisland.ui
 
 import com.replica.replicaisland.R
@@ -27,16 +43,14 @@ class DebugSystem(library: TextureLibrary?) : BaseObject() {
                 + params.gameHeight / 2)
         if (workVector.x + width >= 0.0f && workVector.x < params.gameWidth && workVector.y + height >= 0.0f && workVector.y < params.gameHeight) {
             val bitmap = factory!!.allocateDrawableBitmap()
-            if (bitmap != null) {
-                val texture = getTexture(shapeType, colorType)
-                bitmap.resize(texture!!.width, texture.height)
-                // TODO: scale stretch hack.  fix!
-                bitmap.width = width.toInt()
-                bitmap.height = height.toInt()
-                bitmap.texture = texture
-                workVector[x] = y
-                render!!.scheduleForDraw(bitmap, workVector, SortConstants.HUD, true)
-            }
+            val texture = getTexture(shapeType, colorType)
+            bitmap.resize(texture!!.width, texture.height)
+            // TODO: scale stretch hack.  fix!
+            bitmap.width = width.toInt()
+            bitmap.height = height.toInt()
+            bitmap.texture = texture
+            workVector[x] = y
+            render!!.scheduleForDraw(bitmap, workVector, SortConstants.HUD, true)
         }
     }
 
