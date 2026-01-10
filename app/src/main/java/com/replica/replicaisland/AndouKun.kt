@@ -330,8 +330,15 @@ class AndouKun : Activity(), SensorEventListener {
 
     @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        Log.d("claudeopus", "onKeyDown keyCode=$keyCode (${KeyEvent.keyCodeToString(keyCode)})")
         var result = true
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        // Check if this is a gamepad BACK button (B button on many controllers)
+        val isGamepadSource = (event.source and InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+                              (event.source and InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK
+        if (keyCode == KeyEvent.KEYCODE_BACK && isGamepadSource) {
+            // Treat gamepad B button as attack, not back/exit
+            result = mGame!!.onKeyDownEvent(keyCode)
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             val time = System.currentTimeMillis()
             if (time - lastRollTime > ROLL_TO_FACE_BUTTON_DELAY &&
                     time - lastTouchTime > ROLL_TO_FACE_BUTTON_DELAY) {
@@ -369,7 +376,13 @@ class AndouKun : Activity(), SensorEventListener {
     @SuppressLint("GestureBackNavigation")
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         var result = false
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        // Check if this is a gamepad BACK button (B button on many controllers)
+        val isGamepadSource = (event.source and InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD ||
+                              (event.source and InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK
+        if (keyCode == KeyEvent.KEYCODE_BACK && isGamepadSource) {
+            // Treat gamepad B button as attack, not back/exit
+            result = mGame!!.onKeyUpEvent(keyCode)
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             result = true
         } else if (keyCode == KeyEvent.KEYCODE_MENU) {
             if (VERSION < 0) {

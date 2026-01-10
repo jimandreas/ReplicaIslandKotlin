@@ -215,13 +215,20 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.STOMP_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_HEIGHT.toFloat())
-        val gamepadAttack = keys[KeyEvent.KEYCODE_BUTTON_B]
-        if (useClickButtonForAttack && clickButton!!.pressed) {
+        val gamepadAttackB = keys[KeyEvent.KEYCODE_BUTTON_B]
+        val gamepadAttackBack = keys[KeyEvent.KEYCODE_BACK] // B button also sends BACK on some controllers
+        // Check if gamepad A button is pressed (sends DPAD_CENTER on some controllers)
+        // If so, don't use clickButton for attack to avoid A triggering both jump and attack
+        val gamepadAPressed = gamepadJump?.pressed == true
+        val useClickForAttack = useClickButtonForAttack && !gamepadAPressed
+        if (useClickForAttack && clickButton!!.pressed) {
             attackButton.press(clickButton.lastPressedTime, clickButton.magnitude)
         } else if (attackKey!!.pressed) {
             attackButton.press(attackKey.lastPressedTime, attackKey.magnitude)
-        } else if (gamepadAttack?.pressed == true) {
-            attackButton.press(gamepadAttack.lastPressedTime, gamepadAttack.magnitude)
+        } else if (gamepadAttackB?.pressed == true) {
+            attackButton.press(gamepadAttackB.lastPressedTime, gamepadAttackB.magnitude)
+        } else if (gamepadAttackBack?.pressed == true) {
+            attackButton.press(gamepadAttackBack.lastPressedTime, gamepadAttackBack.magnitude)
         } else if (stompTouch != null) {
             // Since touch events come in constantly, we only want to press the attack button
             // here if it's not already down.  That makes it act like the other buttons (down once then up).
