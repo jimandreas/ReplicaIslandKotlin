@@ -18,6 +18,7 @@
 
 package com.replica.replicaisland.input
 
+import android.util.Log
 import android.view.KeyEvent
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.ui.ButtonConstants
@@ -44,6 +45,8 @@ class InputGameInterface : BaseObject() {
     private var useOrientationForMovement = false
     private var useOnScreenControls = false
     private var lastRollTime = 0f
+    private var lastGamepadConnected = false
+    private var lastGamepadPressed = false
     override fun reset() {
         jumpButton.release()
         attackButton.release()
@@ -86,6 +89,24 @@ class InputGameInterface : BaseObject() {
                     filterOrientationForMovement(orientation.retreiveXaxisMagnitude()),
                     filterOrientationForMovement(orientation.retreiveYaxisMagnitude()))
         } else {
+            // Check gamepad left stick first
+            val gamepad = input.fetchGamepad()
+            val gpConnected = input.isGamepadConnected()
+            val gpPressed = gamepad.pressed
+            val gpX = gamepad.retreiveXaxisMagnitude()
+            if (gpConnected != lastGamepadConnected || gpPressed != lastGamepadPressed) {
+                Log.d("claudeopus", "Gamepad state: connected=$gpConnected pressed=$gpPressed X=$gpX")
+                lastGamepadConnected = gpConnected
+                lastGamepadPressed = gpPressed
+            }
+            if (gpConnected && gpPressed) {
+                val magnitude = gpX * GAMEPAD_FILTER * movementSensitivity
+                if (abs(magnitude) > GAMEPAD_DEAD_ZONE) {
+                    directionalPad.press(gameTime, magnitude, 0.0f)
+                } else {
+                    directionalPad.release()
+                }
+            } else {
             // keys or trackball
             val trackball = input.fetchTrackball()
             val left = keys[leftKeyCode]
@@ -156,6 +177,7 @@ class InputGameInterface : BaseObject() {
                     directionalPad.release()
                 }
             }
+            }
         }
 
         // update other buttons
@@ -174,8 +196,11 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.FLY_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_HEIGHT.toFloat())
+        val gamepadJump = keys[KeyEvent.KEYCODE_BUTTON_A]
         if (jumpKey!!.pressed) {
             jumpButton.press(jumpKey.lastPressedTime, jumpKey.magnitude)
+        } else if (gamepadJump?.pressed == true) {
+            jumpButton.press(gamepadJump.lastPressedTime, gamepadJump.magnitude)
         } else if (jumpTouch != null) {
             if (!jumpButton.pressed) {
                 jumpButton.press(jumpTouch.lastPressedTime, 1.0f)
@@ -190,10 +215,13 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.STOMP_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_HEIGHT.toFloat())
+        val gamepadAttack = keys[KeyEvent.KEYCODE_BUTTON_B]
         if (useClickButtonForAttack && clickButton!!.pressed) {
             attackButton.press(clickButton.lastPressedTime, clickButton.magnitude)
         } else if (attackKey!!.pressed) {
             attackButton.press(attackKey.lastPressedTime, attackKey.magnitude)
+        } else if (gamepadAttack?.pressed == true) {
+            attackButton.press(gamepadAttack.lastPressedTime, gamepadAttack.magnitude)
         } else if (stompTouch != null) {
             // Since touch events come in constantly, we only want to press the attack button
             // here if it's not already down.  That makes it act like the other buttons (down once then up).
@@ -270,6 +298,8 @@ class InputGameInterface : BaseObject() {
         private const val ROLL_DECAY = 8.0f
         private const val KEY_FILTER = 0.25f
         private const val SLIDER_FILTER = 0.25f
+        private const val GAMEPAD_FILTER = 0.18f
+        private const val GAMEPAD_DEAD_ZONE = 0.15f
     }
 
     init {

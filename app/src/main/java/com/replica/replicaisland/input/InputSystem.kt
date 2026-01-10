@@ -27,6 +27,8 @@ class InputSystem : BaseObject() {
     private val orientationSensor = InputXY()
     private val trackball = InputXY()
     private val keyboard = InputKeyboard()
+    private val gamepad = InputXY()
+    private var gamepadConnected = false
     private var screenRotation = 0
     private val orientationInput = FloatArray(3)
     private val orientationOutput = FloatArray(3)
@@ -35,6 +37,8 @@ class InputSystem : BaseObject() {
         touchScreen.reset()
         keyboard.resetAll()
         orientationSensor.reset()
+        gamepad.reset()
+        gamepadConnected = false
     }
 
     fun roll(x: Float, y: Float) {
@@ -90,6 +94,7 @@ class InputSystem : BaseObject() {
         touchScreen.resetAll()
         keyboard.releaseAll()
         orientationSensor.release()
+        gamepad.release()
     }
 
     fun fetchTouchScreen(): InputTouchScreen {
@@ -106,6 +111,23 @@ class InputSystem : BaseObject() {
 
     fun fetchKeyboard(): InputKeyboard {
         return keyboard
+    }
+
+    fun fetchGamepad(): InputXY {
+        return gamepad
+    }
+
+    fun gamepadAxis(axisX: Float, axisY: Float) {
+        val time = sSystemRegistry.timeSystem
+        gamepad.press(time!!.gameTime, axisX, axisY)
+    }
+
+    fun setGamepadConnected(connected: Boolean) {
+        gamepadConnected = connected
+    }
+
+    fun isGamepadConnected(): Boolean {
+        return gamepadConnected
     }
 
     fun setTheScreenRotation(rotation: Int) {
