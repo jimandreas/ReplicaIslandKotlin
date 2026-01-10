@@ -458,6 +458,16 @@ class Game : AllocationGuard() {
         return result
     }
 
+    fun onGenericMotionEvent(event: MotionEvent): Boolean {
+        if (mRunning) {
+            val axisX = event.getAxisValue(MotionEvent.AXIS_X)
+            val axisY = event.getAxisValue(MotionEvent.AXIS_Y)
+            BaseObject.sSystemRegistry.inputSystem?.gamepadAxis(axisX, axisY)
+            BaseObject.sSystemRegistry.inputSystem?.setGamepadConnected(true)
+        }
+        return true
+    }
+
     fun onPause() {
         if (mRunning) {
             gameThread!!.pauseGame()

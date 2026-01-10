@@ -38,6 +38,8 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.Debug
 import android.util.DisplayMetrics
+import android.util.Log
+import android.view.InputDevice
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -383,6 +385,18 @@ class AndouKun : Activity(), SensorEventListener {
             }
         }
         return result
+    }
+
+    override fun onGenericMotionEvent(event: MotionEvent): Boolean {
+        Log.d("claudeopus", "onGenericMotionEvent source=${event.source}")
+        if (event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK ||
+            event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD) {
+            val axisX = event.getAxisValue(MotionEvent.AXIS_X)
+            val axisY = event.getAxisValue(MotionEvent.AXIS_Y)
+            Log.d("claudeopus", "Gamepad joystick: X=$axisX Y=$axisY")
+            return mGame?.onGenericMotionEvent(event) ?: false
+        }
+        return super.onGenericMotionEvent(event)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
