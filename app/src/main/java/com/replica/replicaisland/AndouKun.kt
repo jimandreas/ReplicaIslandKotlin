@@ -28,7 +28,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
-import android.content.SharedPreferences.Editor
 import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -49,13 +48,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.levels.LevelTree
 import com.replica.replicaisland.mechanics.GameFlowEvent
+import com.replica.replicaisland.data.PreferencesManager
 import com.replica.replicaisland.ui.AnimationPlayerActivity
 import com.replica.replicaisland.ui.ConversationDialogActivity
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.ui.DiaryActivity
 import com.replica.replicaisland.ui.GameOverActivity
 import com.replica.replicaisland.ui.LevelSelectActivity
-import com.replica.replicaisland.ui.PreferenceConstants
 import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
@@ -79,7 +78,7 @@ class AndouKun : Activity(), SensorEventListener {
     private var difficulty = 1
     private var extrasUnlocked = false
     private var sensorManager: SensorManager? = null
-    private var prefsEditor: Editor? = null
+    private lateinit var prefsManager: PreferencesManager
     private var lastTouchTime = 0L
     private var lastRollTime = 0L
     private var pauseMessage: View? = null
@@ -107,8 +106,8 @@ class AndouKun : Activity(), SensorEventListener {
         controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
         // end of new method of landscape orientation
 
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val debugLogs = prefs.getBoolean(PreferenceConstants.PREFERENCE_ENABLE_DEBUG, false)
+        prefsManager = PreferencesManager.getInstance(this)
+        val debugLogs = prefsManager.getDebugEnabled()
         if (VERSION < 0 || debugLogs) {
             DebugLog.setDebugLogging(true)
         } else {
@@ -139,33 +138,21 @@ class AndouKun : Activity(), SensorEventListener {
         }
         levelRow = 0
         levelIndex = 0
-        prefsEditor = prefs.edit()
         // Make sure that old game information is cleared when we start a new game.
         if (intent.getBooleanExtra("newGame", false)) {
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_LEVEL_ROW)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_LEVEL_INDEX)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_LINEAR_MODE)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_PEARLS_TOTAL)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED)
-            prefsEditor!!.remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
-            prefsEditor!!.commit()
+            prefsManager.clearGameProgress()
         }
-        //levelRow = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
+        //levelRow = prefsManager.getLevelRow()
         levelRow = 10 // jimhack
-        levelIndex = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
-        var completed = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, 0)
-        totalGameTime = prefs.getFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, 0.0f)
-        robotsDestroyed = prefs.getInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, 0)
-        pearlsCollected = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, 0)
-        pearlsTotal = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, 0)
-        mLinearMode = prefs.getInt(
-            PreferenceConstants.PREFERENCE_LINEAR_MODE,
-                if (intent.getBooleanExtra("linearMode", false)) 1 else 0)
-        extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
-        difficulty = prefs.getInt(PreferenceConstants.PREFERENCE_DIFFICULTY, intent.getIntExtra("difficulty", 1))
+        levelIndex = prefsManager.getLevelIndex()
+        var completed = prefsManager.getLevelCompleted()
+        totalGameTime = prefsManager.getTotalGameTime()
+        robotsDestroyed = prefsManager.getRobotsDestroyed()
+        pearlsCollected = prefsManager.getPearlsCollected()
+        pearlsTotal = prefsManager.getPearlsTotal()
+        mLinearMode = if (intent.getBooleanExtra("linearMode", false)) 1 else prefsManager.getLinearMode()
+        extrasUnlocked = prefsManager.getExtrasUnlocked()
+        difficulty = intent.getIntExtra("difficulty", prefsManager.getDifficulty())
         mGame!!.bootstrap(this, dm.widthPixels, dm.heightPixels, defaultWidth, defaultHeight, difficulty)
         gLSurfaceView!!.setRenderer(mGame!!.renderer as GLSurfaceView.Renderer)
         var levelTreeResource = R.xml.level_tree
@@ -219,10 +206,10 @@ class AndouKun : Activity(), SensorEventListener {
 
         // This activity uses the media stream.
         volumeControlStream = AudioManager.STREAM_MUSIC
-        sessionId = prefs.getLong(PreferenceConstants.PREFERENCE_SESSION_ID, System.currentTimeMillis())
+        sessionId = prefsManager.getSessionId().takeIf { it != 0L } ?: System.currentTimeMillis()
         eventReporter = null
         eventReporterThread = null
-        val statsEnabled = prefs.getBoolean(PreferenceConstants.PREFERENCE_STATS_ENABLED, true)
+        val statsEnabled = prefsManager.getStatsEnabled()
         if (statsEnabled) {
             eventReporter = EventReporter()
             eventReporterThread = Thread(eventReporter)
@@ -265,8 +252,7 @@ class AndouKun : Activity(), SensorEventListener {
         super.onResume()
 
         // Preferences may have changed while we were paused.
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val debugLogs = prefs.getBoolean(PreferenceConstants.PREFERENCE_ENABLE_DEBUG, false)
+        val debugLogs = prefsManager.getDebugEnabled()
         if (VERSION < 0 || debugLogs) {
             DebugLog.setDebugLogging(true)
         } else {
@@ -275,17 +261,17 @@ class AndouKun : Activity(), SensorEventListener {
         DebugLog.d("AndouKun", "onResume")
         gLSurfaceView!!.onResume()
         mGame!!.onResume(this, false)
-        val soundEnabled = prefs.getBoolean(PreferenceConstants.PREFERENCE_SOUND_ENABLED, true)
-        val safeMode = prefs.getBoolean(PreferenceConstants.PREFERENCE_SAFE_MODE, false)
-        val clickAttack = prefs.getBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, true)
-        val tiltControls = prefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)
-        val tiltSensitivity = prefs.getInt(PreferenceConstants.PREFERENCE_TILT_SENSITIVITY, 50)
-        val movementSensitivity = prefs.getInt(PreferenceConstants.PREFERENCE_MOVEMENT_SENSITIVITY, 100)
-        val onScreenControls = prefs.getBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, false)
-        val leftKey = prefs.getInt(PreferenceConstants.PREFERENCE_LEFT_KEY, KeyEvent.KEYCODE_DPAD_LEFT)
-        val rightKey = prefs.getInt(PreferenceConstants.PREFERENCE_RIGHT_KEY, KeyEvent.KEYCODE_DPAD_RIGHT)
-        val jumpKey = prefs.getInt(PreferenceConstants.PREFERENCE_JUMP_KEY, KeyEvent.KEYCODE_SPACE)
-        val attackKey = prefs.getInt(PreferenceConstants.PREFERENCE_ATTACK_KEY, KeyEvent.KEYCODE_SHIFT_LEFT)
+        val soundEnabled = prefsManager.getSoundEnabled()
+        val safeMode = prefsManager.getSafeMode()
+        val clickAttack = prefsManager.getClickAttack()
+        val tiltControls = prefsManager.getTiltControls()
+        val tiltSensitivity = prefsManager.getTiltSensitivity()
+        val movementSensitivity = prefsManager.getMovementSensitivity()
+        val onScreenControls = prefsManager.getScreenControls()
+        val leftKey = prefsManager.getLeftKey()
+        val rightKey = prefsManager.getRightKey()
+        val jumpKey = prefsManager.getJumpKey()
+        val attackKey = prefsManager.getAttackKey()
         mGame!!.setSoundEnabled(soundEnabled)
         mGame!!.setControlOptions(clickAttack, tiltControls, tiltSensitivity, movementSensitivity, onScreenControls)
         mGame!!.setKeyConfig(leftKey, rightKey, jumpKey, attackKey)
@@ -727,22 +713,15 @@ class AndouKun : Activity(), SensorEventListener {
     }
 
     private fun saveGame() {
-        if (prefsEditor != null) {
-            val completed = LevelTree.packCompletedLevels(levelRow)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, levelRow)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, levelIndex)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, completed)
-            prefsEditor!!.putLong(PreferenceConstants.PREFERENCE_SESSION_ID, sessionId)
-            prefsEditor!!.putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, totalGameTime)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LAST_ENDING, mLastEnding)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, robotsDestroyed)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, pearlsCollected)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, pearlsTotal)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_LINEAR_MODE, mLinearMode)
-            prefsEditor!!.putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, extrasUnlocked)
-            prefsEditor!!.putInt(PreferenceConstants.PREFERENCE_DIFFICULTY, difficulty)
-            prefsEditor!!.commit()
-        }
+        val completed = LevelTree.packCompletedLevels(levelRow)
+        prefsManager.saveLevelProgress(levelRow, levelIndex, completed)
+        prefsManager.setSessionId(sessionId)
+        prefsManager.setTotalGameTime(totalGameTime)
+        prefsManager.setLastEnding(mLastEnding)
+        prefsManager.saveGameStats(totalGameTime, pearlsCollected, pearlsTotal, robotsDestroyed)
+        prefsManager.setLinearMode(mLinearMode)
+        prefsManager.setExtrasUnlocked(extrasUnlocked)
+        prefsManager.setDifficulty(difficulty)
     }
 
     private fun showPauseMessage() {

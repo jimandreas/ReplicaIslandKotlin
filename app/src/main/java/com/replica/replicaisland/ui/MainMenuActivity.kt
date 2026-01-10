@@ -37,6 +37,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.AndouKun
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 import com.replica.replicaisland.input.MultiTouchFilter
 import com.replica.replicaisland.input.SingleTouchFilter
 import com.replica.replicaisland.input.TouchFilter
@@ -129,12 +130,12 @@ class MainMenuActivity : Activity() {
         fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
         alternateFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val row = prefsManager.getLevelRow()
+        val index = prefsManager.getLevelIndex()
         var levelTreeResource = R.xml.level_tree
         if (row != 0 || index != 0) {
-            val linear = prefs.getInt(PreferenceConstants.PREFERENCE_LINEAR_MODE, 0)
+            val linear = prefsManager.getLinearMode()
             if (linear != 0) {
                 levelTreeResource = R.xml.linear_level_tree
             }
@@ -172,9 +173,9 @@ class MainMenuActivity : Activity() {
         if (mStartButton != null) {
 
             // Change "start" to "continue" if there's a saved game.
-            val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-            val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-            val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+            val prefsManager = PreferencesManager.getInstance(this)
+            val row = prefsManager.getLevelRow()
+            val index = prefsManager.getLevelIndex()
             if (row != 0 || index != 0) {
                 (mStartButton as ImageView).setImageDrawable(resources.getDrawable(R.drawable.ui_button_continue))
                 mStartButton!!.setOnClickListener(sContinueButtonListener)
@@ -189,7 +190,7 @@ class MainMenuActivity : Activity() {
             } else {
                 MultiTouchFilter()
             }
-            val lastVersion = prefs.getInt(PreferenceConstants.PREFERENCE_LAST_VERSION, 0)
+            val lastVersion = prefsManager.getLastVersion()
             if (lastVersion == 0) {
                 // This is the first time the game has been run.
                 // Pre-configure the control options to match the device.
@@ -200,24 +201,19 @@ class MainMenuActivity : Activity() {
                 selectedControlsString = getString(R.string.control_setup_dialog_trackball)
                 if (navType.equals("DPad", ignoreCase = true)) {
                     // Turn off the click-to-attack pref on devices that have a dpad.
-                    val editor = prefs.edit()
-                    editor.putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, false)
-                    editor.commit()
+                    prefsManager.setClickAttack(false)
                     selectedControlsString = getString(R.string.control_setup_dialog_dpad)
                 } else if (navType.equals("None", ignoreCase = true)) {
-                    val editor = prefs.edit()
-
                     // This test relies on the PackageManager if api version >= 5.
                     selectedControlsString = if (touch.supportsMultitouch(this)) {
                         // Default to screen controls.
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
+                        prefsManager.setScreenControls(true)
                         getString(R.string.control_setup_dialog_screen)
                     } else {
                         // Turn on tilt controls if there's nothing else.
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, true)
+                        prefsManager.setTiltControls(true)
                         getString(R.string.control_setup_dialog_tilt)
                     }
-                    editor.commit()
                 }
             }
             if (abs(lastVersion) < abs(AndouKun.VERSION)) {
@@ -235,26 +231,21 @@ class MainMenuActivity : Activity() {
                     // These are all models that users have complained about.  They likely use
                     // the same buggy QTC graphics driver.  Turn on Safe Mode by default
                     // for these devices.
-                    val editor = prefs.edit()
-                    editor.putBoolean(PreferenceConstants.PREFERENCE_SAFE_MODE, true)
-                    editor.commit()
+                    prefsManager.setSafeMode(true)
                 }
-                val editor = prefs.edit()
                 if (lastVersion in 1..<14) {
                     // if the user has beat the game once, go ahead and unlock stuff for them.
-                    if (prefs.getInt(PreferenceConstants.PREFERENCE_LAST_ENDING, -1) != -1) {
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, true)
+                    if (prefsManager.getLastEnding() != -1) {
+                        prefsManager.setExtrasUnlocked(true)
                     }
                 }
 
                 // show what's new message
-                editor.putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, AndouKun.VERSION)
-                editor.commit()
+                prefsManager.setLastVersion(AndouKun.VERSION)
                 showDialog(WHATS_NEW_DIALOG)
 
                 // screen controls were added in version 14
-                if (lastVersion in 1..<14 &&
-                        prefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)) {
+                if (lastVersion in 1..<14 && prefsManager.getTiltControls()) {
                     if (touch.supportsMultitouch(this)) {
                         // show message about switching from tilt to screen controls
                         showDialog(TILT_TO_SCREEN_CONTROLS_DIALOG)
@@ -306,11 +297,8 @@ class MainMenuActivity : Activity() {
         } else if (id == TILT_TO_SCREEN_CONTROLS_DIALOG) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.onscreen_tilt_dialog_title)
-                    .setPositiveButton(R.string.onscreen_tilt_dialog_ok) { thisDialog, whichButton ->
-                        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-                        val editor = prefs.edit()
-                        editor.putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, true)
-                        editor.commit()
+                    .setPositiveButton(R.string.onscreen_tilt_dialog_ok) { _, _ ->
+                        PreferencesManager.getInstance(this).setScreenControls(true)
                     }
                     .setNegativeButton(R.string.onscreen_tilt_dialog_cancel, null)
                     .setMessage(R.string.onscreen_tilt_dialog_message)

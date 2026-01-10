@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.preference.PreferenceFragmentCompat
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 
 class SetPreferencesActivity : AppCompatActivity(), YesNoDialogPreferenceCompat.YesNoDialogListener {
 
@@ -59,19 +60,7 @@ class SetPreferencesActivity : AppCompatActivity(), YesNoDialogPreferenceCompat.
 
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
-            val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-            prefs.edit().apply {
-                remove(PreferenceConstants.PREFERENCE_LEVEL_ROW)
-                remove(PreferenceConstants.PREFERENCE_LEVEL_INDEX)
-                remove(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED)
-                remove(PreferenceConstants.PREFERENCE_LINEAR_MODE)
-                remove(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME)
-                remove(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED)
-                remove(PreferenceConstants.PREFERENCE_PEARLS_TOTAL)
-                remove(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED)
-                remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
-                apply()
-            }
+            PreferencesManager.getInstance(this).clearGameProgress()
             Toast.makeText(
                 this,
                 R.string.saved_game_erased_notification,
