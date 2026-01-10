@@ -59,13 +59,13 @@ class KeyboardConfigDialogFragment : PreferenceDialogFragmentCompat(), DialogInt
         super.onBindDialogView(view)
 
         val pref = preference as? KeyboardConfigDialogPreferenceCompat ?: return
-        val prefs = pref.getPrefs() ?: return
+        val prefsManager = pref.getPreferencesManager() ?: return
         val context = requireContext()
 
-        leftKeyCode = prefs.getInt(pref.leftPrefKey, KeyEvent.KEYCODE_DPAD_LEFT)
-        rightKeyCode = prefs.getInt(pref.rightPrefKey, KeyEvent.KEYCODE_DPAD_RIGHT)
-        jumpKeyCode = prefs.getInt(pref.jumpPrefKey, KeyEvent.KEYCODE_SPACE)
-        attackKeyCode = prefs.getInt(pref.attackPrefKey, KeyEvent.KEYCODE_SHIFT_LEFT)
+        leftKeyCode = prefsManager.getLeftKey()
+        rightKeyCode = prefsManager.getRightKey()
+        jumpKeyCode = prefsManager.getJumpKey()
+        attackKeyCode = prefsManager.getAttackKey()
 
         leftText = view.findViewById(R.id.key_left)
         leftText?.text = getKeyLabel(leftKeyCode)
@@ -142,15 +142,9 @@ class KeyboardConfigDialogFragment : PreferenceDialogFragmentCompat(), DialogInt
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
             val pref = preference as? KeyboardConfigDialogPreferenceCompat ?: return
-            val prefs = pref.getPrefs() ?: return
+            val prefsManager = pref.getPreferencesManager() ?: return
 
-            prefs.edit().apply {
-                putInt(pref.leftPrefKey, leftKeyCode)
-                putInt(pref.rightPrefKey, rightKeyCode)
-                putInt(pref.jumpPrefKey, jumpKeyCode)
-                putInt(pref.attackPrefKey, attackKeyCode)
-                apply()
-            }
+            prefsManager.saveKeyConfig(leftKeyCode, rightKeyCode, jumpKeyCode, attackKeyCode)
         }
     }
 

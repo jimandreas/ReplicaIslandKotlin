@@ -21,11 +21,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.DataStorePreferenceAdapter
+import com.replica.replicaisland.data.PreferencesManager
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.sharedPreferencesName = PreferenceConstants.PREFERENCE_NAME
+        // Use DataStore instead of SharedPreferences
+        preferenceManager.preferenceDataStore = DataStorePreferenceAdapter.getInstance(requireContext())
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         // Setup YesNoDialogPreference listener
@@ -33,9 +36,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             pref.setListener(activity as? YesNoDialogPreferenceCompat.YesNoDialogListener)
         }
 
-        // Setup KeyboardConfigDialogPreference
+        // Setup KeyboardConfigDialogPreference with PreferencesManager
         findPreference<KeyboardConfigDialogPreferenceCompat>(KEY_CONFIG)?.let { pref ->
-            pref.setPrefs(preferenceManager.sharedPreferences)
+            pref.setPreferencesManager(PreferencesManager.getInstance(requireContext()))
         }
     }
 

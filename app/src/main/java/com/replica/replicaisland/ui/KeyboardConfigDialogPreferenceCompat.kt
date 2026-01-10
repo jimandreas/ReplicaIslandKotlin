@@ -17,10 +17,10 @@
 package com.replica.replicaisland.ui
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.preference.DialogPreference
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 
 class KeyboardConfigDialogPreferenceCompat @JvmOverloads constructor(
     context: Context,
@@ -34,7 +34,7 @@ class KeyboardConfigDialogPreferenceCompat @JvmOverloads constructor(
     val jumpPrefKey: String?
     val attackPrefKey: String?
 
-    private var sharedPrefs: SharedPreferences? = null
+    private var prefsManager: PreferencesManager? = null
 
     init {
         val a = context.obtainStyledAttributes(
@@ -52,9 +52,9 @@ class KeyboardConfigDialogPreferenceCompat @JvmOverloads constructor(
         dialogLayoutResource = R.layout.key_config
     }
 
-    fun setPrefs(prefs: SharedPreferences?) {
-        sharedPrefs = prefs
+    fun setPreferencesManager(manager: PreferencesManager) {
+        prefsManager = manager
     }
 
-    fun getPrefs(): SharedPreferences? = sharedPrefs
+    fun getPreferencesManager(): PreferencesManager? = prefsManager
 }
