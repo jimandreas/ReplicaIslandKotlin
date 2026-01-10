@@ -87,6 +87,10 @@ as of Sept 2025:
 
 https://code.google.com/archive/p/replicaisland/
 
+**Gamepad Controller Support** (in progress on `claudeopus45` branch): Adding support for
+game controllers with joystick movement and button mapping (A=jump, B=attack with long-press
+for possession orb).
+
 ## USAGE NOTES
 
 On Android emulators at API23 (Marshmallow) the on screen controls appear to
