@@ -34,6 +34,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 import java.lang.reflect.InvocationTargetException
 
 class ExtrasMenuActivity : Activity() {
@@ -49,9 +50,9 @@ class ExtrasMenuActivity : Activity() {
     private var lockedAnimation: Animation? = null
     private var pendingGameStart = 0
     private val sLinearModeButtonListener = View.OnClickListener {
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val row = prefsManager.getLevelRow()
+        val index = prefsManager.getLevelIndex()
         if (row != 0 || index != 0) {
             pendingGameStart = START_LINEAR_MODE
             showDialog(NEW_GAME_DIALOG)
@@ -60,9 +61,9 @@ class ExtrasMenuActivity : Activity() {
         }
     }
     private val sLevelSelectButtonListener = View.OnClickListener {
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val row = prefsManager.getLevelRow()
+        val index = prefsManager.getLevelIndex()
         if (row != 0 || index != 0) {
             pendingGameStart = START_LEVEL_SELECT
             showDialog(NEW_GAME_DIALOG)
@@ -96,8 +97,8 @@ class ExtrasMenuActivity : Activity() {
         // end of new method of landscape orientation
 
         setContentView(R.layout.extras_menu)
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val extrasUnlocked = prefsManager.getExtrasUnlocked()
         mLinearModeButton = findViewById(R.id.linearModeButton)
         mLevelSelectButton = findViewById(R.id.levelSelectButton)
         mControlsButton = findViewById(R.id.controlsButton)

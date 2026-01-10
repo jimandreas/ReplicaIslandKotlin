@@ -16,28 +16,28 @@
 
 package com.replica.replicaisland.ui
 
-import android.R
 import android.content.Context
-import android.preference.DialogPreference
 import android.util.AttributeSet
+import androidx.preference.DialogPreference
 
-class YesNoDialogPreference @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null,
-                                                      defStyle: Int = R.attr.yesNoPreferenceStyle
-) : DialogPreference(context, attrs, defStyle) {
-    private var mListener: YesNoDialogListener? = null
+class YesNoDialogPreferenceCompat @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = androidx.preference.R.attr.dialogPreferenceStyle,
+    defStyleRes: Int = 0
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
+
+    private var listener: YesNoDialogListener? = null
 
     interface YesNoDialogListener {
         fun onDialogClosed(positiveResult: Boolean)
     }
 
     fun setListener(listener: YesNoDialogListener?) {
-        mListener = listener
+        this.listener = listener
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (mListener != null) {
-            mListener!!.onDialogClosed(positiveResult)
-        }
+    fun notifyDialogClosed(positiveResult: Boolean) {
+        listener?.onDialogClosed(positiveResult)
     }
 }

@@ -33,6 +33,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.floor
 import kotlin.math.min
@@ -142,12 +143,12 @@ class GameOverActivity : Activity() {
         enemiesDestroyedView = findViewById<View>(R.id.enemy_percent) as IncrementingTextView
         playTimeView = findViewById<View>(R.id.total_play_time) as IncrementingTextView
         endingView = findViewById<View>(R.id.ending) as TextView
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val playTime = prefs.getFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, 0.0f)
-        val ending = prefs.getInt(PreferenceConstants.PREFERENCE_LAST_ENDING, -1)
-        val pearlsCollected = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, 0)
-        val pearlsTotal = prefs.getInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, 0)
-        val enemies = prefs.getInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val playTime = prefsManager.getTotalGameTime()
+        val ending = prefsManager.getLastEnding()
+        val pearlsCollected = prefsManager.getPearlsCollected()
+        val pearlsTotal = prefsManager.getPearlsTotal()
+        val enemies = prefsManager.getRobotsDestroyed()
         if (pearlsCollected > 0 && pearlsTotal > 0) {
             pearlView!!.setTargetValue((pearlsCollected / pearlsTotal.toFloat() * 100.0f))
         } else {
