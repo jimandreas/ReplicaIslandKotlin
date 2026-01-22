@@ -14,48 +14,70 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION",
-    "SimplifyBooleanWithConstants",
-    "KotlinConstantConditions", "UNCHECKED_CAST"
-)
+@file:Suppress("DEPRECATION", "UNCHECKED_CAST")
 
 package com.replica.replicaisland.ui
 
-import android.annotation.SuppressLint
-import android.app.ListActivity
+import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
 import com.replica.replicaisland.AndouKun
 import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
 
 /**
- * @deprecated Use [LevelSelectDialogFragment] instead for level selection.
- * This activity is kept for rollback purposes.
+ * DialogFragment that displays the level selection list.
+ * Replaces LevelSelectActivity with a modern fragment-based approach using Fragment Result API.
  */
-@Deprecated("Use LevelSelectDialogFragment instead", ReplaceWith("LevelSelectDialogFragment"))
-class LevelSelectActivity : ListActivity() {
+class LevelSelectDialogFragment : DialogFragment() {
+
+    companion object {
+        private const val ARG_UNLOCK_ALL = "unlockAll"
+        const val TAG = "LevelSelectDialogFragment"
+
+        private const val UNLOCK_ALL_LEVELS_ID = 0
+        private const val UNLOCK_NEXT_LEVEL_ID = 1
+
+        private const val TYPE_ENABLED = 0
+        private const val TYPE_DISABLED = 1
+        private const val TYPE_COMPLETED = 2
+        private const val TYPE_COUNT = 3
+
+        /**
+         * Factory method to create a new instance with unlock option.
+         */
+        fun newInstance(unlockAll: Boolean): LevelSelectDialogFragment {
+            return LevelSelectDialogFragment().apply {
+                arguments = bundleOf(ARG_UNLOCK_ALL to unlockAll)
+            }
+        }
+    }
+
     private var levelData: ArrayList<LevelMetaData>? = null
     private var buttonFlickerAnimation: Animation? = null
     private var levelSelected = false
     private val sLevelComparator = LevelDataComparator()
+    private var listView: ListView? = null
+    private var adapter: DisableItemArrayAdapter<LevelMetaData>? = null
 
     private class LevelMetaData {
         var level: LevelTree.Level? = null
@@ -74,10 +96,10 @@ class LevelSelectActivity : ListActivity() {
         private val completedRowResource: Int,
         private val textViewResource: Int,
         private val textViewResource2: Int,
-        objects: List<T>?) : ArrayAdapter<T>(contextLocal, rowResource, textViewResource, objects!!) {
+        objects: List<T>?
+    ) : ArrayAdapter<T>(contextLocal, rowResource, textViewResource, objects!!) {
 
         override fun isEnabled(position: Int): Boolean {
-            // TODO: do we have separators in this list?
             return levelData!![position].enabled
         }
 
@@ -116,21 +138,24 @@ class LevelSelectActivity : ListActivity() {
                     convertView
                 } else {
                     LayoutInflater.from(contextLocal).inflate(
-                            rowResource, parent, false)
+                        rowResource, parent, false
+                    )
                 }
             } else if (levelData!![position].level!!.completed) {
                 if (convertView != null && convertView.id == completedRowResource) {
                     convertView
                 } else {
                     LayoutInflater.from(contextLocal).inflate(
-                            completedRowResource, parent, false)
+                        completedRowResource, parent, false
+                    )
                 }
             } else {
                 if (convertView != null && convertView.id == disabledRowResource) {
                     convertView
                 } else {
                     LayoutInflater.from(contextLocal).inflate(
-                            disabledRowResource, parent, false)
+                        disabledRowResource, parent, false
+                    )
                 }
             }
             val view = sourceView!!.findViewById<View>(textViewResource) as TextView
@@ -139,28 +164,47 @@ class LevelSelectActivity : ListActivity() {
             view2.text = levelData!![position].level!!.timeStamp
             return sourceView
         }
-
-
     }
 
-    /** Called when the activity is first created.  */
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            super.onCreate(savedInstanceState)
-        } else {
-            super.onCreate(null)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, R.style.Theme_FullscreenDialogFragment)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.apply {
+            setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
         }
+        return dialog
+    }
 
-        // New method of landscape orientation.
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
-        // end of new method of landscape orientation
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_level_select, container, false)
+    }
 
-        setContentView(R.layout.level_select)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Force landscape orientation
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        listView = view.findViewById(R.id.level_list)
         levelData = ArrayList()
-        if (intent.getBooleanExtra("unlockAll", false)) {
+
+        val unlockAll = arguments?.getBoolean(ARG_UNLOCK_ALL, false) ?: false
+        if (unlockAll) {
             generateLevelList(false)
             for (level in levelData!!) {
                 level.enabled = true
@@ -168,23 +212,66 @@ class LevelSelectActivity : ListActivity() {
         } else {
             generateLevelList(true)
         }
-        val adapter: DisableItemArrayAdapter<LevelMetaData> =
-                DisableItemArrayAdapter(
-                        this,
-                        R.layout.level_select_row,
-                        R.layout.level_select_disabled_row,
-                        R.layout.level_select_completed_row,
-                        R.id.title,
-                        R.id.time,
-                        levelData)
 
-        adapter.sort(sLevelComparator)
-        listAdapter = adapter
-        buttonFlickerAnimation = AnimationUtils.loadAnimation(this, R.anim.button_flicker)
+        adapter = DisableItemArrayAdapter(
+            requireContext(),
+            R.layout.level_select_row,
+            R.layout.level_select_disabled_row,
+            R.layout.level_select_completed_row,
+            R.id.title,
+            R.id.time,
+            levelData
+        )
+
+        adapter!!.sort(sLevelComparator)
+        listView!!.adapter = adapter
+
+        buttonFlickerAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.button_flicker)
         levelSelected = false
 
         // Keep the volume control type consistent across all activities.
-        volumeControlStream = AudioManager.STREAM_MUSIC
+        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
+
+        // Set up item click listener
+        listView!!.onItemClickListener = AdapterView.OnItemClickListener { _, v, position, _ ->
+            onListItemClick(position, v)
+        }
+
+        // Set up menu for debug mode
+        if (AndouKun.VERSION < 0) {
+            requireActivity().addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menu.add(0, UNLOCK_NEXT_LEVEL_ID, 0, R.string.unlock_next_level)
+                    menu.add(0, UNLOCK_ALL_LEVELS_ID, 0, R.string.unlock_levels)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        UNLOCK_NEXT_LEVEL_ID -> {
+                            unlockNext()
+                            levelData!!.clear()
+                            generateLevelList(false)
+                            val sorter = LevelDataComparator()
+                            adapter!!.sort(sorter as Comparator<in LevelMetaData>)
+                            adapter!!.notifyDataSetChanged()
+                            true
+                        }
+                        UNLOCK_ALL_LEVELS_ID -> {
+                            levelData!!.clear()
+                            generateLevelList(false)
+                            for (level in levelData!!) {
+                                level.enabled = true
+                            }
+                            val sorter = LevelDataComparator()
+                            adapter!!.sort(sorter as Comparator<in LevelMetaData>)
+                            adapter!!.notifyDataSetChanged()
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }
     }
 
     private fun generateLevelList(onlyAllowThePast: Boolean) {
@@ -224,20 +311,18 @@ class LevelSelectActivity : ListActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
+    private fun onListItemClick(position: Int, v: View) {
         if (!levelSelected) {
-            super.onListItemClick(l, v, position, id)
             val selectedLevel = levelData!![position]
             if (selectedLevel.enabled) {
                 levelSelected = true
-                val intent = Intent()
-                intent.putExtra("resource", selectedLevel.level!!.resource)
-                intent.putExtra("row", selectedLevel.x)
-                intent.putExtra("index", selectedLevel.y)
                 val text = v.findViewById<View>(R.id.title) as TextView
                 text.startAnimation(buttonFlickerAnimation)
-                buttonFlickerAnimation!!.setAnimationListener(EndActivityAfterAnimation(intent))
+                buttonFlickerAnimation!!.setAnimationListener(EndDialogAfterAnimation(
+                    selectedLevel.level!!.resource,
+                    selectedLevel.x,
+                    selectedLevel.y
+                ))
             }
         }
     }
@@ -251,69 +336,7 @@ class LevelSelectActivity : ListActivity() {
         levelData!!.add(data)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        var handled = false
-        if (AndouKun.VERSION < 0) {
-            menu.add(0, UNLOCK_NEXT_LEVEL_ID, 0, R.string.unlock_next_level)
-            menu.add(0, UNLOCK_ALL_LEVELS_ID, 0, R.string.unlock_levels)
-            handled = true
-        }
-        return handled
-    }
-
-    override fun onMenuItemSelected(featureId: Int, item: MenuItem): Boolean {
-        when (item.itemId) {
-            UNLOCK_NEXT_LEVEL_ID -> {
-                unlockNext()
-                levelData!!.clear()
-                generateLevelList(false)
-
-                // TODO: needs attention
-                val sorter = LevelDataComparator()
-                (listAdapter as ArrayAdapter<*>).sort(sorter as Comparator<in Any>)
-                //(listAdapter as ArrayAdapter<*>).sort(sLevelComparator)
-                (listAdapter as ArrayAdapter<*>).notifyDataSetChanged()
-                return true
-            }
-            UNLOCK_ALL_LEVELS_ID -> {
-                // Regenerate the level list to remove the past-only filter.
-                levelData!!.clear()
-                generateLevelList(false)
-                for (level in levelData!!) {
-                    level.enabled = true
-                }
-
-                // TODO: needs attention
-                val sorter = LevelDataComparator()
-                (listAdapter as ArrayAdapter<*>).sort(sorter as Comparator<in Any>)
-                //(listAdapter as ArrayAdapter<*>).sort(sLevelComparator)
-                (listAdapter as ArrayAdapter<*>).notifyDataSetChanged()
-                return true
-            }
-        }
-        return super.onMenuItemSelected(featureId, item)
-    }
-
-    @SuppressLint("GestureBackNavigation")
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        var result = false
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            result = true
-        }
-        return result
-    }
-
-    @SuppressLint("GestureBackNavigation")
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        var result = false
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            result = true
-        }
-        return result
-    }
-
-    /** Comparator for level meta data.  */
+    /** Comparator for level meta data. */
     private class LevelDataComparator : Comparator<LevelMetaData?> {
         override fun compare(object1: LevelMetaData?, object2: LevelMetaData?): Int {
             var result = 0
@@ -328,30 +351,42 @@ class LevelSelectActivity : ListActivity() {
         }
     }
 
-    private inner class EndActivityAfterAnimation(private val mIntent: Intent) : Animation.AnimationListener {
+    private inner class EndDialogAfterAnimation(
+        private val resource: Int,
+        private val row: Int,
+        private val index: Int
+    ) : Animation.AnimationListener {
+
         override fun onAnimationEnd(animation: Animation) {
-            setResult(RESULT_OK, mIntent)
-            finish()
+            // Use Fragment Result API to communicate the selection back
+            parentFragmentManager.setFragmentResult(
+                LevelSelectResult.REQUEST_KEY,
+                bundleOf(
+                    LevelSelectResult.RESULT_RESOURCE to resource,
+                    LevelSelectResult.RESULT_ROW to row,
+                    LevelSelectResult.RESULT_INDEX to index
+                )
+            )
+            dismiss()
         }
 
         override fun onAnimationRepeat(animation: Animation) {
-            // TODO Auto-generated method stub
+            // Not used
         }
 
         override fun onAnimationStart(animation: Animation) {
-            // TODO Auto-generated method stub
+            // Not used
         }
     }
 
-    companion object {
-        private const val UNLOCK_ALL_LEVELS_ID = 0
-        private const val UNLOCK_NEXT_LEVEL_ID = 1
-
-
-        private const val TYPE_ENABLED = 0
-        private const val TYPE_DISABLED = 1
-        private const val TYPE_COMPLETED = 2
-        private const val TYPE_COUNT = 3
-
+    override fun onStart() {
+        super.onStart()
+        // Ensure dialog is fullscreen
+        dialog?.window?.apply {
+            setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+        }
     }
 }
