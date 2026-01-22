@@ -19,6 +19,7 @@ import androidx.fragment.app.testing.launchFragment
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -37,32 +38,39 @@ class NewGameDialogFragmentTest {
     @Test
     fun dialogDisplaysCorrectTitle() {
         launchFragment<NewGameDialogFragment>(
-            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments
+            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments,
+            themeResId = R.style.Theme_FullscreenDialogFragment
         )
 
         onView(withText(R.string.new_game_dialog_title))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysCorrectMessage() {
         launchFragment<NewGameDialogFragment>(
-            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments
+            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments,
+            themeResId = R.style.Theme_FullscreenDialogFragment
         )
 
         onView(withText(R.string.new_game_dialog_message))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysOkAndCancelButtons() {
         launchFragment<NewGameDialogFragment>(
-            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments
+            fragmentArgs = NewGameDialogFragment.newInstance(0).arguments,
+            themeResId = R.style.Theme_FullscreenDialogFragment
         )
 
         onView(withText(R.string.new_game_dialog_ok))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
         onView(withText(R.string.new_game_dialog_cancel))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
@@ -73,7 +81,8 @@ class NewGameDialogFragmentTest {
         val expectedGameType = 1
 
         val scenario = launchFragment<NewGameDialogFragment>(
-            fragmentArgs = NewGameDialogFragment.newInstance(expectedGameType).arguments
+            fragmentArgs = NewGameDialogFragment.newInstance(expectedGameType).arguments,
+            themeResId = R.style.Theme_FullscreenDialogFragment
         )
 
         scenario.onFragment { fragment ->
@@ -86,7 +95,9 @@ class NewGameDialogFragmentTest {
             }
         }
 
-        onView(withText(R.string.new_game_dialog_ok)).perform(click())
+        onView(withText(R.string.new_game_dialog_ok))
+            .inRoot(isDialog())
+            .perform(click())
 
         // Give time for result to be delivered
         Thread.sleep(100)

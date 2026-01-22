@@ -18,6 +18,7 @@ package com.replica.replicaisland.ui
 import androidx.fragment.app.testing.launchFragment
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -33,25 +34,34 @@ class WhatsNewDialogFragmentTest {
 
     @Test
     fun dialogDisplaysCorrectTitle() {
-        launchFragment<WhatsNewDialogFragment>()
+        launchFragment<WhatsNewDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.whats_new_dialog_title))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysCorrectMessage() {
-        launchFragment<WhatsNewDialogFragment>()
+        launchFragment<WhatsNewDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.whats_new_dialog_message))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysOkButton() {
-        launchFragment<WhatsNewDialogFragment>()
+        launchFragment<WhatsNewDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.whats_new_dialog_ok))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 }

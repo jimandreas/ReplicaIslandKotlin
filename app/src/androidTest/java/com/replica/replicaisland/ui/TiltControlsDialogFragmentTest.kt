@@ -19,6 +19,7 @@ import androidx.fragment.app.testing.launchFragment
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -35,34 +36,46 @@ class TiltControlsDialogFragmentTest {
 
     @Test
     fun dialogDisplaysCorrectTitle() {
-        launchFragment<TiltControlsDialogFragment>()
+        launchFragment<TiltControlsDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.onscreen_tilt_dialog_title))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysCorrectMessage() {
-        launchFragment<TiltControlsDialogFragment>()
+        launchFragment<TiltControlsDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.onscreen_tilt_dialog_message))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun dialogDisplaysOkAndCancelButtons() {
-        launchFragment<TiltControlsDialogFragment>()
+        launchFragment<TiltControlsDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         onView(withText(R.string.onscreen_tilt_dialog_ok))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
         onView(withText(R.string.onscreen_tilt_dialog_cancel))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
     }
 
     @Test
     fun positiveButtonSendsFragmentResult() {
         var resultReceived = false
-        val scenario = launchFragment<TiltControlsDialogFragment>()
+        val scenario = launchFragment<TiltControlsDialogFragment>(
+            themeResId = R.style.Theme_FullscreenDialogFragment
+        )
 
         scenario.onFragment { fragment ->
             fragment.parentFragmentManager.setFragmentResultListener(
@@ -73,7 +86,9 @@ class TiltControlsDialogFragmentTest {
             }
         }
 
-        onView(withText(R.string.onscreen_tilt_dialog_ok)).perform(click())
+        onView(withText(R.string.onscreen_tilt_dialog_ok))
+            .inRoot(isDialog())
+            .perform(click())
 
         // Give time for result to be delivered
         Thread.sleep(100)
