@@ -54,10 +54,12 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.datastore.preferences)
 
-//    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     testImplementation(libs.jupiter)
-    debugImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.androidx.fragment.testing.manifest)
+    androidTestImplementation(libs.androidx.fragment.testing)
 }

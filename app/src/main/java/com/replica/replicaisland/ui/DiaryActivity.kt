@@ -32,6 +32,11 @@ import com.replica.replicaisland.R
 import com.replica.replicaisland.core.BaseObject
 import java.lang.reflect.InvocationTargetException
 
+/**
+ * @deprecated Use [DiaryDialogFragment] instead for displaying diary entries.
+ * This activity is kept for rollback purposes.
+ */
+@Deprecated("Use DiaryDialogFragment instead", ReplaceWith("DiaryDialogFragment"))
 class DiaryActivity : Activity() {
     private val killDiaryListener = View.OnClickListener {
         finish()

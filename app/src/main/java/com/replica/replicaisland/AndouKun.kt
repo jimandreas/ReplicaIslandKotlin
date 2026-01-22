@@ -24,7 +24,6 @@
 package com.replica.replicaisland
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
@@ -43,6 +42,7 @@ import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -51,10 +51,14 @@ import com.replica.replicaisland.mechanics.GameFlowEvent
 import com.replica.replicaisland.data.PreferencesManager
 import com.replica.replicaisland.ui.AnimationPlayerActivity
 import com.replica.replicaisland.ui.ConversationDialogActivity
+import com.replica.replicaisland.ui.ConversationDialogFragment
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.ui.DiaryActivity
+import com.replica.replicaisland.ui.DiaryDialogFragment
 import com.replica.replicaisland.ui.GameOverActivity
 import com.replica.replicaisland.ui.LevelSelectActivity
+import com.replica.replicaisland.ui.LevelSelectDialogFragment
+import com.replica.replicaisland.ui.LevelSelectResult
 import com.replica.replicaisland.ui.UIConstants
 import java.lang.reflect.InvocationTargetException
 
@@ -63,7 +67,7 @@ import java.lang.reflect.InvocationTargetException
  * the game engine, and manages UI events.  Also manages game progression,
  * transitioning to other activites, save game, and input events.
  */
-class AndouKun : Activity(), SensorEventListener {
+class AndouKun : AppCompatActivity(), SensorEventListener {
     private var gLSurfaceView: GLSurfaceView? = null
     private var mGame: Game? = null
     private var methodTracing = false
@@ -115,6 +119,15 @@ class AndouKun : Activity(), SensorEventListener {
         }
         DebugLog.d("AndouKun", "onCreate")
         setContentView(R.layout.main)
+
+        // Register fragment result listener for level selection
+        supportFragmentManager.setFragmentResultListener(
+            LevelSelectResult.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            handleLevelSelectResult(bundle)
+        }
+
         gLSurfaceView = findViewById<View>(R.id.glsurfaceview) as GLSurfaceView
         pauseMessage = findViewById(R.id.pausedMessage)
         waitMessage = findViewById(R.id.pleaseWaitMessage)
@@ -169,9 +182,8 @@ class AndouKun : Activity(), SensorEventListener {
             LevelTree.loadAllDialog(this)
         }
         if (intent.getBooleanExtra("startAtLevelSelect", false)) {
-            val i = Intent(this, LevelSelectActivity::class.java)
-            i.putExtra("unlockAll", true)
-            startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
+            LevelSelectDialogFragment.newInstance(unlockAll = true)
+                .show(supportFragmentManager, LevelSelectDialogFragment.TAG)
         } else {
             if (!LevelTree.levelIsValid(levelRow, levelIndex)) {
                 // bad data?  Let's try to recover.
@@ -412,12 +424,12 @@ class AndouKun : Activity(), SensorEventListener {
         return handled
     }
 
-    override fun onMenuItemSelected(featureId: Int, item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val i: Intent
         when (item.itemId) {
             CHANGE_LEVEL_ID -> {
-                i = Intent(this, LevelSelectActivity::class.java)
-                startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
+                LevelSelectDialogFragment.newInstance(unlockAll = false)
+                    .show(supportFragmentManager, LevelSelectDialogFragment.TAG)
                 return true
             }
             TEST_ANIMATION_ID -> {
@@ -427,9 +439,8 @@ class AndouKun : Activity(), SensorEventListener {
                 return true
             }
             TEST_DIARY_ID -> {
-                i = Intent(this, DiaryActivity::class.java)
-                i.putExtra("text", R.string.Diary10)
-                startActivity(i)
+                DiaryDialogFragment.newInstance(R.string.Diary10)
+                    .show(supportFragmentManager, DiaryDialogFragment.TAG)
                 return true
             }
             METHOD_TRACING_ID -> {
@@ -442,27 +453,13 @@ class AndouKun : Activity(), SensorEventListener {
                 return true
             }
         }
-        return super.onMenuItemSelected(featureId, item)
+        return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent) {
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
-        if (requestCode == ACTIVITY_CHANGE_LEVELS) {
-            if (resultCode == RESULT_OK) {
-
-                levelRow = intent.extras!!.getInt("row")
-                levelIndex = intent.extras!!.getInt("index")
-                LevelTree.updateCompletedState(levelRow, 0)
-
-                saveGame()
-                mGame!!.setPendingLevel(LevelTree.fetch(levelRow, levelIndex))
-                if (LevelTree.fetch(levelRow, levelIndex).showWaitMessage) {
-                    showWaitMessage()
-                } else {
-                    hideWaitMessage()
-                }
-            }
-        } else if (requestCode == ACTIVITY_ANIMATION_PLAYER) {
+        if (requestCode == ACTIVITY_ANIMATION_PLAYER && intent != null) {
             val lastAnimation = intent.getIntExtra("animation", -1)
             // record ending events.
             if (lastAnimation > -1) {
@@ -470,6 +467,23 @@ class AndouKun : Activity(), SensorEventListener {
             }
             // on finishing animation playback, force a level change.
             onGameFlowEvent(GameFlowEvent.EVENT_GO_TO_NEXT_LEVEL, 0)
+        }
+    }
+
+    /**
+     * Handles the result from LevelSelectDialogFragment via Fragment Result API.
+     */
+    private fun handleLevelSelectResult(bundle: Bundle) {
+        levelRow = bundle.getInt(LevelSelectResult.RESULT_ROW)
+        levelIndex = bundle.getInt(LevelSelectResult.RESULT_INDEX)
+        LevelTree.updateCompletedState(levelRow, 0)
+
+        saveGame()
+        mGame!!.setPendingLevel(LevelTree.fetch(levelRow, levelIndex))
+        if (LevelTree.fetch(levelRow, levelIndex).showWaitMessage) {
+            showWaitMessage()
+        } else {
+            hideWaitMessage()
         }
     }
 
@@ -531,17 +545,8 @@ class AndouKun : Activity(), SensorEventListener {
                     val currentLevel = LevelTree.fetch(levelRow, levelIndex)
                     if (currentLevel.inThePast || LevelTree.levels[levelRow].levels.size > 1) {
                         // go to the level select.
-                        val i = Intent(this, LevelSelectActivity::class.java)
-                        startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
-                        if (UIConstants.mOverridePendingTransition != null) {
-                            try {
-                                UIConstants.mOverridePendingTransition!!.invoke(this@AndouKun, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                            } catch (ite: InvocationTargetException) {
-                                DebugLog.d("Activity Transition", "Invocation Target Exception")
-                            } catch (ie: IllegalAccessException) {
-                                DebugLog.d("Activity Transition", "Illegal Access Exception")
-                            }
-                        }
+                        LevelSelectDialogFragment.newInstance(unlockAll = false)
+                            .show(supportFragmentManager, LevelSelectDialogFragment.TAG)
                     } else {
                         // go directly to the next level
                         mGame!!.setPendingLevel(currentLevel)
@@ -614,17 +619,8 @@ class AndouKun : Activity(), SensorEventListener {
                 if (levelRow < LevelTree.levels.size) {
                     val currentLevel = LevelTree.fetch(levelRow, levelIndex)
                     if (currentLevel.inThePast || LevelTree.levels[levelRow].levels.size > 1) {
-                        val i = Intent(this, LevelSelectActivity::class.java)
-                        startActivityForResult(i, ACTIVITY_CHANGE_LEVELS)
-                        if (UIConstants.mOverridePendingTransition != null) {
-                            try {
-                                UIConstants.mOverridePendingTransition!!.invoke(this@AndouKun, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                            } catch (ite: InvocationTargetException) {
-                                DebugLog.d("Activity Transition", "Invocation Target Exception")
-                            } catch (ie: IllegalAccessException) {
-                                DebugLog.d("Activity Transition", "Illegal Access Exception")
-                            }
-                        }
+                        LevelSelectDialogFragment.newInstance(unlockAll = false)
+                            .show(supportFragmentManager, LevelSelectDialogFragment.TAG)
                     } else {
                         mGame!!.setPendingLevel(currentLevel)
                         if (currentLevel.showWaitMessage) {
@@ -664,36 +660,18 @@ class AndouKun : Activity(), SensorEventListener {
                 }
             }
             GameFlowEvent.EVENT_SHOW_DIARY -> {
-                val i = Intent(this, DiaryActivity::class.java)
                 val level = LevelTree.fetch(levelRow, levelIndex)
                 level.diaryCollected = true
-                i.putExtra("text", level.dialogResources!!.diaryEntry)
-                startActivity(i)
-                if (UIConstants.mOverridePendingTransition != null) {
-                    try {
-                        UIConstants.mOverridePendingTransition!!.invoke(this@AndouKun, R.anim.activity_fade_in, R.anim.activity_fade_out)
-                    } catch (ite: InvocationTargetException) {
-                        DebugLog.d("Activity Transition", "Invocation Target Exception")
-                    } catch (ie: IllegalAccessException) {
-                        DebugLog.d("Activity Transition", "Illegal Access Exception")
-                    }
-                }
+                DiaryDialogFragment.newInstance(level.dialogResources!!.diaryEntry)
+                    .show(supportFragmentManager, DiaryDialogFragment.TAG)
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1 -> {
-                val i = Intent(this, ConversationDialogActivity::class.java)
-                i.putExtra("levelRow", levelRow)
-                i.putExtra("levelIndex", levelIndex)
-                i.putExtra("index", index)
-                i.putExtra("character", 1)
-                startActivity(i)
+                ConversationDialogFragment.newInstance(levelRow, levelIndex, index, 1)
+                    .show(supportFragmentManager, ConversationDialogFragment.TAG)
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2 -> {
-                val i = Intent(this, ConversationDialogActivity::class.java)
-                i.putExtra("levelRow", levelRow)
-                i.putExtra("levelIndex", levelIndex)
-                i.putExtra("index", index)
-                i.putExtra("character", 2)
-                startActivity(i)
+                ConversationDialogFragment.newInstance(levelRow, levelIndex, index, 2)
+                    .show(supportFragmentManager, ConversationDialogFragment.TAG)
             }
             GameFlowEvent.EVENT_SHOW_ANIMATION -> {
                 val i = Intent(this, AnimationPlayerActivity::class.java)
