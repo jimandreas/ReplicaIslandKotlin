@@ -15,10 +15,15 @@ and other data are included along with the code.
 
 ### ABOUT THE SOURCE
 
-The code is structured into several Activities for the main menu, level select screen, dialog window, and main game.
-Most of the code in this project is related to src/com/replicaisland/AndouKun.java,
-which implements the core game Activity ("AndouKun" was the code name for this project
-and you can find references to it all over the code).
+The code is structured into several Activities and DialogFragments for the main menu, level select, dialogs, and main game.
+The core game logic is in `src/com/replica/replicaisland/AndouKun.kt`, which implements the main game Activity
+(now extends AppCompatActivity for fragment support). "AndouKun" was the code name for this project
+and you can find references to it all over the code.
+
+**Modern Dialog Architecture**: The game uses DialogFragments for in-game dialogs:
+- `DiaryDialogFragment` - Displays collected diary entries with animated background
+- `ConversationDialogFragment` - Shows NPC conversations with typewriter text effect
+- `LevelSelectDialogFragment` - Level selection using Fragment Result API for communication
 
 The game loop itself is structured as follows:
 
@@ -87,9 +92,14 @@ as of Sept 2025:
 
 https://code.google.com/archive/p/replicaisland/
 
-**Gamepad Controller Support** (in progress on `claudeopus45` branch): Adding support for
-game controllers with joystick movement and button mapping (A=jump, B=attack with long-press
-for possession orb).
+**Gamepad Controller Support** (in progress): Adding support for game controllers with
+joystick movement and button mapping (A=jump, B=attack with long-press for possession orb).
+
+**Modern Android Architecture**: Recent updates include:
+- DialogFragment-based dialogs replacing legacy Activity dialogs
+- PreferenceFragmentCompat for settings screen
+- DataStore for preferences (migrated from SharedPreferences)
+- Instrumented tests with Espresso and fragment-testing
 
 ## USAGE NOTES
 
@@ -102,8 +112,12 @@ You can fix this by checking the box `On-Screen Controls` in the `Configure` men
 
 ![Config box](docs/img/README-usage-02.PNG)
 
-## updating further in 2025... Stay tuned.
+## Development Status
+
+Actively maintained and updated for modern Android development practices.
 
 Currently set up for:
 
-<b>Android Studio Narwhal 4 Feature Drop | 2025.1.4</b>
+**Android Studio Narwhal 4 Feature Drop | 2025.1.4**
+
+Target SDK: 36 | Min SDK: 24
