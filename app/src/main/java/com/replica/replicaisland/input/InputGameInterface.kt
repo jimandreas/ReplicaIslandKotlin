@@ -100,8 +100,9 @@ class InputGameInterface : BaseObject() {
                 lastGamepadPressed = gpPressed
             }
             if (gpConnected && gpPressed) {
-                val magnitude = gpX * GAMEPAD_FILTER * movementSensitivity
-                if (abs(magnitude) > GAMEPAD_DEAD_ZONE) {
+                // Apply dead zone to raw input first, then scale
+                if (abs(gpX) > GAMEPAD_DEAD_ZONE) {
+                    val magnitude = gpX * GAMEPAD_FILTER * movementSensitivity
                     directionalPad.press(gameTime, magnitude, 0.0f)
                 } else {
                     directionalPad.release()
@@ -196,7 +197,7 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.FLY_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_HEIGHT.toFloat())
-        val gamepadJump = keys[KeyEvent.KEYCODE_BUTTON_A]
+        val gamepadJump = keys[KeyEvent.KEYCODE_BUTTON_R2]  // Right trigger for jump
         if (jumpKey!!.pressed) {
             jumpButton.press(jumpKey.lastPressedTime, jumpKey.magnitude)
         } else if (gamepadJump?.pressed == true) {
@@ -215,18 +216,18 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.STOMP_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_HEIGHT.toFloat())
-        val gamepadAttackB = keys[KeyEvent.KEYCODE_BUTTON_B]
+        val gamepadAttackX = keys[KeyEvent.KEYCODE_BUTTON_X]  // X button (above right trigger) for stomp
         val gamepadAttackBack = keys[KeyEvent.KEYCODE_BACK] // B button also sends BACK on some controllers
-        // Check if gamepad A button is pressed (sends DPAD_CENTER on some controllers)
-        // If so, don't use clickButton for attack to avoid A triggering both jump and attack
-        val gamepadAPressed = gamepadJump?.pressed == true
-        val useClickForAttack = useClickButtonForAttack && !gamepadAPressed
+        // Check if gamepad jump button (R2 trigger) is pressed
+        // If so, don't use clickButton for attack to avoid triggering both jump and attack
+        val gamepadJumpPressed = gamepadJump?.pressed == true
+        val useClickForAttack = useClickButtonForAttack && !gamepadJumpPressed
         if (useClickForAttack && clickButton!!.pressed) {
             attackButton.press(clickButton.lastPressedTime, clickButton.magnitude)
         } else if (attackKey!!.pressed) {
             attackButton.press(attackKey.lastPressedTime, attackKey.magnitude)
-        } else if (gamepadAttackB?.pressed == true) {
-            attackButton.press(gamepadAttackB.lastPressedTime, gamepadAttackB.magnitude)
+        } else if (gamepadAttackX?.pressed == true) {
+            attackButton.press(gamepadAttackX.lastPressedTime, gamepadAttackX.magnitude)
         } else if (gamepadAttackBack?.pressed == true) {
             attackButton.press(gamepadAttackBack.lastPressedTime, gamepadAttackBack.magnitude)
         } else if (stompTouch != null) {
