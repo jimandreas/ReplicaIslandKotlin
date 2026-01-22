@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION", "unused", "CascadeIf")
+@file:Suppress("unused", "CascadeIf")
 
 package com.replica.replicaisland.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -45,7 +42,7 @@ import com.replica.replicaisland.levels.LevelTree
 import java.lang.reflect.InvocationTargetException
 import kotlin.math.abs
 
-class MainMenuActivity : Activity() {
+class MainMenuActivity : AppCompatActivity() {
     private var paused = false
     private var mStartButton: View? = null
     private var optionsButton: View? = null
@@ -155,6 +152,25 @@ class MainMenuActivity : Activity() {
         // Keep the volume control type consistent across all activities.
         volumeControlStream = AudioManager.STREAM_MUSIC
 
+        // Set up fragment result listeners for dialog callbacks
+        supportFragmentManager.setFragmentResultListener(
+            TiltControlsDialogFragment.REQUEST_KEY, this
+        ) { _, bundle ->
+            if (bundle.getBoolean(TiltControlsDialogFragment.RESULT_ENABLE_SCREEN_CONTROLS)) {
+                PreferencesManager.getInstance(this).setScreenControls(true)
+            }
+        }
+
+        supportFragmentManager.setFragmentResultListener(
+            ControlSetupDialogFragment.REQUEST_KEY, this
+        ) { _, bundle ->
+            if (bundle.getBoolean(ControlSetupDialogFragment.RESULT_OPEN_SETTINGS)) {
+                val i = Intent(baseContext, SetPreferencesActivity::class.java)
+                i.putExtra("controlConfig", true)
+                startActivity(i)
+            }
+        }
+
         //MediaPlayer mp = MediaPlayer.create(this, R.raw.bwv_115);
         //mp.start();
     }
@@ -242,17 +258,20 @@ class MainMenuActivity : Activity() {
 
                 // show what's new message
                 prefsManager.setLastVersion(AndouKun.VERSION)
-                showDialog(WHATS_NEW_DIALOG)
+                WhatsNewDialogFragment.newInstance()
+                    .show(supportFragmentManager, WhatsNewDialogFragment.TAG)
 
                 // screen controls were added in version 14
                 if (lastVersion in 1..<14 && prefsManager.getTiltControls()) {
                     if (touch.supportsMultitouch(this)) {
                         // show message about switching from tilt to screen controls
-                        showDialog(TILT_TO_SCREEN_CONTROLS_DIALOG)
+                        TiltControlsDialogFragment.newInstance()
+                            .show(supportFragmentManager, TiltControlsDialogFragment.TAG)
                     }
                 } else if (lastVersion == 0) {
                     // show message about auto-selected control schemes.
-                    showDialog(CONTROL_SETUP_DIALOG)
+                    ControlSetupDialogFragment.newInstance(selectedControlsString ?: "")
+                        .show(supportFragmentManager, ControlSetupDialogFragment.TAG)
                 }
             }
         }
@@ -285,44 +304,6 @@ class MainMenuActivity : Activity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("ApplySharedPref", "UseKtx")
-    override fun onCreateDialog(id: Int): Dialog {
-        val dialog: Dialog = if (id == WHATS_NEW_DIALOG) {
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.whats_new_dialog_title)
-                    .setPositiveButton(R.string.whats_new_dialog_ok, null)
-                    .setMessage(R.string.whats_new_dialog_message)
-                    .create()
-        } else if (id == TILT_TO_SCREEN_CONTROLS_DIALOG) {
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.onscreen_tilt_dialog_title)
-                    .setPositiveButton(R.string.onscreen_tilt_dialog_ok) { _, _ ->
-                        PreferencesManager.getInstance(this).setScreenControls(true)
-                    }
-                    .setNegativeButton(R.string.onscreen_tilt_dialog_cancel, null)
-                    .setMessage(R.string.onscreen_tilt_dialog_message)
-                    .create()
-        } else if (id == CONTROL_SETUP_DIALOG) {
-            val messageFormat = resources.getString(R.string.control_setup_dialog_message)
-            val message = String.format(messageFormat, selectedControlsString)
-            val sytledMessage: CharSequence = Html.fromHtml(message) // lame.
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.control_setup_dialog_title)
-                    .setPositiveButton(R.string.control_setup_dialog_ok, null)
-                    .setNegativeButton(R.string.control_setup_dialog_change) { thisDialog, whichButton ->
-                        val i = Intent(baseContext, SetPreferencesActivity::class.java)
-                        i.putExtra("controlConfig", true)
-                        startActivity(i)
-                    }
-                    .setMessage(sytledMessage)
-                    .create()
-        } else {
-            super.onCreateDialog(id)
-        }
-        return dialog
-    }
-
     private inner class StartActivityAfterAnimation(private val intent: Intent) :
         Animation.AnimationListener {
         override fun onAnimationEnd(animation: Animation) {
@@ -345,11 +326,5 @@ class MainMenuActivity : Activity() {
         override fun onAnimationStart(animation: Animation) {
             // TODO Auto-generated method stub
         }
-    }
-
-    companion object {
-        private const val WHATS_NEW_DIALOG = 0
-        private const val TILT_TO_SCREEN_CONTROLS_DIALOG = 1
-        private const val CONTROL_SETUP_DIALOG = 2
     }
 }
