@@ -17,18 +17,10 @@
 package com.replica.replicaisland.data
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-
-// Extension property for DataStore - single instance per app
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "replica_island_preferences"
-)
 
 /**
  * Repository for accessing game preferences via DataStore.
@@ -36,7 +28,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  */
 class GamePreferencesRepository(context: Context) {
 
-    private val dataStore = context.dataStore
+    private val dataStore = context.replicaIslandDataStore
 
     // ============ Flow-based reads for reactive UI ============
 
