@@ -197,11 +197,17 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.FLY_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.FLY_BUTTON_REGION_HEIGHT.toFloat())
-        val gamepadJump = keys[KeyEvent.KEYCODE_BUTTON_R2]  // Right trigger for jump
+        val gamepadJumpKey = keys[KeyEvent.KEYCODE_BUTTON_R2]  // Right trigger key event (some controllers)
+        val rightTriggerAxis = input.getRightTrigger()  // Right trigger axis value (0.0-1.0)
+        val rightTriggerPressed = rightTriggerAxis > TRIGGER_THRESHOLD
         if (jumpKey!!.pressed) {
             jumpButton.press(jumpKey.lastPressedTime, jumpKey.magnitude)
-        } else if (gamepadJump?.pressed == true) {
-            jumpButton.press(gamepadJump.lastPressedTime, gamepadJump.magnitude)
+        } else if (rightTriggerPressed) {
+            // Right trigger axis pressed
+            jumpButton.press(gameTime, rightTriggerAxis)
+        } else if (gamepadJumpKey?.pressed == true) {
+            // Fallback to key event if controller sends it
+            jumpButton.press(gamepadJumpKey.lastPressedTime, gamepadJumpKey.magnitude)
         } else if (jumpTouch != null) {
             if (!jumpButton.pressed) {
                 jumpButton.press(jumpTouch.lastPressedTime, 1.0f)
@@ -216,18 +222,18 @@ class InputGameInterface : BaseObject() {
                 ButtonConstants.STOMP_BUTTON_REGION_Y.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_WIDTH.toFloat(),
                 ButtonConstants.STOMP_BUTTON_REGION_HEIGHT.toFloat())
-        val gamepadAttackX = keys[KeyEvent.KEYCODE_BUTTON_X]  // X button (above right trigger) for stomp
+        val gamepadAttackR1 = keys[KeyEvent.KEYCODE_BUTTON_R1]  // R1 button (keycode 103) for stomp
         val gamepadAttackBack = keys[KeyEvent.KEYCODE_BACK] // B button also sends BACK on some controllers
         // Check if gamepad jump button (R2 trigger) is pressed
         // If so, don't use clickButton for attack to avoid triggering both jump and attack
-        val gamepadJumpPressed = gamepadJump?.pressed == true
+        val gamepadJumpPressed = rightTriggerPressed || gamepadJumpKey?.pressed == true
         val useClickForAttack = useClickButtonForAttack && !gamepadJumpPressed
         if (useClickForAttack && clickButton!!.pressed) {
             attackButton.press(clickButton.lastPressedTime, clickButton.magnitude)
         } else if (attackKey!!.pressed) {
             attackButton.press(attackKey.lastPressedTime, attackKey.magnitude)
-        } else if (gamepadAttackX?.pressed == true) {
-            attackButton.press(gamepadAttackX.lastPressedTime, gamepadAttackX.magnitude)
+        } else if (gamepadAttackR1?.pressed == true) {
+            attackButton.press(gamepadAttackR1.lastPressedTime, gamepadAttackR1.magnitude)
         } else if (gamepadAttackBack?.pressed == true) {
             attackButton.press(gamepadAttackBack.lastPressedTime, gamepadAttackBack.magnitude)
         } else if (stompTouch != null) {
@@ -308,6 +314,7 @@ class InputGameInterface : BaseObject() {
         private const val SLIDER_FILTER = 0.25f
         private const val GAMEPAD_FILTER = 0.18f
         private const val GAMEPAD_DEAD_ZONE = 0.15f
+        private const val TRIGGER_THRESHOLD = 0.5f  // Threshold for analog trigger to register as pressed
     }
 
     init {
