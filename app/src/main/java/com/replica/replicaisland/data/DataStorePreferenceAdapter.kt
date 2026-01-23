@@ -17,13 +17,12 @@
 package com.replica.replicaisland.data
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import android.content.SharedPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.preference.PreferenceDataStore
+import com.replica.replicaisland.ui.PreferenceConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,23 +30,29 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-// Extension property for DataStore - single instance per app
-private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "replica_island_preferences"
-)
-
 /**
  * Adapter that connects PreferenceFragmentCompat to DataStore.
  * Implements PreferenceDataStore to intercept preference reads/writes
- * and route them to DataStore instead of SharedPreferences.
+ * and route them to BOTH DataStore AND SharedPreferences (dual-write strategy).
+ *
+ * This ensures consistency with PreferencesManager, which reads from SharedPreferences
+ * during the migration period.
  */
 class DataStorePreferenceAdapter(context: Context) : PreferenceDataStore() {
 
-    private val dataStore = context.applicationContext.settingsDataStore
+    private val appContext = context.applicationContext
+    private val dataStore = appContext.replicaIslandDataStore
+    private val sharedPrefs: SharedPreferences = appContext.getSharedPreferences(
+        PreferenceConstants.PREFERENCE_NAME,
+        Context.MODE_PRIVATE
+    )
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    // Boolean preferences
+    // Boolean preferences - dual-write to both SharedPreferences and DataStore
     override fun putBoolean(key: String, value: Boolean) {
+        // Write to SharedPreferences synchronously for immediate availability
+        sharedPrefs.edit().putBoolean(key, value).apply()
+        // Write to DataStore asynchronously
         scope.launch {
             dataStore.edit { prefs ->
                 prefs[booleanPreferencesKey(key)] = value
@@ -61,8 +66,11 @@ class DataStorePreferenceAdapter(context: Context) : PreferenceDataStore() {
         }
     }
 
-    // Integer preferences
+    // Integer preferences - dual-write to both SharedPreferences and DataStore
     override fun putInt(key: String, value: Int) {
+        // Write to SharedPreferences synchronously for immediate availability
+        sharedPrefs.edit().putInt(key, value).apply()
+        // Write to DataStore asynchronously
         scope.launch {
             dataStore.edit { prefs ->
                 prefs[intPreferencesKey(key)] = value
@@ -76,8 +84,11 @@ class DataStorePreferenceAdapter(context: Context) : PreferenceDataStore() {
         }
     }
 
-    // String preferences (for completeness, though not currently used)
+    // String preferences - dual-write to both SharedPreferences and DataStore
     override fun putString(key: String, value: String?) {
+        // Write to SharedPreferences synchronously for immediate availability
+        sharedPrefs.edit().putString(key, value).apply()
+        // Write to DataStore asynchronously
         scope.launch {
             dataStore.edit { prefs ->
                 if (value != null) {

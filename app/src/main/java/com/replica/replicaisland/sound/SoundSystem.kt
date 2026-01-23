@@ -178,7 +178,7 @@ class SoundSystem : BaseObject() {
         searchDummy = Sound()
 
         val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_GAME)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 
@@ -195,7 +195,8 @@ class SoundSystem : BaseObject() {
             if (status == 0) {
                 // Play each sound with zero volume to warm up the pipeline.
                 // This reduces sound latency in the game by a lot!
-                soundPool.play(sampleId, 0f, 0f, 0, 0, 1f)
+                // Use PRIORITY_NORMAL (1) to ensure Android doesn't skip this play.
+                soundPool.play(sampleId, 0f, 0f, PRIORITY_NORMAL, 0, 1f)
             }
         }
     }

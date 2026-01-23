@@ -29,6 +29,7 @@ class InputSystem : BaseObject() {
     private val keyboard = InputKeyboard()
     private val gamepad = InputXY()
     private var gamepadConnected = false
+    private var rightTrigger = 0f
     private var screenRotation = 0
     private val orientationInput = FloatArray(3)
     private val orientationOutput = FloatArray(3)
@@ -120,6 +121,14 @@ class InputSystem : BaseObject() {
     fun gamepadAxis(axisX: Float, axisY: Float) {
         val time = sSystemRegistry.timeSystem
         gamepad.press(time!!.gameTime, axisX, axisY)
+    }
+
+    fun setRightTrigger(value: Float) {
+        rightTrigger = value
+    }
+
+    fun getRightTrigger(): Float {
+        return rightTrigger
     }
 
     fun setGamepadConnected(connected: Boolean) {
