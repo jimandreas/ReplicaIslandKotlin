@@ -48,3 +48,6 @@ _sandbox
 
 # Claude - not tracked
 .claude
+
+# Claude - local copy of plans to execute - not tracked
+_claude*
