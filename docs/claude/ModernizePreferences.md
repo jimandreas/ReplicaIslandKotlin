@@ -133,7 +133,7 @@ val soundEnabled = prefsManager.getSoundEnabled()
 
 ### Testing Phase 3
 - [ ] Game launches and plays normally
-- [ ] All controls work (keyboard, tilt, screen)
+- [ ] All controls work (keyboard, screen, gamepad)
 - [ ] Level progress saves and loads
 - [ ] Game statistics display on game over
 - [ ] Extras unlock after completion

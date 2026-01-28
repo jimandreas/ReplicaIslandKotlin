@@ -41,9 +41,8 @@ android {
     }
     buildFeatures {
         viewBinding = true
-    }
-    buildFeatures {
         buildConfig = true
+        resValues = true
     }
 }
 

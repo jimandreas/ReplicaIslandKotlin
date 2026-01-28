@@ -276,8 +276,6 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         val soundEnabled = prefsManager.getSoundEnabled()
         val safeMode = prefsManager.getSafeMode()
         val clickAttack = prefsManager.getClickAttack()
-        val tiltControls = prefsManager.getTiltControls()
-        val tiltSensitivity = prefsManager.getTiltSensitivity()
         val movementSensitivity = prefsManager.getMovementSensitivity()
         val onScreenControls = prefsManager.getScreenControls()
         val leftKey = prefsManager.getLeftKey()
@@ -285,7 +283,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         val jumpKey = prefsManager.getJumpKey()
         val attackKey = prefsManager.getAttackKey()
         mGame!!.setSoundEnabled(soundEnabled)
-        mGame!!.setControlOptions(clickAttack, tiltControls, tiltSensitivity, movementSensitivity, onScreenControls)
+        mGame!!.setControlOptions(clickAttack, movementSensitivity, onScreenControls)
         mGame!!.setKeyConfig(leftKey, rightKey, jumpKey, attackKey)
         mGame!!.setSafeMode(safeMode)
         if (sensorManager != null) {
@@ -299,13 +297,13 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    override fun onTrackballEvent(event: MotionEvent): Boolean {
-        if (!mGame!!.isPaused) {
-            mGame!!.onTrackballEvent(event)
-            val time = System.currentTimeMillis()
-            lastRollTime = time
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
         }
-        return true
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -789,6 +787,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // If the version is a negative number, debug features (logging and a debug menu)
         // are enabled.
-        const val VERSION = 14
+//        const val VERSION = 14
+        const val VERSION = -1
     }
 }

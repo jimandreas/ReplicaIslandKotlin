@@ -25,7 +25,6 @@ import com.replica.replicaisland.core.BaseObject
 class InputSystem : BaseObject() {
     private val touchScreen = InputTouchScreen()
     private val orientationSensor = InputXY()
-    private val trackball = InputXY()
     private val keyboard = InputKeyboard()
     private val gamepad = InputXY()
     private var gamepadConnected = false
@@ -34,17 +33,11 @@ class InputSystem : BaseObject() {
     private val orientationInput = FloatArray(3)
     private val orientationOutput = FloatArray(3)
     override fun reset() {
-        trackball.reset()
         touchScreen.reset()
         keyboard.resetAll()
         orientationSensor.reset()
         gamepad.reset()
         gamepadConnected = false
-    }
-
-    fun roll(x: Float, y: Float) {
-        val time = sSystemRegistry.timeSystem
-        trackball.press(time!!.gameTime, trackball.retreiveXaxisMagnitude() + x, trackball.retreiveYaxisMagnitude() + y)
     }
 
     fun touchDown(index: Int, x: Float, y: Float) {
@@ -90,8 +83,6 @@ class InputSystem : BaseObject() {
     }
 
     fun releaseAllKeys() {
-        trackball.releaseX()
-        trackball.releaseY()
         touchScreen.resetAll()
         keyboard.releaseAll()
         orientationSensor.release()
@@ -104,10 +95,6 @@ class InputSystem : BaseObject() {
 
     fun fetchOrientationSensor(): InputXY {
         return orientationSensor
-    }
-
-    fun fetchTrackball(): InputXY {
-        return trackball
     }
 
     fun fetchKeyboard(): InputKeyboard {

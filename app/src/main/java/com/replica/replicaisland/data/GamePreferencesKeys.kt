@@ -46,8 +46,6 @@ object GamePreferencesKeys {
     val SOUND_ENABLED = booleanPreferencesKey("enableSound")
     val SAFE_MODE = booleanPreferencesKey("safeMode")
     val CLICK_ATTACK = booleanPreferencesKey("enableClickAttack")
-    val TILT_CONTROLS = booleanPreferencesKey("enableTiltControls")
-    val TILT_SENSITIVITY = intPreferencesKey("tiltSensitivity")
     val MOVEMENT_SENSITIVITY = intPreferencesKey("movementSensitivity")
     val SCREEN_CONTROLS = booleanPreferencesKey("enableScreenControls")
     val DEBUG_ENABLED = booleanPreferencesKey("enableDebug")

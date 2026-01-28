@@ -81,9 +81,9 @@ class GhostComponent : GameComponent() {
             }
             if (input != null) {
                 if (useOrientationSensor) {
-                    val tilt = input.tilt
-                    parentObject.targetVelocity.x = tilt.retreiveXaxisMagnitude() * mMovementSpeed
-                    parentObject.targetVelocity.y = tilt.retreiveYaxisMagnitude() * mMovementSpeed
+                    val orientation = sSystemRegistry.inputSystem!!.fetchOrientationSensor()
+                    parentObject.targetVelocity.x = orientation.retreiveXaxisMagnitude() * mMovementSpeed
+                    parentObject.targetVelocity.y = orientation.retreiveYaxisMagnitude() * mMovementSpeed
                     parentObject.acceleration.x = mAcceleration
                     parentObject.acceleration.y = mAcceleration
                 } else {

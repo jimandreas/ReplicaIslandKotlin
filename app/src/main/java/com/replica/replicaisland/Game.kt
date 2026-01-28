@@ -415,19 +415,6 @@ class Game : AllocationGuard() {
         }
     }
 
-    fun onTrackballEvent(event: MotionEvent): Boolean {
-        if (mRunning) {
-            if (event.action == MotionEvent.ACTION_MOVE) {
-                BaseObject.sSystemRegistry.inputSystem!!.roll(event.rawX, event.rawY)
-            } else if (event.action == MotionEvent.ACTION_DOWN) {
-                onKeyDownEvent(KeyEvent.KEYCODE_DPAD_CENTER)
-            } else if (event.action == MotionEvent.ACTION_UP) {
-                onKeyUpEvent(KeyEvent.KEYCODE_DPAD_CENTER)
-            }
-        }
-        return true
-    }
-
     fun onOrientationEvent(x: Float, y: Float, z: Float): Boolean {
         if (mRunning) {
             BaseObject.sSystemRegistry.inputSystem!!.setOrientation(x, y, z)
@@ -533,11 +520,8 @@ class Game : AllocationGuard() {
         BaseObject.sSystemRegistry.soundSystem!!.soundEnabled = soundEnabled
     }
 
-    fun setControlOptions(clickAttack: Boolean,
-                          tiltControls: Boolean, tiltSensitivity: Int, movementSensitivity: Int, onScreenControls: Boolean) {
+    fun setControlOptions(clickAttack: Boolean, movementSensitivity: Int, onScreenControls: Boolean) {
         BaseObject.sSystemRegistry.inputGameInterface!!.setUseClickForAttack(clickAttack)
-        BaseObject.sSystemRegistry.inputGameInterface!!.setUseOrientationForMovement(tiltControls)
-        BaseObject.sSystemRegistry.inputGameInterface!!.setOrientationMovementSensitivity(tiltSensitivity / 100.0f)
         BaseObject.sSystemRegistry.inputGameInterface!!.setMovementSensitivity(movementSensitivity / 100.0f)
         BaseObject.sSystemRegistry.inputGameInterface!!.setUseOnScreenControls(onScreenControls)
         BaseObject.sSystemRegistry.hudSystem!!.setMovementSliderMode(onScreenControls)
