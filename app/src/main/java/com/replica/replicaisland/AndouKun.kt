@@ -105,9 +105,8 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // New method of landscape orientation.
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemBars()
         // end of new method of landscape orientation
 
         prefsManager = PreferencesManager.getInstance(this)
@@ -262,6 +261,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
+        hideSystemBars()
 
         // Preferences may have changed while we were paused.
         val debugLogs = prefsManager.getDebugEnabled()
@@ -300,10 +300,14 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            val controller = WindowCompat.getInsetsController(window, window.decorView)
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+            hideSystemBars()
         }
+    }
+
+    private fun hideSystemBars() {
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -787,7 +791,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // If the version is a negative number, debug features (logging and a debug menu)
         // are enabled.
-//        const val VERSION = 14
-        const val VERSION = -1
+        const val VERSION = 14
+//        const val VERSION = -1
     }
 }
