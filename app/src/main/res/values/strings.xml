@@ -31,22 +31,14 @@
 
 <string name="preference_configure_controls" translatable="false">Configure Controls</string>
 <string name="preference_enable_click_attack" translatable="false">Click Attack</string>
-<string name="preference_enable_click_attack_summary" translatable="false">Use the trackball click or directional pad center button to attack.</string>
+<string name="preference_enable_click_attack_summary" translatable="false">Use the directional pad center button to attack.</string>
 <string name="preference_enable_screen_controls" translatable="false">On-Screen Controls</string>
-<string name="preference_enable_screen_controls_summary" translatable="false">Displays movement pad and buttons on screen.  Suggested for devices without a d-pad or trackball. Requires mulitouch.</string>
-
-<string name="preference_enable_tilt_controls" translatable="false">Tilt Controls</string>
-<string name="preference_enable_tilt_controls_summary" translatable="false">EXPERIMENTAL!  Tilt the phone left and right to drive the Android around.  Good for devices with no trackball or d-pad.</string>
+<string name="preference_enable_screen_controls_summary" translatable="false">Displays movement pad and buttons on screen.  Suggested for devices without a d-pad. Requires multitouch.</string>
 
 <string name="preference_movement_sensitivity" translatable="false">Motion Sensitivity</string>
-<string name="preference_movement_sensitivity_summary" translatable="false">Adjusts the sensitivity of the trackball, d-pad, or optical sensor.</string>
+<string name="preference_movement_sensitivity_summary" translatable="false">Adjusts the sensitivity of the d-pad or controller.</string>
 <string name="preference_movement_min" translatable="false">Slow</string>
 <string name="preference_movement_max" translatable="false">Fast</string>
-
-<string name="preference_tilt_sensitivity" translatable="false">Tilt Sensitivity</string>
-<string name="preference_tilt_sensitivity_summary" translatable="false">Adjusts the sensitivity of the tilt controls.</string>
-<string name="preference_tilt_min" translatable="false">Slow</string>
-<string name="preference_tilt_max" translatable="false">Fast</string>
 
 <string name="preference_key_config" translatable="false">Configure Keyboard</string>
 <string name="preference_key_config_summary" translatable="false">Customize keys for phones with hard keyboards.</string>
@@ -103,7 +95,7 @@
 <string name="extras_locked_dialog_message" translatable="false">This extra feature is still locked.  Beat the game one time to unlock it!</string>
 
 
-<string name="nav_type" translatable="false">Trackball</string>
+<string name="nav_type" translatable="false">None</string>
 
 <string name="whats_new_dialog_title" translatable="false">Replica Island</string>
 <string name="whats_new_dialog_ok" translatable="false">Rock on!</string>
@@ -138,20 +130,8 @@ any time using the Configure Controls button in Options.
 &lt;br>
 Are you ok with the control system selected above, or would you like to set up your control 
 settings manually now?</string>
-<string name="control_setup_dialog_trackball" translatable="false">&lt;b>Trackball / Trackpad&lt;/b> - Sensitivity can be adjusted in Options.</string>
 <string name="control_setup_dialog_dpad" translatable="false">&lt;b>Keyboard / Pad&lt;/b> - Key mappings can be changed in Options.</string>
 <string name="control_setup_dialog_screen" translatable="false">&lt;b>On-Screen Pad&lt;/b></string>
-<string name="control_setup_dialog_tilt" translatable="false">&lt;b>Tilt&lt;/b> - Sensitivity can be adjusted in Options.</string>
-
-<string name="onscreen_tilt_dialog_title" translatable="false">New Control Scheme!</string>
-<string name="onscreen_tilt_dialog_ok" translatable="false">On-Screen Pad</string>
-<string name="onscreen_tilt_dialog_cancel" translatable="false">Stick with Tilt</string>
-<string name="onscreen_tilt_dialog_message" translatable="false">This version of Replica Island adds an option for
-<b>On-Screen Controls</b> for multi-touch devices.  Your device supports this new 
-mode, but your options are currently set to <b>Tilt</b> controls.  Would you like to try the 
-new On-Screen Controls instead, or stick with Tilt? 
-\n<small>You can change this setting at any time by choosing Configure Controls under Options.</small>
-</string>
 
 <string name="whats_new_ticker" translatable="false">New in this version: On-screen controls, app-to-sd card support, unlockable extra modes, game statistics after winning, lots of minor (and not so minor) bugs fixed.</string>
 

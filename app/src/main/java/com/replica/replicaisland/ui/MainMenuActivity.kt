@@ -154,14 +154,6 @@ class MainMenuActivity : AppCompatActivity() {
 
         // Set up fragment result listeners for dialog callbacks
         supportFragmentManager.setFragmentResultListener(
-            TiltControlsDialogFragment.REQUEST_KEY, this
-        ) { _, bundle ->
-            if (bundle.getBoolean(TiltControlsDialogFragment.RESULT_ENABLE_SCREEN_CONTROLS)) {
-                PreferencesManager.getInstance(this).setScreenControls(true)
-            }
-        }
-
-        supportFragmentManager.setFragmentResultListener(
             ControlSetupDialogFragment.REQUEST_KEY, this
         ) { _, bundle ->
             if (bundle.getBoolean(ControlSetupDialogFragment.RESULT_OPEN_SETTINGS)) {
@@ -214,21 +206,17 @@ class MainMenuActivity : AppCompatActivity() {
                 // TODO: is there a better way to do this?  Seems like a kind of neat
                 // way to do custom device profiles.
                 val navType = getString(R.string.nav_type)
-                selectedControlsString = getString(R.string.control_setup_dialog_trackball)
+                selectedControlsString = getString(R.string.control_setup_dialog_dpad)
                 if (navType.equals("DPad", ignoreCase = true)) {
                     // Turn off the click-to-attack pref on devices that have a dpad.
                     prefsManager.setClickAttack(false)
                     selectedControlsString = getString(R.string.control_setup_dialog_dpad)
                 } else if (navType.equals("None", ignoreCase = true)) {
                     // This test relies on the PackageManager if api version >= 5.
-                    selectedControlsString = if (touch.supportsMultitouch(this)) {
+                    if (touch.supportsMultitouch(this)) {
                         // Default to screen controls.
                         prefsManager.setScreenControls(true)
-                        getString(R.string.control_setup_dialog_screen)
-                    } else {
-                        // Turn on tilt controls if there's nothing else.
-                        prefsManager.setTiltControls(true)
-                        getString(R.string.control_setup_dialog_tilt)
+                        selectedControlsString = getString(R.string.control_setup_dialog_screen)
                     }
                 }
             }
@@ -261,14 +249,7 @@ class MainMenuActivity : AppCompatActivity() {
                 WhatsNewDialogFragment.newInstance()
                     .show(supportFragmentManager, WhatsNewDialogFragment.TAG)
 
-                // screen controls were added in version 14
-                if (lastVersion in 1..<14 && prefsManager.getTiltControls()) {
-                    if (touch.supportsMultitouch(this)) {
-                        // show message about switching from tilt to screen controls
-                        TiltControlsDialogFragment.newInstance()
-                            .show(supportFragmentManager, TiltControlsDialogFragment.TAG)
-                    }
-                } else if (lastVersion == 0) {
+                if (lastVersion == 0) {
                     // show message about auto-selected control schemes.
                     ControlSetupDialogFragment.newInstance(selectedControlsString ?: "")
                         .show(supportFragmentManager, ControlSetupDialogFragment.TAG)

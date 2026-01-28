@@ -276,8 +276,6 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         val soundEnabled = prefsManager.getSoundEnabled()
         val safeMode = prefsManager.getSafeMode()
         val clickAttack = prefsManager.getClickAttack()
-        val tiltControls = prefsManager.getTiltControls()
-        val tiltSensitivity = prefsManager.getTiltSensitivity()
         val movementSensitivity = prefsManager.getMovementSensitivity()
         val onScreenControls = prefsManager.getScreenControls()
         val leftKey = prefsManager.getLeftKey()
@@ -285,7 +283,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         val jumpKey = prefsManager.getJumpKey()
         val attackKey = prefsManager.getAttackKey()
         mGame!!.setSoundEnabled(soundEnabled)
-        mGame!!.setControlOptions(clickAttack, tiltControls, tiltSensitivity, movementSensitivity, onScreenControls)
+        mGame!!.setControlOptions(clickAttack, movementSensitivity, onScreenControls)
         mGame!!.setKeyConfig(leftKey, rightKey, jumpKey, attackKey)
         mGame!!.setSafeMode(safeMode)
         if (sensorManager != null) {
@@ -297,15 +295,6 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
                         0)
             }
         }
-    }
-
-    override fun onTrackballEvent(event: MotionEvent): Boolean {
-        if (!mGame!!.isPaused) {
-            mGame!!.onTrackballEvent(event)
-            val time = System.currentTimeMillis()
-            lastRollTime = time
-        }
-        return true
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -789,6 +778,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // If the version is a negative number, debug features (logging and a debug menu)
         // are enabled.
-        const val VERSION = 14
+//        const val VERSION = 14
+        const val VERSION = -1
     }
 }

@@ -57,12 +57,6 @@ class PreferencesManager private constructor(context: Context) {
     fun getClickAttack(): Boolean =
         sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, true)
 
-    fun getTiltControls(): Boolean =
-        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, false)
-
-    fun getTiltSensitivity(): Int =
-        sharedPrefs.getInt(PreferenceConstants.PREFERENCE_TILT_SENSITIVITY, 50)
-
     fun getMovementSensitivity(): Int =
         sharedPrefs.getInt(PreferenceConstants.PREFERENCE_MOVEMENT_SENSITIVITY, 100)
 
@@ -108,7 +102,8 @@ class PreferencesManager private constructor(context: Context) {
         sharedPrefs.getInt(PreferenceConstants.PREFERENCE_LAST_ENDING, -1)
 
     fun getExtrasUnlocked(): Boolean =
-        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
+//        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
+        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, true)
 
     // Key Config
     fun getLeftKey(): Int =
@@ -146,16 +141,6 @@ class PreferencesManager private constructor(context: Context) {
     fun setClickAttack(enabled: Boolean) {
         sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, enabled).apply()
         scope.launch { repository.setClickAttack(enabled) }
-    }
-
-    fun setTiltControls(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_TILT_CONTROLS, enabled).apply()
-        scope.launch { repository.setTiltControls(enabled) }
-    }
-
-    fun setTiltSensitivity(sensitivity: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_TILT_SENSITIVITY, sensitivity).apply()
-        scope.launch { repository.setTiltSensitivity(sensitivity) }
     }
 
     fun setMovementSensitivity(sensitivity: Int) {

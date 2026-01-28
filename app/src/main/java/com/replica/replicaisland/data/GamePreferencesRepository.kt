@@ -51,8 +51,6 @@ class GamePreferencesRepository(context: Context) {
     val soundEnabled: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.SOUND_ENABLED] ?: true }
     val safeMode: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.SAFE_MODE] ?: false }
     val clickAttack: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.CLICK_ATTACK] ?: true }
-    val tiltControls: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.TILT_CONTROLS] ?: false }
-    val tiltSensitivity: Flow<Int> = dataStore.data.map { it[GamePreferencesKeys.TILT_SENSITIVITY] ?: 50 }
     val movementSensitivity: Flow<Int> = dataStore.data.map { it[GamePreferencesKeys.MOVEMENT_SENSITIVITY] ?: 100 }
     val screenControls: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.SCREEN_CONTROLS] ?: false }
     val debugEnabled: Flow<Boolean> = dataStore.data.map { it[GamePreferencesKeys.DEBUG_ENABLED] ?: false }
@@ -73,8 +71,6 @@ class GamePreferencesRepository(context: Context) {
     suspend fun getSoundEnabled(): Boolean = dataStore.data.first()[GamePreferencesKeys.SOUND_ENABLED] ?: true
     suspend fun getSafeMode(): Boolean = dataStore.data.first()[GamePreferencesKeys.SAFE_MODE] ?: false
     suspend fun getClickAttack(): Boolean = dataStore.data.first()[GamePreferencesKeys.CLICK_ATTACK] ?: true
-    suspend fun getTiltControls(): Boolean = dataStore.data.first()[GamePreferencesKeys.TILT_CONTROLS] ?: false
-    suspend fun getTiltSensitivity(): Int = dataStore.data.first()[GamePreferencesKeys.TILT_SENSITIVITY] ?: 50
     suspend fun getMovementSensitivity(): Int = dataStore.data.first()[GamePreferencesKeys.MOVEMENT_SENSITIVITY] ?: 100
     suspend fun getScreenControls(): Boolean = dataStore.data.first()[GamePreferencesKeys.SCREEN_CONTROLS] ?: false
     suspend fun getDebugEnabled(): Boolean = dataStore.data.first()[GamePreferencesKeys.DEBUG_ENABLED] ?: false
@@ -113,14 +109,6 @@ class GamePreferencesRepository(context: Context) {
 
     suspend fun setClickAttack(enabled: Boolean) {
         dataStore.edit { it[GamePreferencesKeys.CLICK_ATTACK] = enabled }
-    }
-
-    suspend fun setTiltControls(enabled: Boolean) {
-        dataStore.edit { it[GamePreferencesKeys.TILT_CONTROLS] = enabled }
-    }
-
-    suspend fun setTiltSensitivity(sensitivity: Int) {
-        dataStore.edit { it[GamePreferencesKeys.TILT_SENSITIVITY] = sensitivity }
     }
 
     suspend fun setMovementSensitivity(sensitivity: Int) {

@@ -95,12 +95,6 @@ class PreferencesMigrationHelper(private val context: Context) {
             migrateBoolean(sharedPrefs, PreferenceConstants.PREFERENCE_CLICK_ATTACK) {
                 repository.setClickAttack(it)
             }
-            migrateBoolean(sharedPrefs, PreferenceConstants.PREFERENCE_TILT_CONTROLS) {
-                repository.setTiltControls(it)
-            }
-            migrateInt(sharedPrefs, PreferenceConstants.PREFERENCE_TILT_SENSITIVITY) {
-                repository.setTiltSensitivity(it)
-            }
             migrateInt(sharedPrefs, PreferenceConstants.PREFERENCE_MOVEMENT_SENSITIVITY) {
                 repository.setMovementSensitivity(it)
             }
