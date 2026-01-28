@@ -297,6 +297,15 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+        }
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (!mGame!!.isPaused) {
             mGame!!.onTouchEvent(event)
