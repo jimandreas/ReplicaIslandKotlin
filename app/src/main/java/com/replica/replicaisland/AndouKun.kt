@@ -38,7 +38,11 @@ import android.os.Debug
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.InputDevice
-import android.view.*
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
@@ -46,17 +50,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.replica.replicaisland.data.PreferencesManager
 import com.replica.replicaisland.levels.LevelTree
 import com.replica.replicaisland.mechanics.GameFlowEvent
-import com.replica.replicaisland.data.PreferencesManager
 import com.replica.replicaisland.ui.AnimationPlayerActivity
-import com.replica.replicaisland.ui.ConversationDialogActivity
 import com.replica.replicaisland.ui.ConversationDialogFragment
 import com.replica.replicaisland.ui.DebugLog
-import com.replica.replicaisland.ui.DiaryActivity
 import com.replica.replicaisland.ui.DiaryDialogFragment
 import com.replica.replicaisland.ui.GameOverActivity
-import com.replica.replicaisland.ui.LevelSelectActivity
 import com.replica.replicaisland.ui.LevelSelectDialogFragment
 import com.replica.replicaisland.ui.LevelSelectResult
 import com.replica.replicaisland.ui.UIConstants
@@ -791,7 +792,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // If the version is a negative number, debug features (logging and a debug menu)
         // are enabled.
-        const val VERSION = 14
-//        const val VERSION = -1
+//        const val VERSION = 14
+        const val VERSION = -1
     }
 }
