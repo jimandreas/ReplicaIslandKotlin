@@ -18,10 +18,10 @@
 
 package com.replica.replicaisland.rendering
 
+import android.opengl.GLES20
 import com.replica.replicaisland.Grid
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.levels.TiledWorld
-import javax.microedition.khronos.opengles.GL10
 import kotlin.math.ceil
 
 class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, private val mHeight: Int, private val mTileWidth: Int, private val mTileHeight: Int) : BaseObject() {
@@ -68,7 +68,7 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
         }
         var grid: Grid? = null
         if (!entirelyEmpty) {
-            grid = Grid(tilesAcross, tilesDown, false)
+            grid = Grid(tilesAcross, tilesDown)
             for (tileY in 0 until tilesDown) {
                 for (tileX in 0 until tilesAcross) {
                     val offsetX = tileX * tileWidth.toFloat()
@@ -107,29 +107,29 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
 
     fun draw(x: Float, y: Float, scrollOriginX: Float, scrollOriginY: Float) {
         val world = mWorld
-        val gl = OpenGLSystem.gL
-        if (!generated && world != null && gl != null && mTexture != null) {
-            val tilesAcross = mWorld!!.fetchWidth()
-            val tilesDown = mWorld!!.fetchHeight()
+        val shader = OpenGLSystem.spriteShader
+        val matrix = OpenGLSystem.matrixHelper
+        if (shader == null || matrix == null) return
+
+        if (!generated && world != null && mTexture != null) {
             mWorldPixelWidth = mWorld!!.fetchWidth() * mTileWidth.toFloat()
             mWorldPixelHeight = mWorld!!.fetchHeight() * mTileHeight.toFloat()
-            tilesPerRow = tilesAcross
-            tilesPerColumn = tilesDown
+            tilesPerRow = mWorld!!.fetchWidth()
+            tilesPerColumn = mWorld!!.fetchHeight()
             val bufferLibrary = sSystemRegistry.bufferLibrary
             val grid = generateGrid(mWorldPixelWidth.toInt(), mWorldPixelHeight.toInt(), 0, 0)
             mTileMap = grid
             generated = true
             if (grid != null) {
                 bufferLibrary!!.add(grid)
-                if (sSystemRegistry.contextParameters!!.supportsVBOs) {
-                    grid.generateHardwareBuffers(gl)
-                }
+                grid.generateHardwareBuffers()
             }
         }
+
         val tileMap = mTileMap
         if (tileMap != null) {
             val texture = mTexture
-            if (gl != null && texture != null) {
+            if (texture != null) {
                 val originX = (x - scrollOriginX).toInt()
                 val originY = (y - scrollOriginY).toInt()
                 val worldPixelWidth = mWorldPixelWidth
@@ -137,28 +137,29 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                 val tileSpaceX = percentageScrollRight * tilesPerRow
                 val leftTile = tileSpaceX.toInt()
 
-                // calculate the top tile index
                 val worldPixelHeight = mWorldPixelHeight
                 val percentageScrollUp = if (scrollOriginY != 0.0f) scrollOriginY / worldPixelHeight else 0.0f
                 val tileSpaceY = percentageScrollUp * tilesPerColumn
                 val bottomTile = tileSpaceY.toInt()
 
-                // calculate any sub-tile slop that our scroll position may require.
                 val horizontalSlop = if ((tileSpaceX - leftTile) * mTileWidth > 0) 1 else 0
                 val verticalSlop = if ((tileSpaceY - bottomTile) * mTileHeight > 0) 1 else 0
-                OpenGLSystem.bindTexture(GL10.GL_TEXTURE_2D, texture.name)
-                tileMap.beginDrawingStrips(gl, true)
+
+                OpenGLSystem.bindTexture(GLES20.GL_TEXTURE_2D, texture.name)
+
+                // Set up model matrix for tile offset
+                matrix.setIdentityModel()
+                matrix.translateModel(originX.toFloat(), originY.toFloat(), 0f)
+
+                GLES20.glUniformMatrix4fv(shader.uMVPMatrixLocation, 1, false, matrix.computeMVP(), 0)
+                GLES20.glUniform4f(shader.uColorLocation, 1f, 1f, 1f, 1f)
+
+                tileMap.beginDrawingStrips(shader)
+
                 val horzTileCount = ceil(mWidth.toFloat() / mTileWidth.toDouble()).toInt()
                 val vertTileCount = ceil(mHeight.toFloat() / mTileHeight.toDouble()).toInt()
-                // draw vertex strips
                 val endX = leftTile + horizontalSlop + horzTileCount
                 val endY = bottomTile + verticalSlop + vertTileCount
-                gl.glPushMatrix()
-                gl.glLoadIdentity()
-                gl.glTranslatef(
-                        originX.toFloat(),
-                        originY.toFloat(),
-                        0.0f)
                 val indexesPerTile = 6
                 val indexesPerRow = tilesPerRow * indexesPerTile
                 val startOffset = leftTile * indexesPerTile
@@ -166,11 +167,11 @@ class TiledVertexGrid(private val mTexture: Texture?, private val mWidth: Int, p
                 var tileY = bottomTile
                 while (tileY < endY && tileY < tilesPerColumn) {
                     val row = tileY * indexesPerRow
-                    tileMap.drawStrip(gl, true, row + startOffset, count)
+                    tileMap.drawStrip(row + startOffset, count)
                     tileY++
                 }
-                gl.glPopMatrix()
-                Grid.endDrawing(gl)
+
+                tileMap.endDrawingStrips(shader)
             }
         }
     }

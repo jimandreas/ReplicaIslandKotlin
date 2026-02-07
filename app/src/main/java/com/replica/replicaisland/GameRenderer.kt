@@ -18,32 +18,28 @@
 package com.replica.replicaisland
 
 import android.content.Context
-import android.os.Build
+import android.opengl.GLES20
+import android.opengl.GLSurfaceView
 import android.os.SystemClock
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.DrawableBitmap
+import com.replica.replicaisland.rendering.MatrixHelper
 import com.replica.replicaisland.rendering.OpenGLSystem
 import com.replica.replicaisland.rendering.RenderSystem
+import com.replica.replicaisland.rendering.ShaderProgram
+import com.replica.replicaisland.rendering.SpriteQuad
 import com.replica.replicaisland.rendering.TextureLibrary
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.utils.BufferLibrary
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-// TODO 2 : apply a kotlin solution to this issue
-// https://stackoverflow.com/a/44589962/3853712
-
-// defined in GameThread.kt:
-// fun Any.wait() = (this as Object).wait()
-// fun Any.notify() = (this as Object).notify()
-// fun Any.notifyAll() = (this as Object).notifyAll()
-
 /**
  * GameRenderer the top-level rendering interface for the game engine.  It is called by
- * GLSurfaceView and is responsible for submitting commands to OpenGL.  GameRenderer receives a
- * queue of renderable objects from the thread and uses that to draw the scene every frame.  If
- * no queue is available then no drawing is performed.  If the queue is not changed from frame to
- * frame, the same scene will be redrawn every frame.
+ * GLSurfaceView and is responsible for submitting commands to OpenGL ES 2.0.  GameRenderer
+ * receives a queue of renderable objects from the thread and uses that to draw the scene every
+ * frame.  If no queue is available then no drawing is performed.  If the queue is not changed
+ * from frame to frame, the same scene will be redrawn every frame.
  * The GameRenderer also invokes texture loads when it is activated.
  */
 class GameRenderer(private var mContext: Context, private val mGame: Game, private val mWidth: Int, private val mHeight: Int) : GLSurfaceView.Renderer {
@@ -63,87 +59,59 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     private var mCameraX: Float
     private var mCameraY: Float
     private var callbackRequested: Boolean
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        /*
-         * Some one-time OpenGL initialization can be made here probably based
-         * on features of this particular context
-         */
-        gl!!.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST)
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 1f)
-        gl.glShadeModel(GL10.GL_FLAT)
-        gl.glDisable(GL10.GL_DEPTH_TEST)
-        gl.glEnable(GL10.GL_TEXTURE_2D)
-        /*
-         * By default, OpenGL enables features that improve quality but reduce
-         * performance. One might want to tweak that especially on software
-         * renderer.
-         */gl.glDisable(GL10.GL_DITHER)
-        gl.glDisable(GL10.GL_LIGHTING)
-        gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE)
-        gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
-        val extensions = gl.glGetString(GL10.GL_EXTENSIONS)
-        val version = gl.glGetString(GL10.GL_VERSION)
-        val renderer = gl.glGetString(GL10.GL_RENDERER)
-        val isSoftwareRenderer = renderer.contains("PixelFlinger")
-        val isOpenGL10 = version.contains("1.0")
-        val supportsDrawTexture = extensions.contains("draw_texture")
-        // VBOs are standard in GLES1.1
-        // No use using VBOs when software renderering, esp. since older versions of the software renderer
-        // had a crash bug related to freeing VBOs.
-        val supportsVBOs = !isSoftwareRenderer && (!isOpenGL10 || extensions.contains("vertex_buffer_object"))
-        val params = BaseObject.sSystemRegistry.contextParameters
-        params!!.supportsDrawTexture = supportsDrawTexture
-        params.supportsVBOs = supportsVBOs
-        hackBrokenDevices()
-        DebugLog.i("Graphics Support", version + " (" + renderer + "): " + (if (supportsDrawTexture) "draw texture," else "") + if (supportsVBOs) "vbos" else "")
+        // When a new EGL context is created, all previous GL resources are invalidated.
+        // Notify the game so it can mark textures/buffers as needing reload.
+        mGame.onSurfaceLost()
+
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1f)
+        GLES20.glDisable(GLES20.GL_DEPTH_TEST)
+        GLES20.glDisable(GLES20.GL_DITHER)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+
+        // Compile shaders
+        val shader = ShaderProgram()
+        if (shader.compile()) {
+            OpenGLSystem.spriteShader = shader
+            DebugLog.i("Graphics", "ES 2.0 shaders compiled successfully")
+        } else {
+            DebugLog.e("Graphics", "Failed to compile ES 2.0 shaders!")
+        }
+
+        // Initialize sprite quad VBO
+        val quad = SpriteQuad()
+        quad.initialize()
+        OpenGLSystem.spriteQuad = quad
+
+        // Initialize matrix helper
+        OpenGLSystem.matrixHelper = MatrixHelper()
+
+        val version = GLES20.glGetString(GLES20.GL_VERSION)
+        val renderer = GLES20.glGetString(GLES20.GL_RENDERER)
+        DebugLog.i("Graphics Support", "$version ($renderer): ES 2.0 mode")
+
         mGame.onSurfaceCreated()
     }
 
-    private fun hackBrokenDevices() {
-        // Some devices are broken.  Fix them here.  This is pretty much the only
-        // device-specific code in the whole project.  Ugh.
-        val params = BaseObject.sSystemRegistry.contextParameters
-        if (Build.PRODUCT.contains("morrison")) {
-            // This is the Motorola Cliq.  This device LIES and says it supports
-            // VBOs, which it actually does not (or, more likely, the extensions string
-            // is correct and the GL JNI glue is broken).
-            params!!.supportsVBOs = false
-            // TODO: if Motorola fixes this, I should switch to using the fingerprint
-            // (blur/morrison/morrison/morrison:1.5/CUPCAKE/091007:user/ota-rel-keys,release-keys)
-            // instead of the product name so that newer versions use VBOs.
-        }
+    fun loadTextures(library: TextureLibrary?) {
+        library!!.loadAll(mContext)
+        DebugLog.d("AndouKun", "Textures Loaded.")
     }
 
-    override fun loadTextures(gl: GL10?, library: TextureLibrary?) {
-        if (gl != null) {
-            library!!.loadAll(mContext, gl)
-            DebugLog.d("AndouKun", "Textures Loaded.")
-        }
+    fun flushTextures(library: TextureLibrary?) {
+        library!!.deleteAll()
+        DebugLog.d("AndouKun", "Textures Unloaded.")
     }
 
-    override fun flushTextures(gl: GL10?, library: TextureLibrary?) {
-        if (gl != null) {
-            library!!.deleteAll(gl)
-            DebugLog.d("AndouKun", "Textures Unloaded.")
-        }
+    fun loadBuffers(library: BufferLibrary?) {
+        library!!.generateHardwareBuffers()
+        DebugLog.d("AndouKun", "Buffers Created.")
     }
 
-    override fun loadBuffers(gl: GL10?, library: BufferLibrary?) {
-        if (gl != null) {
-            library!!.generateHardwareBuffers(gl)
-            DebugLog.d("AndouKun", "Buffers Created.")
-        }
-    }
-
-    override fun flushBuffers(gl: GL10?, library: BufferLibrary?) {
-        if (gl != null) {
-            library!!.releaseHardwareBuffers(gl)
-            DebugLog.d("AndouKun", "Buffers Released.")
-        }
-    }
-
-    override fun onSurfaceLost() {
-        mGame.onSurfaceLost()
+    fun flushBuffers(library: BufferLibrary?) {
+        library!!.releaseHardwareBuffers()
+        DebugLog.d("AndouKun", "Buffers Released.")
     }
 
     fun requestCallback() {
@@ -160,7 +128,6 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     try {
                         drawLock.wait()
                     } catch (_: InterruptedException) {
-                        // No big deal if this wait is interrupted.
                     }
                 }
             }
@@ -171,10 +138,12 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
             mGame.onSurfaceReady()
             callbackRequested = false
         }
-        DrawableBitmap.beginDrawing(gl!!, mWidth.toFloat(), mHeight.toFloat())
+
+        OpenGLSystem.resetBindings()
+        DrawableBitmap.beginDrawing(mWidth.toFloat(), mHeight.toFloat())
+
         synchronized(this) {
             if (drawQueue != null && drawQueue!!.fetchObjects().count > 0) {
-                OpenGLSystem.gL = gl
                 val objects = drawQueue!!.fetchObjects()
                 val objectArray: Array<Any?> = objects.array as Array<Any?>
                 val count = objects.count
@@ -193,14 +162,13 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     }
                     element.mDrawable!!.draw(x, y, scaleX, scaleY)
                 }
-                OpenGLSystem.gL = null
             } else if (drawQueue == null) {
-                // If we have no draw queue, clear the screen.  If we have a draw queue that
-                // is empty, we'll leave the frame buffer alone.
-                gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
             }
         }
-        DrawableBitmap.endDrawing(gl)
+
+        DrawableBitmap.endDrawing()
+
         val time2 = SystemClock.uptimeMillis()
         lastTime = time2
         profileFrameTime += time_delta
@@ -228,27 +196,15 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         DebugLog.d("AndouKun", "Surface Size Change: $width, $height")
 
-        //mWidth = w;0
-        //mHeight = h;
-        // ensure the same aspect ratio as the game
         val scaleX = width.toFloat() / mWidth
         val scaleY = height.toFloat() / mHeight
         val viewportWidth = (mWidth * scaleX).toInt()
         val viewportHeight = (mHeight * scaleY).toInt()
-        gl!!.glViewport(0, 0, viewportWidth, viewportHeight)
+
+        GLES20.glViewport(0, 0, viewportWidth, viewportHeight)
+
         mScaleX = scaleX
         mScaleY = scaleY
-
-
-        /*
-         * Set our projection matrix. This doesn't have to be done each time we
-         * draw, but usually a new projection needs to be set when the viewport
-         * is resized.
-         */
-        val ratio = mWidth.toFloat() / mHeight
-        gl.glMatrixMode(GL10.GL_PROJECTION)
-        gl.glLoadIdentity()
-        gl.glFrustumf(-ratio, ratio, -1f, 1f, 1f, 10f)
         mGame.onSurfaceReady()
     }
 
@@ -265,20 +221,12 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
 
     @Synchronized
     fun onPause() {
-        // Stop waiting to avoid deadlock.
-        // TODO: this is a hack.  Probably this renderer
-        // should just use GLSurfaceView's non-continuious render
-        // mode.
         synchronized(drawLock) {
             drawQueueChanged = true
             drawLock.notify()
         }
     }
 
-    /**
-     * This function blocks while drawFrame() is in progress, and may be used by other threads to
-     * determine when drawing is occurring.
-     */
     @Synchronized
     fun waitDrawingComplete() {
     }

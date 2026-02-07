@@ -18,7 +18,6 @@ package com.replica.replicaisland.utils
 
 import com.replica.replicaisland.Grid
 import com.replica.replicaisland.core.BaseObject
-import javax.microedition.khronos.opengles.GL10
 
 class BufferLibrary : BaseObject() {
     private val gridList: FixedSizeArray<Grid> = FixedSizeArray(GRID_LIST_SIZE)
@@ -34,33 +33,27 @@ class BufferLibrary : BaseObject() {
         gridList.clear()
     }
 
-    fun generateHardwareBuffers(gl: GL10?) {
-        if (sSystemRegistry.contextParameters!!.supportsVBOs) {
-            val count = gridList.count
-            for (x in 0 until count) {
-                val grid = gridList[x]
-                grid!!.generateHardwareBuffers(gl)
-            }
+    fun generateHardwareBuffers() {
+        val count = gridList.count
+        for (x in 0 until count) {
+            val grid = gridList[x]
+            grid!!.generateHardwareBuffers()
         }
     }
 
-    fun releaseHardwareBuffers(gl: GL10?) {
-        if (sSystemRegistry.contextParameters!!.supportsVBOs) {
-            val count = gridList.count
-            for (x in 0 until count) {
-                val grid = gridList[x]
-                grid!!.releaseHardwareBuffers(gl)
-            }
+    fun releaseHardwareBuffers() {
+        val count = gridList.count
+        for (x in 0 until count) {
+            val grid = gridList[x]
+            grid!!.releaseHardwareBuffers()
         }
     }
 
     fun invalidateHardwareBuffers() {
-        if (sSystemRegistry.contextParameters!!.supportsVBOs) {
-            val count = gridList.count
-            for (x in 0 until count) {
-                val grid = gridList[x]
-                grid!!.invalidateHardwareBuffers()
-            }
+        val count = gridList.count
+        for (x in 0 until count) {
+            val grid = gridList[x]
+            grid!!.invalidateHardwareBuffers()
         }
     }
 
