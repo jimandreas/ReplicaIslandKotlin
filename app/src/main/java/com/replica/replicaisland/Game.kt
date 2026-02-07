@@ -70,7 +70,6 @@ class Game : AllocationGuard() {
     private var mGameRoot: ObjectManager? = null
     var renderer: GameRenderer? = null
         private set
-    private var surfaceView: GLSurfaceView? = null
     private var mRunning = false
     private var bootstrapComplete = false
     private var pendingLevel: LevelTree.Level? = null
@@ -91,7 +90,7 @@ class Game : AllocationGuard() {
             renderer = GameRenderer(context, this, gameWidth, gameHeight)
 
             // Create core systems
-            BaseObject.sSystemRegistry.openGLSystem = OpenGLSystem(null)
+            BaseObject.sSystemRegistry.openGLSystem = OpenGLSystem()
             BaseObject.sSystemRegistry.customToastSystem = CustomToastSystem(context)
             val params = mContextParameters
             params.viewWidth = viewWidth
@@ -309,9 +308,9 @@ class Game : AllocationGuard() {
         BaseObject.sSystemRegistry.reset()
 
         // Dump the short-term texture objects only.
-        surfaceView!!.flushTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+        renderer!!.flushTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
         BaseObject.sSystemRegistry.shortTermTextureLibrary!!.removeAll()
-        surfaceView!!.flushBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+        renderer!!.flushBuffers(BaseObject.sSystemRegistry.bufferLibrary)
         BaseObject.sSystemRegistry.bufferLibrary!!.removeAll()
     }
 
@@ -354,9 +353,9 @@ class Game : AllocationGuard() {
                 params!!.context!!.resources.openRawResource(level.resource), mGameRoot!!)
         val context = params.context
         renderer!!.setContext(context!!)
-        surfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
-        surfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
-        surfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+        renderer!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
+        renderer!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+        renderer!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
         gLDataLoaded = true
         currentLevel = level
         pendingLevel = null
@@ -487,10 +486,6 @@ class Game : AllocationGuard() {
         }
     }
 
-    fun setSurfaceView(view: GLSurfaceView?) {
-        surfaceView = view
-    }
-
     fun onSurfaceLost() {
         DebugLog.d("AndouKun", "Surface Lost")
         BaseObject.sSystemRegistry.shortTermTextureLibrary!!.invalidateAll()
@@ -502,12 +497,10 @@ class Game : AllocationGuard() {
     fun onSurfaceCreated() {
         DebugLog.d("AndouKun", "Surface Created")
 
-        // TODO: this is dumb.  SurfaceView doesn't need to control everything here.
-        // GL should just be passed to this function and then set up directly.
         if (!gLDataLoaded && gameThread!!.paused && mRunning && pendingLevel == null) {
-            surfaceView!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
-            surfaceView!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
-            surfaceView!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
+            renderer!!.loadTextures(BaseObject.sSystemRegistry.longTermTextureLibrary)
+            renderer!!.loadTextures(BaseObject.sSystemRegistry.shortTermTextureLibrary)
+            renderer!!.loadBuffers(BaseObject.sSystemRegistry.bufferLibrary)
             gLDataLoaded = true
         }
     }
@@ -525,10 +518,6 @@ class Game : AllocationGuard() {
         BaseObject.sSystemRegistry.inputGameInterface!!.setMovementSensitivity(movementSensitivity / 100.0f)
         BaseObject.sSystemRegistry.inputGameInterface!!.setUseOnScreenControls(onScreenControls)
         BaseObject.sSystemRegistry.hudSystem!!.setMovementSliderMode(onScreenControls)
-    }
-
-    fun setSafeMode(safe: Boolean) {
-        surfaceView!!.setSafeMode(safe)
     }
 
     val gameTime: Float

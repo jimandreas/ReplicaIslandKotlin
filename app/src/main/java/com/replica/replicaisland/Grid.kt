@@ -17,34 +17,28 @@
 
 package com.replica.replicaisland
 
+import android.opengl.GLES20
+import com.replica.replicaisland.rendering.ShaderProgram
 import com.replica.replicaisland.ui.DebugLog
 import java.nio.*
-import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
 
 /**
  * A 2D rectangular mesh. Can be drawn textured or untextured.
- * This version is modified from the original Grid.java (found in
- * the SpriteText package in the APIDemos Android sample) to support hardware
- * vertex buffers and to insert edges between grid squares for tiling.
+ * Uses OpenGL ES 2.0 with VBOs for hardware-accelerated rendering.
  */
-class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
-    private var floatVertexBuffer: FloatBuffer? = null
-    private var floatTexCoordBuffer: FloatBuffer? = null
-    private var fixedVertexBuffer: IntBuffer? = null
-    private var fixedTexCoordBuffer: IntBuffer? = null
-    private val indexBuffer: CharBuffer
-    private var vertexBuffer: Buffer? = null
-    private var texCoordBuffer: Buffer? = null
-    private var coordinateSize = 0
-    private var coordinateType = 0
+class Grid(quadsAcross: Int, quadsDown: Int) {
+    private val floatVertexBuffer: FloatBuffer
+    private val floatTexCoordBuffer: FloatBuffer
     private val mVertsAcross: Int
     private val mVertsDown: Int
     private val mIndexCount: Int
-    private var useHardwareBuffers: Boolean
-    private var vertBufferIndex: Int
+    private val shortIndexBuffer: ShortBuffer
+
+    // ES 2.0 VBO handles
+    private var vertBufferIndex = 0
+    private var texCoordBufferIndex = 0
     private var indexBufferIndex = 0
-    private var textureCoordBufferIndex = 0
+    private var useHardwareBuffers = false
 
     operator fun set(quadX: Int, quadY: Int, positions: Array<FloatArray>, uvs: Array<FloatArray>) {
         require(!(quadX < 0 || quadX * 2 >= mVertsAcross)) { "quadX" }
@@ -65,80 +59,54 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         val index = mVertsAcross * j + i
         val posIndex = index * 3
         val texIndex = index * 2
-        if (coordinateType == GL10.GL_FLOAT) {
-            floatVertexBuffer!!.put(posIndex, x)
-            floatVertexBuffer!!.put(posIndex + 1, y)
-            floatVertexBuffer!!.put(posIndex + 2, z)
-            floatTexCoordBuffer!!.put(texIndex, u)
-            floatTexCoordBuffer!!.put(texIndex + 1, v)
+        floatVertexBuffer.put(posIndex, x)
+        floatVertexBuffer.put(posIndex + 1, y)
+        floatVertexBuffer.put(posIndex + 2, z)
+        floatTexCoordBuffer.put(texIndex, u)
+        floatTexCoordBuffer.put(texIndex + 1, v)
+    }
+
+    fun beginDrawingStrips(shader: ShaderProgram) {
+        if (useHardwareBuffers) {
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertBufferIndex)
+            GLES20.glEnableVertexAttribArray(shader.aPositionLocation)
+            GLES20.glVertexAttribPointer(shader.aPositionLocation, 3, GLES20.GL_FLOAT, false, 0, 0)
+
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, texCoordBufferIndex)
+            GLES20.glEnableVertexAttribArray(shader.aTexCoordLocation)
+            GLES20.glVertexAttribPointer(shader.aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 0, 0)
+
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
         } else {
-            fixedVertexBuffer!!.put(posIndex, (x * (1 shl 16)).toInt())
-            fixedVertexBuffer!!.put(posIndex + 1, (y * (1 shl 16)).toInt())
-            fixedVertexBuffer!!.put(posIndex + 2, (z * (1 shl 16)).toInt())
-            fixedTexCoordBuffer!!.put(texIndex, (u * (1 shl 16)).toInt())
-            fixedTexCoordBuffer!!.put(texIndex + 1, (v * (1 shl 16)).toInt())
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
+            GLES20.glEnableVertexAttribArray(shader.aPositionLocation)
+            GLES20.glVertexAttribPointer(shader.aPositionLocation, 3, GLES20.GL_FLOAT, false, 0, floatVertexBuffer)
+
+            GLES20.glEnableVertexAttribArray(shader.aTexCoordLocation)
+            GLES20.glVertexAttribPointer(shader.aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 0, floatTexCoordBuffer)
+
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0)
         }
     }
 
-    fun beginDrawingStrips(gl: GL10, useTexture: Boolean) {
-        beginDrawing(gl, useTexture)
-        if (!useHardwareBuffers) {
-            gl.glVertexPointer(3, coordinateType, 0, vertexBuffer)
-            if (useTexture) {
-                gl.glTexCoordPointer(2, coordinateType, 0, texCoordBuffer)
-            }
-        } else {
-            val gl11 = gl as GL11
-            // draw using hardware buffers
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
-            gl11.glVertexPointer(3, coordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, textureCoordBufferIndex)
-            gl11.glTexCoordPointer(2, coordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
-        }
-    }
-
-    // Assumes beginDrawingStrips() has been called before this.
-    fun drawStrip(gl: GL10, useTexture: Boolean, startIndex: Int, indexCount: Int) {
+    fun drawStrip(startIndex: Int, indexCount: Int) {
         var count = indexCount
         if (startIndex + indexCount >= mIndexCount) {
             count = mIndexCount - startIndex
         }
-        if (!useHardwareBuffers) {
-            gl.glDrawElements(GL10.GL_TRIANGLES, count,
-                    GL10.GL_UNSIGNED_SHORT, indexBuffer.position(startIndex))
+        if (useHardwareBuffers) {
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_SHORT, startIndex * SHORT_SIZE)
         } else {
-            val gl11 = gl as GL11
-            gl11.glDrawElements(GL11.GL_TRIANGLES, count,
-                    GL11.GL_UNSIGNED_SHORT, startIndex * CHAR_SIZE)
+            shortIndexBuffer.position(startIndex)
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_SHORT, shortIndexBuffer)
         }
     }
 
-    fun draw(gl: GL10, useTexture: Boolean) {
-        if (!useHardwareBuffers) {
-            gl.glVertexPointer(3, coordinateType, 0, vertexBuffer)
-            if (useTexture) {
-                gl.glTexCoordPointer(2, coordinateType, 0, texCoordBuffer)
-            }
-            gl.glDrawElements(GL10.GL_TRIANGLES, mIndexCount,
-                    GL10.GL_UNSIGNED_SHORT, indexBuffer)
-        } else {
-            val gl11 = gl as GL11
-            // draw using hardware buffers
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
-            gl11.glVertexPointer(3, coordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, textureCoordBufferIndex)
-            gl11.glTexCoordPointer(2, coordinateType, 0, 0)
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
-            gl11.glDrawElements(GL11.GL_TRIANGLES, mIndexCount,
-                    GL11.GL_UNSIGNED_SHORT, 0)
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
-        }
-    }
-
-    fun usingHardwareBuffers(): Boolean {
-        return useHardwareBuffers
+    fun endDrawingStrips(shader: ShaderProgram) {
+        GLES20.glDisableVertexAttribArray(shader.aPositionLocation)
+        GLES20.glDisableVertexAttribArray(shader.aTexCoordLocation)
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0)
     }
 
     /**
@@ -148,103 +116,60 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
      */
     fun invalidateHardwareBuffers() {
         vertBufferIndex = 0
+        texCoordBufferIndex = 0
         indexBufferIndex = 0
-        textureCoordBufferIndex = 0
         useHardwareBuffers = false
     }
 
-    /**
-     * Deletes the hardware buffers allocated by this object (if any).
-     */
-    fun releaseHardwareBuffers(gl: GL10?) {
+    fun releaseHardwareBuffers() {
         if (useHardwareBuffers) {
-            if (gl is GL11) {
-                val buffer = IntArray(1)
-                buffer[0] = vertBufferIndex
-                gl.glDeleteBuffers(1, buffer, 0)
-                buffer[0] = textureCoordBufferIndex
-                gl.glDeleteBuffers(1, buffer, 0)
-                buffer[0] = indexBufferIndex
-                gl.glDeleteBuffers(1, buffer, 0)
-            }
+            val buffer = IntArray(1)
+            buffer[0] = vertBufferIndex
+            GLES20.glDeleteBuffers(1, buffer, 0)
+            buffer[0] = texCoordBufferIndex
+            GLES20.glDeleteBuffers(1, buffer, 0)
+            buffer[0] = indexBufferIndex
+            GLES20.glDeleteBuffers(1, buffer, 0)
             invalidateHardwareBuffers()
         }
     }
 
-    /**
-     * Allocates hardware buffers on the graphics card and fills them with
-     * data if a buffer has not already been previously allocated.  Note that
-     * this function uses the GL_OES_vertex_buffer_object extension, which is
-     * not guaranteed to be supported on every device.
-     * @param gl  A pointer to the OpenGL ES context.
-     */
-    fun generateHardwareBuffers(gl: GL10?) {
+    fun generateHardwareBuffers() {
         if (!useHardwareBuffers) {
             DebugLog.i("Grid", "Using Hardware Buffers")
-            if (gl is GL11) {
-                val buffer = IntArray(1)
+            val buffer = IntArray(1)
 
-                // Allocate and fill the vertex buffer.
-                gl.glGenBuffers(1, buffer, 0)
-                vertBufferIndex = buffer[0]
-                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, vertBufferIndex)
-                val vertexSize = vertexBuffer!!.capacity() * coordinateSize
-                gl.glBufferData(GL11.GL_ARRAY_BUFFER, vertexSize,
-                        vertexBuffer, GL11.GL_STATIC_DRAW)
+            // Vertex buffer
+            GLES20.glGenBuffers(1, buffer, 0)
+            vertBufferIndex = buffer[0]
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertBufferIndex)
+            val vertexSize = floatVertexBuffer.capacity() * FLOAT_SIZE
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexSize, floatVertexBuffer, GLES20.GL_STATIC_DRAW)
 
-                // Allocate and fill the texture coordinate buffer.
-                gl.glGenBuffers(1, buffer, 0)
-                textureCoordBufferIndex = buffer[0]
-                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER,
-                        textureCoordBufferIndex)
-                val texCoordSize = texCoordBuffer!!.capacity() * coordinateSize
-                gl.glBufferData(GL11.GL_ARRAY_BUFFER, texCoordSize,
-                        texCoordBuffer, GL11.GL_STATIC_DRAW)
+            // Texture coordinate buffer
+            GLES20.glGenBuffers(1, buffer, 0)
+            texCoordBufferIndex = buffer[0]
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, texCoordBufferIndex)
+            val texCoordSize = floatTexCoordBuffer.capacity() * FLOAT_SIZE
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, texCoordSize, floatTexCoordBuffer, GLES20.GL_STATIC_DRAW)
 
-                // Unbind the array buffer.
-                gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
 
-                // Allocate and fill the index buffer.
-                gl.glGenBuffers(1, buffer, 0)
-                indexBufferIndex = buffer[0]
-                gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER,
-                        indexBufferIndex)
-                // A char is 2 bytes.
-                val indexSize = indexBuffer.capacity() * 2
-                gl.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexSize, indexBuffer,
-                        GL11.GL_STATIC_DRAW)
+            // Index buffer
+            GLES20.glGenBuffers(1, buffer, 0)
+            indexBufferIndex = buffer[0]
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferIndex)
+            val indexSize = shortIndexBuffer.capacity() * SHORT_SIZE
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexSize, shortIndexBuffer, GLES20.GL_STATIC_DRAW)
 
-                // Unbind the element array buffer.
-                gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
-                useHardwareBuffers = true
-                // TODO: fix assertions
-//                assert(vertBufferIndex != 0)
-//                assert(textureCoordBufferIndex != 0)
-//                assert(indexBufferIndex != 0)
-//                assert(gl11.glGetError() == 0)
-            }
+            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0)
+            useHardwareBuffers = true
         }
     }
 
     companion object {
         private const val FLOAT_SIZE = 4
-        private const val FIXED_SIZE = 4
-        private const val CHAR_SIZE = 2
-        fun beginDrawing(gl: GL10, useTexture: Boolean) {
-            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY)
-            if (useTexture) {
-                gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY)
-                gl.glEnable(GL10.GL_TEXTURE_2D)
-            } else {
-                gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY)
-                gl.glDisable(GL10.GL_TEXTURE_2D)
-            }
-        }
-
-        
-        fun endDrawing(gl: GL10) {
-            gl.glDisableClientState(GL10.GL_VERTEX_ARRAY)
-        }
+        private const val SHORT_SIZE = 2
     }
 
     init {
@@ -253,34 +178,21 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
         require(vertsAcross in 0..<65536) { "quadsAcross" }
         require(vertsDown in 0..<65536) { "quadsDown" }
         require(vertsAcross * vertsDown < 65536) { "quadsAcross * quadsDown >= 32768" }
-        useHardwareBuffers = false
         mVertsAcross = vertsAcross
         mVertsDown = vertsDown
         val size = vertsAcross * vertsDown
-        if (useFixedPoint) {
-            fixedVertexBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 3)
-                    .order(ByteOrder.nativeOrder()).asIntBuffer()
-            fixedTexCoordBuffer = ByteBuffer.allocateDirect(FIXED_SIZE * size * 2)
-                    .order(ByteOrder.nativeOrder()).asIntBuffer()
-            vertexBuffer = fixedVertexBuffer
-            texCoordBuffer = fixedTexCoordBuffer
-            coordinateSize = FIXED_SIZE
-            coordinateType = GL10.GL_FIXED
-        } else {
-            floatVertexBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 3)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer()
-            floatTexCoordBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 2)
-                    .order(ByteOrder.nativeOrder()).asFloatBuffer()
-            vertexBuffer = floatVertexBuffer
-            texCoordBuffer = floatTexCoordBuffer
-            coordinateSize = FLOAT_SIZE
-            coordinateType = GL10.GL_FLOAT
-        }
+
+        floatVertexBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 3)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer()
+        floatTexCoordBuffer = ByteBuffer.allocateDirect(FLOAT_SIZE * size * 2)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer()
+
         val quadCount = quadsAcross * quadsDown
         val indexCount = quadCount * 6
         mIndexCount = indexCount
-        indexBuffer = ByteBuffer.allocateDirect(CHAR_SIZE * indexCount)
-                .order(ByteOrder.nativeOrder()).asCharBuffer()
+
+        shortIndexBuffer = ByteBuffer.allocateDirect(SHORT_SIZE * indexCount)
+                .order(ByteOrder.nativeOrder()).asShortBuffer()
 
         /*
          * Initialize triangle list mesh.
@@ -299,19 +211,17 @@ class Grid(quadsAcross: Int, quadsDown: Int, useFixedPoint: Boolean) {
             val indexY = y * 2
             for (x in 0 until quadsAcross) {
                 val indexX = x * 2
-                val a = (indexY * mVertsAcross + indexX).toChar()
-                val b = (indexY * mVertsAcross + indexX + 1).toChar()
-                val c = ((indexY + 1) * mVertsAcross + indexX).toChar()
-                val d = ((indexY + 1) * mVertsAcross + indexX + 1).toChar()
-                indexBuffer.put(i++, a)
-                indexBuffer.put(i++, b)
-                indexBuffer.put(i++, c)
-                indexBuffer.put(i++, b)
-                indexBuffer.put(i++, c)
-                indexBuffer.put(i++, d)
+                val a = (indexY * mVertsAcross + indexX).toShort()
+                val b = (indexY * mVertsAcross + indexX + 1).toShort()
+                val c = ((indexY + 1) * mVertsAcross + indexX).toShort()
+                val d = ((indexY + 1) * mVertsAcross + indexX + 1).toShort()
+                shortIndexBuffer.put(i++, a)
+                shortIndexBuffer.put(i++, b)
+                shortIndexBuffer.put(i++, c)
+                shortIndexBuffer.put(i++, b)
+                shortIndexBuffer.put(i++, c)
+                shortIndexBuffer.put(i++, d)
             }
         }
-
-        vertBufferIndex = 0
     }
 }

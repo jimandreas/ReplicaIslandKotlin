@@ -21,14 +21,11 @@ package com.replica.replicaisland.rendering
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.opengl.GLU
+import android.opengl.GLES20
 import android.opengl.GLUtils
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.core.BaseObject
 import java.io.IOException
-import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
-import javax.microedition.khronos.opengles.GL11Ext
 
 /**
  * The Texture Library manages all textures in the game.  Textures are pooled and handed out to
@@ -38,21 +35,12 @@ import javax.microedition.khronos.opengles.GL11Ext
  * various game systems and while the texture data itself is streamed in or loaded as necessary.
  */
 class TextureLibrary : BaseObject() {
-    // Textures are stored in a simple hash.  This class implements its own array-based hash rather
-    // than using HashMap for performance.
     private var textureHash: Array<Texture?> = arrayOfNulls(DEFAULT_SIZE)
     private var textureNameWorkspace: IntArray
-    private var cropWorkspace: IntArray
     override fun reset() {
         removeAll()
     }
 
-    /**
-     * Creates a Texture object that is mapped to the passed resource id.  If a texture has already
-     * been allocated for this id, the previously allocated Texture object is returned.
-     * @param resourceID
-     * @return
-     */
     fun allocateTexture(resourceID: Int): Texture? {
         var texture = getTextureByResource(resourceID)
         if (texture == null) {
@@ -61,41 +49,31 @@ class TextureLibrary : BaseObject() {
         return texture
     }
 
-    /** Loads a single texture into memory.  Does nothing if the texture is already loaded.  */
-    fun loadTexture(context: Context?, gl: GL10?, resourceID: Int): Texture {
+    fun loadTexture(context: Context?, resourceID: Int): Texture {
         var texture = allocateTexture(resourceID)
-        texture = loadBitmap(context, gl, texture)
+        texture = loadBitmap(context, texture)
         return texture
     }
 
-    /** Loads all unloaded textures into OpenGL memory.  Already-loaded textures are ignored.  */
-    fun loadAll(context: Context?, gl: GL10?) {
+    fun loadAll(context: Context?) {
         for (x in textureHash.indices) {
             if (textureHash[x]!!.resource != -1 && !textureHash[x]!!.loaded) {
-                loadBitmap(context, gl, textureHash[x])
+                loadBitmap(context, textureHash[x])
             }
         }
     }
 
-    /** Flushes all textures from OpenGL memory  */
-    fun deleteAll(gl: GL10) {
+    fun deleteAll() {
         for (x in textureHash.indices) {
             if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded) {
-                //TODO: assert(textureHash[x]!!.name != -1)
                 textureNameWorkspace[0] = textureHash[x]!!.name
                 textureHash[x]!!.name = -1
                 textureHash[x]!!.loaded = false
-                gl.glDeleteTextures(1, textureNameWorkspace, 0)
-                val error = gl.glGetError()
-                if (error != GL10.GL_NO_ERROR) {
-                    DebugLog.d("Texture Delete", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + textureHash[x]!!.resource)
-                }
-                //TODO: assert(error == GL10.GL_NO_ERROR)
+                GLES20.glDeleteTextures(1, textureNameWorkspace, 0)
             }
         }
     }
 
-    /** Marks all textures as unloaded  */
     fun invalidateAll() {
         for (x in textureHash.indices) {
             if (textureHash[x]!!.resource != -1 && textureHash[x]!!.loaded) {
@@ -105,63 +83,47 @@ class TextureLibrary : BaseObject() {
         }
     }
 
-    /** Loads a bitmap into OpenGL and sets up the common parameters for 2D texture maps.  */
-    private fun loadBitmap(context: Context?, gl: GL10?, texture: Texture?): Texture {
-        //TODO: assert(gl != null)
-        //TODO: assert(context != null)
-        //TODO: assert(texture != null)
+    private fun loadBitmap(context: Context?, texture: Texture?): Texture {
         if (!texture!!.loaded && texture.resource != -1) {
-            gl!!.glGenTextures(1, textureNameWorkspace, 0)
-            var error = gl.glGetError()
-            if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 1", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+            GLES20.glGenTextures(1, textureNameWorkspace, 0)
+            var error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                DebugLog.d("Texture Load 1", "GLError: $error: ${texture.resource}")
             }
-            //TODO: assert(error == GL10.GL_NO_ERROR)
             val textureName = textureNameWorkspace[0]
-            gl.glBindTexture(GL10.GL_TEXTURE_2D, textureName)
-            error = gl.glGetError()
-            if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 2", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureName)
+            error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                DebugLog.d("Texture Load 2", "GLError: $error: ${texture.resource}")
             }
-            //TODO: assert(error == GL10.GL_NO_ERROR)
-            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST.toFloat())
-            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR.toFloat())
-            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE.toFloat())
-            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE.toFloat())
-            gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE.toFloat()) //GL10.GL_REPLACE);
-            val `is` = context!!.resources.openRawResource(texture.resource)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+
+            val inputStream = context!!.resources.openRawResource(texture.resource)
             val bitmap: Bitmap = try {
-                BitmapFactory.decodeStream(`is`)
+                BitmapFactory.decodeStream(inputStream)
             } finally {
                 try {
-                    `is`.close()
+                    inputStream.close()
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    // Ignore.
                 }
             }
-            GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0)
-            error = gl.glGetError()
-            if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 3", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+            error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                DebugLog.d("Texture Load 3", "GLError: $error: ${texture.resource}")
             }
-            //TODO: assert(error == GL10.GL_NO_ERROR)
-            cropWorkspace[0] = 0
-            cropWorkspace[1] = bitmap.height
-            cropWorkspace[2] = bitmap.width
-            cropWorkspace[3] = -bitmap.height
-            (gl as GL11?)!!.glTexParameteriv(
-                GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES,
-                    cropWorkspace, 0)
             texture.name = textureName
             texture.width = bitmap.width
             texture.height = bitmap.height
             bitmap.recycle()
-            error = gl.glGetError()
-            if (error != GL10.GL_NO_ERROR) {
-                DebugLog.d("Texture Load 4", "GLError: " + error + " (" + GLU.gluErrorString(error) + "): " + texture.resource)
+            error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                DebugLog.d("Texture Load 4", "GLError: $error: ${texture.resource}")
             }
-            //TODO: assert(error == GL10.GL_NO_ERROR)
             texture.loaded = true
         }
         return texture
@@ -171,12 +133,6 @@ class TextureLibrary : BaseObject() {
         return getTextureByResource(resourceID) != null
     }
 
-    /**
-     * Returns the texture associated with the passed Android resource ID.
-     * @param resourceID The resource ID of a bitmap defined in R.java.
-     * @return An associated Texture object, or null if there is no associated
-     * texture in the library.
-     */
     fun getTextureByResource(resourceID: Int): Texture? {
         val index = getHashIndex(resourceID)
         val realIndex = findFirstKey(index, resourceID)
@@ -191,15 +147,6 @@ class TextureLibrary : BaseObject() {
         return id % textureHash.size
     }
 
-    /**
-     * Locates the texture in the hash.  This hash uses a simple linear probe chaining mechanism:
-     * if the hash slot is occupied by some other entry, the next empty array index is used.
-     * This is O(n) for the worst case (every slot is a cache miss) but the average case is
-     * constant time.
-     * @param startIndex
-     * @param key
-     * @return
-     */
     private fun findFirstKey(startIndex: Int, key: Int): Int {
         var index = -1
         for (x in textureHash.indices) {
@@ -214,11 +161,9 @@ class TextureLibrary : BaseObject() {
         return index
     }
 
-    /** Inserts a texture into the hash  */
     private fun addTexture(id: Int, name: Int, width: Int, height: Int): Texture? {
         val index = findFirstKey(getHashIndex(id), -1)
         var texture: Texture? = null
-        //TODO: assert(index != -1)
         if (index != -1) {
             textureHash[index]!!.resource = id
             textureHash[index]!!.name = name
@@ -245,7 +190,6 @@ class TextureLibrary : BaseObject() {
             textureHash[x] = Texture()
         }
         textureNameWorkspace = IntArray(1)
-        cropWorkspace = IntArray(4)
         sBitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565
     }
 }

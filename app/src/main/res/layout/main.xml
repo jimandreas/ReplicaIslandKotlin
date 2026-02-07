@@ -5,9 +5,8 @@
     android:layout_height="fill_parent"
     tools:ignore="Deprecated,ContentDescription,RtlHardcoded">
 
-    <view
+    <android.opengl.GLSurfaceView
         android:id="@+id/glsurfaceview"
-        class="com.replica.replicaisland.GLSurfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

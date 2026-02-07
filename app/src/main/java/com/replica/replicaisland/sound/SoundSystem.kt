@@ -18,9 +18,13 @@ package com.replica.replicaisland.sound
 
 import android.media.AudioAttributes
 import android.media.SoundPool
+import android.os.Handler
+import android.os.HandlerThread
+import android.util.SparseIntArray
 import com.replica.replicaisland.utils.AllocationGuard
 import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.utils.FixedSizeArray
+import java.util.concurrent.atomic.AtomicInteger
 
 class SoundSystem : BaseObject() {
     private val soundPool: SoundPool
@@ -30,13 +34,22 @@ class SoundSystem : BaseObject() {
     @set:Synchronized
     var soundEnabled = false
     private val loopingStreams: IntArray
+
+    private val soundThread = HandlerThread("GameSound").apply { start() }
+    private val soundHandler = Handler(soundThread.looper)
+
+    private val handleCounter = AtomicInteger(1)
+    private val handleToStream = SparseIntArray()  // accessed only on sound thread
+
     override fun reset() {
+        soundHandler.removeCallbacksAndMessages(null)
         soundPool.release()
         soundsArray.clear()
         soundEnabled = true
         for (x in loopingStreams.indices) {
             loopingStreams[x] = -1
         }
+        handleToStream.clear()
     }
 
     fun load(resource: Int): Sound? {
@@ -60,47 +73,83 @@ class SoundSystem : BaseObject() {
 
     @Synchronized
     fun play(sound: Sound, loop: Boolean, priority: Int): Int {
-        var stream = -1
-        if (soundEnabled) {
-            stream = soundPool.play(sound.soundId, 1.0f, 1.0f, priority, if (loop) -1 else 0, 1.0f)
-            if (loop) {
+        if (!soundEnabled) return -1
+        val handle = handleCounter.getAndIncrement()
+        if (!loop) {
+            soundHandler.post {
+                soundPool.play(sound.soundId, 1.0f, 1.0f, priority, 0, 1.0f)
+            }
+            return handle
+        }
+        soundHandler.post {
+            val stream = soundPool.play(sound.soundId, 1.0f, 1.0f, priority, -1, 1.0f)
+            if (stream > 0) {
+                handleToStream.put(handle, stream)
                 addLoopingStream(stream)
             }
         }
-        return stream
+        return handle
     }
 
     @Synchronized
     fun play(sound: Sound, loop: Boolean, priority: Int, volume: Float, rate: Float): Int {
-        var stream = -1
-        if (soundEnabled) {
-            stream = soundPool.play(sound.soundId, volume, volume, priority, if (loop) -1 else 0, rate)
-            if (loop) {
+        if (!soundEnabled) return -1
+        val handle = handleCounter.getAndIncrement()
+        if (!loop) {
+            soundHandler.post {
+                soundPool.play(sound.soundId, volume, volume, priority, 0, rate)
+            }
+            return handle
+        }
+        soundHandler.post {
+            val stream = soundPool.play(sound.soundId, volume, volume, priority, -1, rate)
+            if (stream > 0) {
+                handleToStream.put(handle, stream)
                 addLoopingStream(stream)
             }
         }
-        return stream
+        return handle
     }
 
-    fun stop(stream: Int) {
-        soundPool.stop(stream)
-        removeLoopingStream(stream)
+    fun stop(handle: Int) {
+        soundHandler.post {
+            val stream = handleToStream.get(handle, -1)
+            if (stream >= 0) {
+                soundPool.stop(stream)
+                removeLoopingStream(stream)
+                handleToStream.delete(handle)
+            }
+        }
     }
 
-    fun pause(stream: Int) {
-        soundPool.pause(stream)
+    fun pause(handle: Int) {
+        soundHandler.post {
+            val stream = handleToStream.get(handle, -1)
+            if (stream >= 0) {
+                soundPool.pause(stream)
+            }
+        }
     }
 
-    fun resume(stream: Int) {
-        soundPool.resume(stream)
+    fun resume(handle: Int) {
+        soundHandler.post {
+            val stream = handleToStream.get(handle, -1)
+            if (stream >= 0) {
+                soundPool.resume(stream)
+            }
+        }
     }
 
     fun stopAll() {
-        val count = loopingStreams.size
-        for (x in count - 1 downTo 0) {
-            if (loopingStreams[x] >= 0) {
-                stop(loopingStreams[x])
+        soundHandler.post {
+            val count = loopingStreams.size
+            for (x in count - 1 downTo 0) {
+                if (loopingStreams[x] >= 0) {
+                    soundPool.stop(loopingStreams[x])
+                    loopingStreams[x] = -1
+                }
             }
+            handleToStream.clear()
         }
     }
 
@@ -110,10 +159,12 @@ class SoundSystem : BaseObject() {
     // that SoundPool does internally here, I've opted to just pause looping
     // sounds when the Activity is paused.
     fun pauseAll() {
-        val count = loopingStreams.size
-        for (x in 0 until count) {
-            if (loopingStreams[x] >= 0) {
-                pause(loopingStreams[x])
+        soundHandler.post {
+            val count = loopingStreams.size
+            for (x in 0 until count) {
+                if (loopingStreams[x] >= 0) {
+                    soundPool.pause(loopingStreams[x])
+                }
             }
         }
     }

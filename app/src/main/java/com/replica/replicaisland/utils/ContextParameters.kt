@@ -36,10 +36,6 @@ class ContextParameters : BaseObject() {
     
     var viewScaleY = 0f
     
-    var supportsDrawTexture = false
-    
-    var supportsVBOs = false
-    
     var difficulty = 0
     override fun reset() {}
 }

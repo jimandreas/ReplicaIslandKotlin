@@ -28,6 +28,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.opengl.GLSurfaceView
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -136,11 +137,10 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         waitFadeAnimation = AnimationUtils.loadAnimation(this, R.anim.wait_message_fade)
 
 
-        //gLSurfaceView.setGLWrapper(new GLErrorLogger());
+        gLSurfaceView!!.setEGLContextClientVersion(2)
         gLSurfaceView!!.setEGLConfigChooser(false) // 16 bit, no z-buffer
         //gLSurfaceView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR | GLSurfaceView.DEBUG_LOG_GL_CALLS);
         mGame = Game()
-        mGame!!.setSurfaceView(gLSurfaceView)
         val dm = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(dm)
         var defaultWidth = 480
@@ -167,7 +167,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         extrasUnlocked = prefsManager.getExtrasUnlocked()
         difficulty = intent.getIntExtra("difficulty", prefsManager.getDifficulty())
         mGame!!.bootstrap(this, dm.widthPixels, dm.heightPixels, defaultWidth, defaultHeight, difficulty)
-        gLSurfaceView!!.setRenderer(mGame!!.renderer as GLSurfaceView.Renderer)
+        gLSurfaceView!!.setRenderer(mGame!!.renderer)
         var levelTreeResource = R.xml.level_tree
         if (mLinearMode != 0) {
             levelTreeResource = R.xml.linear_level_tree
@@ -286,7 +286,6 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         mGame!!.setSoundEnabled(soundEnabled)
         mGame!!.setControlOptions(clickAttack, movementSensitivity, onScreenControls)
         mGame!!.setKeyConfig(leftKey, rightKey, jumpKey, attackKey)
-        mGame!!.setSafeMode(safeMode)
         if (sensorManager != null) {
             val orientation = sensorManager!!.getDefaultSensor(Sensor.TYPE_ORIENTATION)
             if (orientation != null) {
