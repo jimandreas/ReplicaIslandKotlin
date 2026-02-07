@@ -6,7 +6,7 @@
         <item name="android:windowBackground">@drawable/dialog_box</item>
 	</style>
 
-    <style name="Theme.AppCompat.NoTitleBar.Fullscreen" parent="Theme.AppCompat">
+    <style name="Theme.AppCompat.NoTitleBar.Fullscreen" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>

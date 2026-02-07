@@ -162,9 +162,9 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
                     }
                     element.mDrawable!!.draw(x, y, scaleX, scaleY)
                 }
-            } else if (drawQueue == null) {
-                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
             }
+            // When drawQueue is null (during level transitions), skip clearing
+            // so the last rendered frame stays visible instead of flashing black.
         }
 
         DrawableBitmap.endDrawing()

@@ -102,8 +102,9 @@ class PreferencesManager private constructor(context: Context) {
         sharedPrefs.getInt(PreferenceConstants.PREFERENCE_LAST_ENDING, -1)
 
     fun getExtrasUnlocked(): Boolean =
-//        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
-        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, true)
+        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
+        // hackjra - override extras unlocked
+//        sharedPrefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, true)
 
     // Key Config
     fun getLeftKey(): Int =

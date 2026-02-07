@@ -155,8 +155,9 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         if (intent.getBooleanExtra("newGame", false)) {
             prefsManager.clearGameProgress()
         }
-        //levelRow = prefsManager.getLevelRow()
-        levelRow = 10 // jimhack
+        levelRow = prefsManager.getLevelRow()
+        // hackjra
+        //levelRow = 10 // hackjra
         levelIndex = prefsManager.getLevelIndex()
         var completed = prefsManager.getLevelCompleted()
         totalGameTime = prefsManager.getTotalGameTime()
@@ -791,7 +792,9 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
 
         // If the version is a negative number, debug features (logging and a debug menu)
         // are enabled.
-//        const val VERSION = 14
-        const val VERSION = -1
+        // hackjra
+        //const val VERSION = -1
+       const val VERSION = 14
+
     }
 }
