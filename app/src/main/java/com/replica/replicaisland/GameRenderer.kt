@@ -116,6 +116,10 @@ class GameRenderer(private var mContext: Context, private val mGame: Game, priva
 
     fun requestCallback() {
         callbackRequested = true
+        synchronized(drawLock) {
+            drawQueueChanged = true
+            drawLock.notify()
+        }
     }
 
     /** Draws the scene.  Note that the draw queue is locked for the duration of this function.  */

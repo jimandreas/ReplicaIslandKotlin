@@ -488,6 +488,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         } else {
             hideWaitMessage()
         }
+        mGame!!.requestNewLevel()
     }
 
     /*
