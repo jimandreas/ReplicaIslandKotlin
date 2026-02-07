@@ -73,16 +73,16 @@ open class DrawableBitmap internal constructor(override var texture: Texture?, v
 
         OpenGLSystem.bindTexture(GLES20.GL_TEXTURE_2D, texture.name)
 
-        // Convert crop array to UV coordinates
-        // crop[0] = left, crop[1] = bottom, crop[2] = width (negative = h-flip), crop[3] = -height
-        // GLUtils.texImage2D loads bitmaps with V=0 at image top, so bottom vertex
-        // needs the higher V (image bottom) and top vertex needs the lower V (image top).
+        // Convert crop array to UV coordinates matching the glDrawTexfOES convention.
+        // crop = [left, bottom, width, -height] where negative width/height = flip.
+        // For default crop [0, h, w, -h]:
+        //   u0=0, u1=w/texW, v0=0 (bottom vertices), v1=h/texH (top vertices)
         val texW = texture.width.toFloat()
         val texH = texture.height.toFloat()
         val u0 = crop[0] / texW
         val u1 = (crop[0] + crop[2]) / texW
-        val v0 = crop[1] / texH
-        val v1 = (crop[1] + crop[3]) / texH
+        val v0 = (crop[1] + crop[3]) / texH
+        val v1 = crop[1] / texH
         quad.setUVs(u0, v0, u1, v1)
 
         // Model matrix: translate to position, scale to pixel size.
