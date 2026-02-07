@@ -12,11 +12,11 @@ Hello there, Android.  I’m Dr. Woodrow Lichtenstein Kabochanomizu, your humble
 </string>
 
 <string name="Kabocha_0_2_1_3" translatable="false">
-But first, we should go over some of the basics.  Use the trackball or directional pad to <b>roll left and right</b>.  You only need to make <b>very small movements</b> to move effectively.  Try rolling down that hill.
+But first, we should go over some of the basics.  Use the directional pad or on-screen controls to <b>move left and right</b>.  You only need to make <b>very small movements</b> to move effectively.  Try moving down that hill.
 </string>
 
 <string name="Kabocha_0_2_2_1" translatable="false">
-Jolly good!  You learn exactly as quickly as I calculated you would.  Fantastique!  Remember, the trackball and directional pad are just for <b>changing direction</b>.  You do not need to press them constantly.
+Jolly good!  You learn exactly as quickly as I calculated you would.  Fantastique!  Remember, the controls are just for <b>changing direction</b>.  You do not need to press them constantly.
 </string>
 
 <string name="Kabocha_0_2_2_2" translatable="false">
@@ -85,7 +85,7 @@ I’ve outfitted you with a special type of energy weapon that allows you to con
 </string>
 
 <string name="Kabocha_0_3_2_2" translatable="false">
-Once the Possession Orb is released, you can control its movement by tilting the phone.  Running it into a mechanical object will allow you to possess that object.  Pressing the attack button will destroy it and return control to your body.
+Once the Possession Orb is released, you can control its movement with the directional controls.  Running it into a mechanical object will allow you to possess that object.  Pressing the attack button will destroy it and return control to your body.
 </string>
 
 <string name="Kabocha_0_3_2_3" translatable="false">

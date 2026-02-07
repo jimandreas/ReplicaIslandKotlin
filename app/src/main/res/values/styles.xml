@@ -11,4 +11,10 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Theme.FullscreenDialogFragment" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
 </resources>

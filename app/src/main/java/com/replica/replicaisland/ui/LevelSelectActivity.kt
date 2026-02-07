@@ -46,6 +46,11 @@ import com.replica.replicaisland.AndouKun
 import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
 
+/**
+ * @deprecated Use [LevelSelectDialogFragment] instead for level selection.
+ * This activity is kept for rollback purposes.
+ */
+@Deprecated("Use LevelSelectDialogFragment instead", ReplaceWith("LevelSelectDialogFragment"))
 class LevelSelectActivity : ListActivity() {
     private var levelData: ArrayList<LevelMetaData>? = null
     private var buttonFlickerAnimation: Animation? = null

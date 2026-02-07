@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION", "unused")
+@file:Suppress("unused")
 
 package com.replica.replicaisland.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.media.AudioManager
@@ -30,13 +27,15 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.replica.replicaisland.R
+import com.replica.replicaisland.data.PreferencesManager
 import java.lang.reflect.InvocationTargetException
 
-class ExtrasMenuActivity : Activity() {
+class ExtrasMenuActivity : AppCompatActivity() {
     private var mLinearModeButton: View? = null
     private var mLevelSelectButton: View? = null
     private var mControlsButton: View? = null
@@ -47,30 +46,32 @@ class ExtrasMenuActivity : Activity() {
     private var fadeOutAnimation: Animation? = null
     private var alternateFadeOutAnimation: Animation? = null
     private var lockedAnimation: Animation? = null
-    private var pendingGameStart = 0
     private val sLinearModeButtonListener = View.OnClickListener {
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val row = prefsManager.getLevelRow()
+        val index = prefsManager.getLevelIndex()
         if (row != 0 || index != 0) {
-            pendingGameStart = START_LINEAR_MODE
-            showDialog(NEW_GAME_DIALOG)
+            NewGameDialogFragment.newInstance(START_LINEAR_MODE)
+                .show(supportFragmentManager, NewGameDialogFragment.TAG)
         } else {
             startGame(START_LINEAR_MODE)
         }
     }
     private val sLevelSelectButtonListener = View.OnClickListener {
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val row = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, 0)
-        val index = prefs.getInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, 0)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val row = prefsManager.getLevelRow()
+        val index = prefsManager.getLevelIndex()
         if (row != 0 || index != 0) {
-            pendingGameStart = START_LEVEL_SELECT
-            showDialog(NEW_GAME_DIALOG)
+            NewGameDialogFragment.newInstance(START_LEVEL_SELECT)
+                .show(supportFragmentManager, NewGameDialogFragment.TAG)
         } else {
             startGame(START_LEVEL_SELECT)
         }
     }
-    private val sLockedSelectButtonListener = View.OnClickListener { showDialog(EXTRAS_LOCKED_DIALOG) }
+    private val sLockedSelectButtonListener = View.OnClickListener {
+        ExtrasLockedDialogFragment.newInstance()
+            .show(supportFragmentManager, ExtrasLockedDialogFragment.TAG)
+    }
     private val sControlsButtonListener = View.OnClickListener { v ->
         val i = Intent(baseContext, SetPreferencesActivity::class.java)
         i.putExtra("controlConfig", true)
@@ -96,8 +97,8 @@ class ExtrasMenuActivity : Activity() {
         // end of new method of landscape orientation
 
         setContentView(R.layout.extras_menu)
-        val prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE)
-        val extrasUnlocked = prefs.getBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, false)
+        val prefsManager = PreferencesManager.getInstance(this)
+        val extrasUnlocked = prefsManager.getExtrasUnlocked()
         mLinearModeButton = findViewById(R.id.linearModeButton)
         mLevelSelectButton = findViewById(R.id.levelSelectButton)
         mControlsButton = findViewById(R.id.controlsButton)
@@ -124,6 +125,16 @@ class ExtrasMenuActivity : Activity() {
 
         // Keep the volume control type consistent across all activities.
         volumeControlStream = AudioManager.STREAM_MUSIC
+
+        // Set up fragment result listener for new game dialog callback
+        supportFragmentManager.setFragmentResultListener(
+            NewGameDialogFragment.REQUEST_KEY, this
+        ) { _, bundle ->
+            if (bundle.getBoolean(NewGameDialogFragment.RESULT_CONFIRMED)) {
+                val gameStartType = bundle.getInt(NewGameDialogFragment.RESULT_GAME_START_TYPE)
+                startGame(gameStartType)
+            }
+        }
     }
 
     @SuppressLint("GestureBackNavigation")
@@ -144,25 +155,6 @@ class ExtrasMenuActivity : Activity() {
             result = super.onKeyDown(keyCode, event)
         }
         return result
-    }
-
-    override fun onCreateDialog(id: Int): Dialog {
-        var dialog: Dialog? = null
-        if (id == NEW_GAME_DIALOG) {
-            dialog = AlertDialog.Builder(this)
-                    .setTitle(R.string.new_game_dialog_title)
-                    .setPositiveButton(R.string.new_game_dialog_ok) { _, whichButton -> startGame(pendingGameStart) }
-                    .setNegativeButton(R.string.new_game_dialog_cancel, null)
-                    .setMessage(R.string.new_game_dialog_message)
-                    .create()
-        } else if (id == EXTRAS_LOCKED_DIALOG) {
-            dialog = AlertDialog.Builder(this)
-                    .setTitle(R.string.extras_locked_dialog_title)
-                    .setPositiveButton(R.string.extras_locked_dialog_ok, null)
-                    .setMessage(R.string.extras_locked_dialog_message)
-                    .create()
-        }
-        return dialog!!
     }
 
     private fun startGame(type: Int) {
@@ -213,8 +205,6 @@ class ExtrasMenuActivity : Activity() {
     }
 
     companion object {
-        const val NEW_GAME_DIALOG = 0
-        const val EXTRAS_LOCKED_DIALOG = 1
         private const val START_LINEAR_MODE = 0
         private const val START_LEVEL_SELECT = 1
     }

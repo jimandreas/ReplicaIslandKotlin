@@ -26,8 +26,6 @@ object PreferenceConstants {
     const val PREFERENCE_LAST_VERSION = "lastVersion"
     const val PREFERENCE_STATS_ENABLED = "enableStats"
     const val PREFERENCE_CLICK_ATTACK = "enableClickAttack"
-    const val PREFERENCE_TILT_CONTROLS = "enableTiltControls"
-    const val PREFERENCE_TILT_SENSITIVITY = "tiltSensitivity"
     const val PREFERENCE_MOVEMENT_SENSITIVITY = "movementSensitivity"
     const val PREFERENCE_SCREEN_CONTROLS = "enableScreenControls"
     const val PREFERENCE_ENABLE_DEBUG = "enableDebug"

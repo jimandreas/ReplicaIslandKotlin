@@ -39,6 +39,11 @@ import com.replica.replicaisland.R
 import com.replica.replicaisland.levels.LevelTree
 import java.util.ArrayList
 
+/**
+ * @deprecated Use [ConversationDialogFragment] instead for displaying conversations.
+ * This activity is kept for rollback purposes.
+ */
+@Deprecated("Use ConversationDialogFragment instead", ReplaceWith("ConversationDialogFragment"))
 class ConversationDialogActivity : Activity() {
     private var mConversation: ConversationUtils.Conversation? = null
     private var mPages: ArrayList<ConversationUtils.ConversationPage>? = null

@@ -25,21 +25,19 @@ import com.replica.replicaisland.core.BaseObject
 class InputSystem : BaseObject() {
     private val touchScreen = InputTouchScreen()
     private val orientationSensor = InputXY()
-    private val trackball = InputXY()
     private val keyboard = InputKeyboard()
+    private val gamepad = InputXY()
+    private var gamepadConnected = false
+    private var rightTrigger = 0f
     private var screenRotation = 0
     private val orientationInput = FloatArray(3)
     private val orientationOutput = FloatArray(3)
     override fun reset() {
-        trackball.reset()
         touchScreen.reset()
         keyboard.resetAll()
         orientationSensor.reset()
-    }
-
-    fun roll(x: Float, y: Float) {
-        val time = sSystemRegistry.timeSystem
-        trackball.press(time!!.gameTime, trackball.retreiveXaxisMagnitude() + x, trackball.retreiveYaxisMagnitude() + y)
+        gamepad.reset()
+        gamepadConnected = false
     }
 
     fun touchDown(index: Int, x: Float, y: Float) {
@@ -85,11 +83,10 @@ class InputSystem : BaseObject() {
     }
 
     fun releaseAllKeys() {
-        trackball.releaseX()
-        trackball.releaseY()
         touchScreen.resetAll()
         keyboard.releaseAll()
         orientationSensor.release()
+        gamepad.release()
     }
 
     fun fetchTouchScreen(): InputTouchScreen {
@@ -100,12 +97,33 @@ class InputSystem : BaseObject() {
         return orientationSensor
     }
 
-    fun fetchTrackball(): InputXY {
-        return trackball
-    }
-
     fun fetchKeyboard(): InputKeyboard {
         return keyboard
+    }
+
+    fun fetchGamepad(): InputXY {
+        return gamepad
+    }
+
+    fun gamepadAxis(axisX: Float, axisY: Float) {
+        val time = sSystemRegistry.timeSystem
+        gamepad.press(time!!.gameTime, axisX, axisY)
+    }
+
+    fun setRightTrigger(value: Float) {
+        rightTrigger = value
+    }
+
+    fun getRightTrigger(): Float {
+        return rightTrigger
+    }
+
+    fun setGamepadConnected(connected: Boolean) {
+        gamepadConnected = connected
+    }
+
+    fun isGamepadConnected(): Boolean {
+        return gamepadConnected
     }
 
     fun setTheScreenRotation(rotation: Int) {
