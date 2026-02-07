@@ -1,3 +1,5 @@
+import java.io.FileInputStream
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -21,8 +23,43 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            // First try environment variables (for CI)
+            val envKeystoreFile = System.getenv("KEYSTORE_FILE")
+            val envKeystorePassword = System.getenv("KEYSTORE_PASSWORD")
+            val envKeyAlias = System.getenv("KEY_ALIAS")
+            val envKeyPassword = System.getenv("KEY_PASSWORD")
+
+            if (!envKeystoreFile.isNullOrEmpty() && !envKeystorePassword.isNullOrEmpty() &&
+                !envKeyAlias.isNullOrEmpty() && !envKeyPassword.isNullOrEmpty()
+            ) {
+                storeFile = file(envKeystoreFile)
+                storePassword = envKeystorePassword
+                keyAlias = envKeyAlias
+                keyPassword = envKeyPassword
+            } else {
+                // Fall back to signing.properties file (for local builds)
+                val props = Properties()
+                val propFile = file("../gradle/signing.properties")
+                if (propFile.canRead()) {
+                    props.load(FileInputStream(propFile))
+                    if (props.containsKey("STORE_FILE") && props.containsKey("STORE_PASSWORD") &&
+                        props.containsKey("KEY_ALIAS") && props.containsKey("KEY_PASSWORD")
+                    ) {
+                        storeFile = file(props["STORE_FILE"] as String)
+                        storePassword = props["STORE_PASSWORD"] as String
+                        keyAlias = props["KEY_ALIAS"] as String
+                        keyPassword = props["KEY_PASSWORD"] as String
+                    }
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

@@ -46,6 +46,11 @@ _sandbox
 # overrides
 /gradle.properties
 
+# Signing
+gradle/signing.properties
+*.keystore
+*.jks
+
 # Claude - not tracked
 .claude
 
