@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="520dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/gamepad_dialog_background"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <!-- Left side: title, diagram, description -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/gamepad_onboarding_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/gamepad_onboarding_title"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Gamepad diagram with callout labels -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="12dp">
+
+                <!-- Gamepad vector diagram -->
+                <ImageView
+                    android:layout_width="280dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/gamepad_diagram"
+                    android:contentDescription="@string/gamepad_onboarding_title" />
+
+                <!-- Left stick callout -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|bottom"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:background="@drawable/gamepad_joystick_circle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gamepad_callout_left_stick"
+                        android:textColor="#4CAF50"
+                        android:textSize="11sp"
+                        android:layout_marginStart="4dp" />
+                </LinearLayout>
+
+                <!-- R2 trigger callout -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gamepad_callout_right_trigger"
+                        android:textColor="#FF9800"
+                        android:textSize="11sp"
+                        android:layout_marginEnd="4dp" />
+
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/gamepad_trigger_shape" />
+                </LinearLayout>
+
+                <!-- R1 button callout -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gamepad_callout_right_button"
+                        android:textColor="#2196F3"
+                        android:textSize="11sp"
+                        android:layout_marginEnd="4dp" />
+
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/gamepad_button_shape" />
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <!-- Description text -->
+            <TextView
+                android:id="@+id/gamepad_onboarding_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/gamepad_onboarding_message"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!-- Right side: buttons stacked vertically -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_marginStart="16dp">
+
+            <Button
+                android:id="@+id/gamepad_use_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gamepad_onboarding_use_gamepad"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#388E3C"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/gamepad_cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gamepad_onboarding_cancel"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#555555" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

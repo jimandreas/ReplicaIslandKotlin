@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="160dp"
+    android:viewportWidth="280"
+    android:viewportHeight="160">
+
+    <!-- Gamepad body outline -->
+    <path
+        android:pathData="M60,40 Q60,30 70,28 L120,24 Q140,22 160,24 L210,28 Q220,30 220,40 L222,70 Q224,90 216,105 L200,130 Q195,138 185,140 L170,142 Q160,143 150,140 L140,136 Q130,143 120,140 L95,142 Q85,140 80,130 L64,105 Q56,90 58,70 Z"
+        android:strokeColor="#8899AACC"
+        android:strokeWidth="2"
+        android:fillColor="#22334455" />
+
+    <!-- Left stick base circle -->
+    <path
+        android:pathData="M95,72 m-18,0 a18,18 0,1 1,36 0 a18,18 0,1 1,-36 0"
+        android:strokeColor="#4CAF50"
+        android:strokeWidth="2"
+        android:fillColor="#1A4CAF50" />
+
+    <!-- Left stick dot -->
+    <path
+        android:pathData="M95,72 m-6,0 a6,6 0,1 1,12 0 a6,6 0,1 1,-12 0"
+        android:fillColor="#4CAF50" />
+
+    <!-- Right stick base circle -->
+    <path
+        android:pathData="M185,95 m-14,0 a14,14 0,1 1,28 0 a14,14 0,1 1,-28 0"
+        android:strokeColor="#555555"
+        android:strokeWidth="1.5"
+        android:fillColor="#11FFFFFF" />
+
+    <!-- D-pad -->
+    <path
+        android:pathData="M90,100 L86,100 Q84,100 84,102 L84,108 Q84,110 86,110 L90,110 L90,114 Q90,116 92,116 L98,116 Q100,116 100,114 L100,110 L104,110 Q106,110 106,108 L106,102 Q106,100 104,100 L100,100 L100,96 Q100,94 98,94 L92,94 Q90,94 90,96 Z"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:fillColor="#11FFFFFF" />
+
+    <!-- Face buttons (A/B/X/Y) -->
+    <path
+        android:pathData="M185,58 m-5,0 a5,5 0,1 1,10 0 a5,5 0,1 1,-10 0"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:fillColor="#11FFFFFF" />
+    <path
+        android:pathData="M175,68 m-5,0 a5,5 0,1 1,10 0 a5,5 0,1 1,-10 0"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:fillColor="#11FFFFFF" />
+    <path
+        android:pathData="M195,68 m-5,0 a5,5 0,1 1,10 0 a5,5 0,1 1,-10 0"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:fillColor="#11FFFFFF" />
+    <path
+        android:pathData="M185,78 m-5,0 a5,5 0,1 1,10 0 a5,5 0,1 1,-10 0"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:fillColor="#11FFFFFF" />
+
+    <!-- R1 bumper - highlighted -->
+    <path
+        android:pathData="M180,30 L210,32 Q215,33 215,36 L215,38 Q215,40 210,40 L180,38 Q176,37 176,35 L176,33 Q176,31 180,30 Z"
+        android:strokeColor="#2196F3"
+        android:strokeWidth="2"
+        android:fillColor="#332196F3" />
+
+    <!-- R2 trigger - highlighted -->
+    <path
+        android:pathData="M182,18 L212,20 Q216,21 216,24 L216,27 Q216,29 212,29 L182,27 Q178,26 178,24 L178,21 Q178,19 182,18 Z"
+        android:strokeColor="#FF9800"
+        android:strokeWidth="2"
+        android:fillColor="#33FF9800" />
+
+    <!-- L1 bumper -->
+    <path
+        android:pathData="M100,30 L70,32 Q65,33 65,36 L65,38 Q65,40 70,40 L100,38 Q104,37 104,35 L104,33 Q104,31 100,30 Z"
+        android:strokeColor="#555555"
+        android:strokeWidth="1.5"
+        android:fillColor="#11FFFFFF" />
+
+    <!-- L2 trigger -->
+    <path
+        android:pathData="M98,18 L68,20 Q64,21 64,24 L64,27 Q64,29 68,29 L98,27 Q102,26 102,24 L102,21 Q102,19 98,18 Z"
+        android:strokeColor="#555555"
+        android:strokeWidth="1.5"
+        android:fillColor="#11FFFFFF" />
+
+</vector>

@@ -393,6 +393,15 @@ If I am honest with myself, there is another reason the adventurers had to die. 
 
 <string name="KyleDeadNote" translatable="false">It’s Kyle.  He’s not moving.</string>
 
+<!-- Gamepad onboarding -->
+<string name="gamepad_onboarding_title" translatable="false">Gamepad Detected</string>
+<string name="gamepad_onboarding_message" translatable="false">A gamepad is connected. Use it instead of on-screen controls?</string>
+<string name="gamepad_onboarding_use_gamepad" translatable="false">Use Gamepad</string>
+<string name="gamepad_onboarding_cancel" translatable="false">Cancel</string>
+<string name="gamepad_callout_left_stick" translatable="false">Left Stick \u2014 Move</string>
+<string name="gamepad_callout_right_trigger" translatable="false">R2 \u2014 Fly</string>
+<string name="gamepad_callout_right_button" translatable="false">R1 \u2014 Stomp</string>
+
 <!-- bug fixes -->
 <string name="description" translatable="false">logcat workaround, see defects/logcatAttributionTag.md</string>
 <string name="space" translatable="false"> </string>

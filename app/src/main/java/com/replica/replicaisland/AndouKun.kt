@@ -59,6 +59,7 @@ import com.replica.replicaisland.ui.ConversationDialogFragment
 import com.replica.replicaisland.ui.DebugLog
 import com.replica.replicaisland.ui.DiaryDialogFragment
 import com.replica.replicaisland.ui.GameOverActivity
+import com.replica.replicaisland.ui.GamepadOnboardingDialogFragment
 import com.replica.replicaisland.ui.LevelSelectDialogFragment
 import com.replica.replicaisland.ui.LevelSelectResult
 import com.replica.replicaisland.ui.UIConstants
@@ -95,6 +96,7 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
     private var eventReporter: EventReporter? = null
     private var eventReporterThread: Thread? = null
     private var sessionId = 0L
+    private var gamepadDialogShownThisSession = false
 
     /** Called when the activity is first created.  */
     @SuppressLint("ApplySharedPref", "CommitPrefEdits")
@@ -127,6 +129,21 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
             this
         ) { _, bundle ->
             handleLevelSelectResult(bundle)
+        }
+
+        // Register fragment result listener for gamepad onboarding
+        supportFragmentManager.setFragmentResultListener(
+            GamepadOnboardingDialogFragment.REQUEST_KEY,
+            this
+        ) { _, bundle ->
+            if (bundle.getBoolean(GamepadOnboardingDialogFragment.RESULT_USE_GAMEPAD)) {
+                prefsManager.setScreenControls(false)
+                mGame!!.setControlOptions(
+                    prefsManager.getClickAttack(),
+                    prefsManager.getMovementSensitivity(),
+                    false
+                )
+            }
         }
 
         gLSurfaceView = findViewById<View>(R.id.glsurfaceview) as GLSurfaceView
@@ -287,6 +304,11 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
         mGame!!.setSoundEnabled(soundEnabled)
         mGame!!.setControlOptions(clickAttack, movementSensitivity, onScreenControls)
         mGame!!.setKeyConfig(leftKey, rightKey, jumpKey, attackKey)
+        if (onScreenControls && !gamepadDialogShownThisSession && isGamepadConnected()) {
+            gamepadDialogShownThisSession = true
+            GamepadOnboardingDialogFragment.newInstance()
+                .show(supportFragmentManager, GamepadOnboardingDialogFragment.TAG)
+        }
         if (sensorManager != null) {
             val orientation = sensorManager!!.getDefaultSensor(Sensor.TYPE_ORIENTATION)
             if (orientation != null) {
@@ -408,6 +430,11 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
             val axisX = event.getAxisValue(MotionEvent.AXIS_X)
             val axisY = event.getAxisValue(MotionEvent.AXIS_Y)
             Log.d("claudeopus", "Gamepad joystick: X=$axisX Y=$axisY")
+            if (!gamepadDialogShownThisSession && prefsManager.getScreenControls()) {
+                gamepadDialogShownThisSession = true
+                GamepadOnboardingDialogFragment.newInstance()
+                    .show(supportFragmentManager, GamepadOnboardingDialogFragment.TAG)
+            }
             return mGame?.onGenericMotionEvent(event) ?: false
         }
         return super.onGenericMotionEvent(event)
@@ -737,6 +764,19 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
             waitMessage!!.visibility = View.GONE
             waitMessage!!.clearAnimation()
         }
+    }
+
+    private fun isGamepadConnected(): Boolean {
+        val deviceIds = InputDevice.getDeviceIds()
+        for (id in deviceIds) {
+            val device = InputDevice.getDevice(id) ?: continue
+            val sources = device.sources
+            if (sources and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD ||
+                sources and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
