@@ -24,6 +24,7 @@ and you can find references to it all over the code.
 - `DiaryDialogFragment` - Displays collected diary entries with animated background
 - `ConversationDialogFragment` - Shows NPC conversations with typewriter text effect
 - `LevelSelectDialogFragment` - Level selection using Fragment Result API for communication
+- `GamepadOnboardingDialogFragment` - Gamepad detection dialog with graphical control diagram
 
 The game loop itself is structured as follows:
 
@@ -92,8 +93,10 @@ as of Sept 2025:
 
 https://code.google.com/archive/p/replicaisland/
 
-**Gamepad Controller Support** (in progress): Adding support for game controllers with
-joystick movement and button mapping (A=jump, B=attack with long-press for possession orb).
+**Gamepad Controller Support**: Game controller support with joystick movement and button
+mapping (A=jump, B=attack with long-press for possession orb). When a gamepad is connected
+while on-screen controls are active, an onboarding dialog shows a graphical gamepad diagram
+with control callouts and lets the user switch to gamepad mode with one tap.
 
 **Modern Android Architecture**: Recent updates include:
 - DialogFragment-based dialogs replacing legacy Activity dialogs
