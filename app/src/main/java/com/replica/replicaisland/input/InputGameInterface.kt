@@ -36,12 +36,14 @@ class InputGameInterface : BaseObject() {
     private var movementSensitivity = 1.0f
     private var useClickButtonForAttack = true
     private var useOnScreenControls = false
+    private var activeSliderPointerIndex = -1
     private var lastGamepadConnected = false
     private var lastGamepadPressed = false
     override fun reset() {
         jumpButton.release()
         attackButton.release()
         directionalPad.release()
+        activeSliderPointerIndex = -1
     }
 
     override fun update(timeDelta: Float, parent: BaseObject?) {
@@ -53,19 +55,32 @@ class InputGameInterface : BaseObject() {
 
         // update movement inputs
         if (useOnScreenControls) {
-            val sliderTouch = touch.findPointerInRegion(
-                    ButtonConstants.MOVEMENT_SLIDER_REGION_X.toFloat(),
-                    ButtonConstants.MOVEMENT_SLIDER_REGION_Y.toFloat(),
-                    ButtonConstants.MOVEMENT_SLIDER_REGION_WIDTH.toFloat(),
-                    ButtonConstants.MOVEMENT_SLIDER_REGION_HEIGHT.toFloat())
-            if (sliderTouch != null) {
-                val halfWidth = ButtonConstants.MOVEMENT_SLIDER_BAR_WIDTH / 2.0f
-                val center = ButtonConstants.MOVEMENT_SLIDER_X + halfWidth
-                val offset = sliderTouch.retreiveXaxisMagnitude() - center
-                val magnitudeRamp = if (abs(offset) > halfWidth) 1.0f else abs(offset) / halfWidth
-                val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * movementSensitivity
-                sliderOffset = magnitudeRamp * Utils.sign(offset)
-                directionalPad.press(gameTime, magnitude, 0.0f)
+            // If no active pointer, search for a new touch in the slider region
+            if (activeSliderPointerIndex == -1) {
+                activeSliderPointerIndex = touch.findPointerIndexInRegion(
+                        ButtonConstants.MOVEMENT_SLIDER_REGION_X.toFloat(),
+                        ButtonConstants.MOVEMENT_SLIDER_REGION_Y.toFloat(),
+                        ButtonConstants.MOVEMENT_SLIDER_REGION_WIDTH.toFloat(),
+                        ButtonConstants.MOVEMENT_SLIDER_REGION_HEIGHT.toFloat())
+            }
+            if (activeSliderPointerIndex >= 0) {
+                val pointer = touch.getPointer(activeSliderPointerIndex)
+                if (pointer != null && pointer.pressed) {
+                    // Compute slider magnitude using the tracked pointer's X position.
+                    // magnitudeRamp already clamps to 1.0f when the finger is outside the bar,
+                    // so this works correctly even when the finger drifts out of the region.
+                    val halfWidth = ButtonConstants.MOVEMENT_SLIDER_BAR_WIDTH / 2.0f
+                    val center = ButtonConstants.MOVEMENT_SLIDER_X + halfWidth
+                    val offset = pointer.retreiveXaxisMagnitude() - center
+                    val magnitudeRamp = if (abs(offset) > halfWidth) 1.0f else abs(offset) / halfWidth
+                    val magnitude = magnitudeRamp * Utils.sign(offset) * SLIDER_FILTER * movementSensitivity
+                    sliderOffset = magnitudeRamp * Utils.sign(offset)
+                    directionalPad.press(gameTime, magnitude, 0.0f)
+                } else {
+                    // Finger lifted — release slider and stop tracking
+                    activeSliderPointerIndex = -1
+                    directionalPad.release()
+                }
             } else {
                 directionalPad.release()
             }

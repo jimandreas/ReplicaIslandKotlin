@@ -107,6 +107,21 @@ class InputTouchScreen : BaseObject() {
         return touch
     }
 
+    fun findPointerIndexInRegion(regionX: Float, regionY: Float, regionWidth: Float, regionHeight: Float): Int {
+        for (x in 0 until MAX_TOUCH_POINTS) {
+            val pointer = touchPoints[x]
+            if (pointer!!.pressed &&
+                    getTouchedWithinRegion(pointer.retreiveXaxisMagnitude(), pointer.retreiveYaxisMagnitude(), regionX, regionY, regionWidth, regionHeight)) {
+                return x
+            }
+        }
+        return -1
+    }
+
+    fun getPointer(index: Int): InputXY? {
+        return if (index in 0 until MAX_TOUCH_POINTS) touchPoints[index] else null
+    }
+
     private fun getTouchedWithinRegion(x: Float, y: Float, regionX: Float, regionY: Float, regionWidth: Float, regionHeight: Float): Boolean {
         return x >= regionX && y >= regionY && x <= regionX + regionWidth && y <= regionY + regionHeight
     }
