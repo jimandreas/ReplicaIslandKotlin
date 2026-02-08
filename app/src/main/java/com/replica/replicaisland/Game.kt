@@ -120,6 +120,7 @@ class Game : AllocationGuard() {
             // The buffer library manages hardware VBOs.
             BaseObject.sSystemRegistry.bufferLibrary = BufferLibrary()
             BaseObject.sSystemRegistry.soundSystem = SoundSystem()
+            BaseObject.sSystemRegistry.soundSystem!!.preloadSounds()
 
             // The root of the game graph.
             val gameRoot = MainLoop()

@@ -16,6 +16,7 @@
 
 package com.replica.replicaisland.sound
 
+import com.replica.replicaisland.R
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Handler
@@ -71,14 +72,26 @@ class SoundSystem : BaseObject() {
         return result
     }
 
+    fun preloadSounds() {
+        val resources = intArrayOf(
+            R.raw.thump, R.raw.rockets, R.raw.gem1, R.raw.gem2, R.raw.gem3,
+            R.raw.sound_explode, R.raw.deep_clang, R.raw.sound_possession,
+            R.raw.sound_stomp, R.raw.ding, R.raw.sound_open, R.raw.sound_close,
+            R.raw.sound_button, R.raw.sound_cannon, R.raw.sound_break_block,
+            R.raw.sound_gun, R.raw.quick_explosion, R.raw.sound_poing,
+            R.raw.sound_kabocha_hit, R.raw.sound_rokudou_hit
+        )
+        for (res in resources) {
+            load(res)
+        }
+    }
+
     @Synchronized
     fun play(sound: Sound, loop: Boolean, priority: Int): Int {
         if (!soundEnabled) return -1
         val handle = handleCounter.getAndIncrement()
         if (!loop) {
-            soundHandler.post {
-                soundPool.play(sound.soundId, 1.0f, 1.0f, priority, 0, 1.0f)
-            }
+            soundPool.play(sound.soundId, 1.0f, 1.0f, priority, 0, 1.0f)
             return handle
         }
         soundHandler.post {
@@ -96,9 +109,7 @@ class SoundSystem : BaseObject() {
         if (!soundEnabled) return -1
         val handle = handleCounter.getAndIncrement()
         if (!loop) {
-            soundHandler.post {
-                soundPool.play(sound.soundId, volume, volume, priority, 0, rate)
-            }
+            soundPool.play(sound.soundId, volume, volume, priority, 0, rate)
             return handle
         }
         soundHandler.post {
@@ -247,7 +258,7 @@ class SoundSystem : BaseObject() {
                 // Play each sound with zero volume to warm up the pipeline.
                 // This reduces sound latency in the game by a lot!
                 // Use PRIORITY_NORMAL (1) to ensure Android doesn't skip this play.
-                soundPool.play(sampleId, 0f, 0f, PRIORITY_NORMAL, 0, 1f)
+                soundPool.play(sampleId, 0.001f, 0.001f, PRIORITY_NORMAL, 0, 1f)
             }
         }
     }
