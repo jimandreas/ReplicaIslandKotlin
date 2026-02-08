@@ -1,10 +1,8 @@
 ---
 title: "Collision.bin File Format"
-date: 2025-01-01
+date: 2025-11-01
 draft: false
 ---
-
-# Collison.bin file format discussion
 
 ## Grok analysis (version 3 or 4 expert mode)
 

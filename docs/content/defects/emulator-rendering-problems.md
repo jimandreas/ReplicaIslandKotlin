@@ -1,14 +1,32 @@
 ---
 title: "Emulator Rendering Problems"
-date: 2025-01-01
+date: 2025-11-01
 draft: false
 ---
 
 # Emulator Rendering Problems
 
+This was an interesting defect in the Android Studio Emulator.   The 
+emulator would not display all the elements in a level. I tracked this down
+and found a defect in the tracker that appeared to be similar to the 
+problem presented by the Android Studio emulator.  Note that the game
+displayed fine on my test Android physical smartphones.
+
+The issue tracker link is: https://issuetracker.google.com/issues/197659250
+
+I worked up a test Android program that demonstrated the A/B problem / fix 
+and posted this to Github at:  https://issuetracker.google.com/issues/197659250
+
+The ultimate solution was to upgrade the use of OpenGL to a newer version 
+of OpenGL and get off the base version.   This has been accomplished 
+with thanks to Claude Code CLI as of Feb 2026.
+
 ## No tiles rendered
 
-Q to Gemini:  When running this game in the emulator, the background renders and the sprites render, but the game tiles are not rendered.  Everything works on a physical device.  I have tried various versions of emulators but all don't display the game tiles.  Can you find the problem?
+Q to Gemini:  When running this game in the emulator, the background renders 
+and the sprites render, but the game tiles are not rendered.  
+Everything works on a physical device.  I have tried various versions of 
+emulators but all don't display the game tiles.  Can you find the problem?
 
 Hello! Dealing with rendering discrepancies between emulators and physical devices
 can be quite challenging. Based on the GameRenderer.kt code you've provided and

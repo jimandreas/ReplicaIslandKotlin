@@ -1,12 +1,27 @@
 ---
 title: "Refactor Strategy"
-date: 2025-01-01
+date: 2025-11-25
 draft: false
 ---
 
+I really don't remember which LLM recommended this refactor.  This was before I made
+sure to ask the AI to add itself as the source of the work.  But it was a good
+framework - and this time I did the refactoring myself in stages followed by 
+test builds.
+
+Now (2026) with Claude Code CLI I would just ask Claude to do all the work.  This
+suggests that this question was posed to Google Gemini, but I could be wrong on this. (jra)
+
 ### Suggested Refactor for Replica Island Source Code
 
-The Replica Island codebase (as mirrored in open-source repositories like masokotanga/ReplicaIsland) maintains a flat Java package structure in `src/com/replica/replicaisland/`, with approximately 150 .java files lacking clear organization. This hampers maintainability for a tile-based physics platformer involving rendering, input, and modular components. The proposed modular refactor via **subpackages** under the root `com.replica.replicaisland` addresses this by grouping classes by responsibility, adhering to Java/Android layered architecture principles (e.g., core abstractions -> domain logic -> infrastructure).
+The Replica Island codebase (as mirrored in open-source repositories like
+masokotanga/ReplicaIsland) maintains a flat Java package structure in 
+`src/com/replica/replicaisland/`, with approximately 150 .java files lacking 
+clear organization. This hampers maintainability for a tile-based physics 
+platformer involving rendering, input, and modular components. The proposed 
+modular refactor via **subpackages** under the root `com.replica.replicaisland` 
+addresses this by grouping classes by responsibility, adhering to Java/Android 
+layered architecture principles (e.g., core abstractions -> domain logic -> infrastructure).
 
 #### Refactor Principles
 - **Grouping Criteria**: Functional cohesion—e.g., physics and collision classes together for simulation isolation; rendering for draw logic. Tightly coupled files (e.g., `PhysicsComponent.java` and `CollisionSystem.java`) stay grouped.

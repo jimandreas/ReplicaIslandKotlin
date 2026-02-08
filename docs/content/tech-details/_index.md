@@ -1,6 +1,6 @@
 ---
 title: "Technical Details"
-date: 2025-01-01
+date: 2010-01-01
 draft: false
 ---
 

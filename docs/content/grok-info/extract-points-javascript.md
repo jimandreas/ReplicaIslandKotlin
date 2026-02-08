@@ -1,10 +1,8 @@
 ---
 title: "ExtractPoints JavaScript"
-date: 2025-01-01
+date: 2025-11-01
 draft: false
 ---
-
-# ExtractPoints java script
 
 ExtractPoints.js is a JavaScript script designed for Adobe Photoshop, authored by Chris Pruett as part of the Replica Island game's development toolkit around 2009-2010. Its primary purpose is to automate the extraction of collision geometry from level artwork. Specifically, it processes closed paths drawn in Photoshop layers (representing level boundaries and obstacles) and converts them into a textual representation of line segments with associated normals. This data is organized by tile positions (assuming a grid-based level structure, such as 32x32 pixel tiles) and output to a new text layer in the document. The generated text can then be manually copied and compiled into a binary collision file (collision.bin) for use in the Replica Island game engine, facilitating efficient physics and collision detection in the tile-based levels.
 
