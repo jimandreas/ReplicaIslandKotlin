@@ -1,0 +1,4 @@
+mainSections = ["tech-details", "links", "claude", "defects", "grok-info", "refactor", "scripts"]
+author = "Jim Andreas"
+description = "Replica Island Kotlin Conversion — technical documentation"
+github = "https://github.com/jimandreas/ReplicaIslandKotlin"

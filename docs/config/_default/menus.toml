@@ -1,0 +1,36 @@
+[[main]]
+  name = "Home"
+  url = "/"
+  weight = 1
+
+[[main]]
+  name = "Technical Details"
+  url = "/tech-details/"
+  weight = 2
+
+[[main]]
+  name = "Links"
+  url = "/links/"
+  weight = 3
+
+[[main]]
+  name = "Defects"
+  url = "/defects/"
+  weight = 4
+
+[[main]]
+  name = "Grok Info"
+  url = "/grok-info/"
+  weight = 5
+
+[[main]]
+  name = "Claude"
+  url = "/claude/"
+  weight = 6
+
+[[main]]
+  name = "GitHub"
+  url = "https://github.com/jimandreas/ReplicaIslandKotlin"
+  weight = 7
+  [main.params]
+    external = true

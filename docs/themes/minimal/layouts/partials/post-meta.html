@@ -1,0 +1,19 @@
+{{ if not .Date.IsZero }}
+<div class="post-meta">
+  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+  {{ with .Params.categories }}
+  <span class="categories">
+    {{ range . }}
+    <a href="{{ "categories/" | relURL }}{{ . | urlize }}/">{{ . }}</a>
+    {{ end }}
+  </span>
+  {{ end }}
+  {{ with .Params.tags }}
+  <span class="tags">
+    {{ range . }}
+    <a href="{{ "tags/" | relURL }}{{ . | urlize }}/">{{ . }}</a>
+    {{ end }}
+  </span>
+  {{ end }}
+</div>
+{{ end }}

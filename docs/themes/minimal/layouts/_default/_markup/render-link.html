@@ -1,0 +1,8 @@
+{{- $dest := .Destination -}}
+{{- $isExternal := or (hasPrefix $dest "http://") (hasPrefix $dest "https://") -}}
+{{- if $isExternal -}}
+<a href="{{ $dest | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }} target="_blank" rel="noopener">{{ .Text | safeHTML }}</a>
+{{- else -}}
+<a href="{{ $dest | relURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- end -}}
+{{- /* render-link.html - applies relURL for internal links, opens external links in new tab */ -}}

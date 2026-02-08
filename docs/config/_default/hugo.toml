@@ -1,0 +1,15 @@
+baseURL = "https://jimandreas.github.io/ReplicaIslandKotlin/"
+languageCode = "en-us"
+title = "Replica Island Kotlin Conversion"
+theme = "minimal"
+copyright = "Copyright &copy; 2021 Jim Andreas"
+
+[markup]
+  [markup.highlight]
+    style = "dracula"
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4

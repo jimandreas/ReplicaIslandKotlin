@@ -1,0 +1,12 @@
+name = "Minimal"
+license = "MIT"
+licenselink = "https://github.com/jimandreas/jimandreas.github.io/blob/master/LICENSE"
+description = "A minimal Hugo theme with dark/light mode support"
+homepage = "https://jimandreas.github.io/"
+tags = ["minimal", "dark-mode", "responsive"]
+features = ["dark-mode", "responsive"]
+min_version = "0.100.0"
+
+[author]
+  name = "Jim Andreas"
+  homepage = "https://jimandreas.github.io/"

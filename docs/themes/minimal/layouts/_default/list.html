@@ -1,0 +1,31 @@
+{{ define "main" }}
+<article class="page">
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p class="description">{{ . }}</p>{{ end }}
+  </header>
+
+  <div class="page-content">
+    {{ .Content }}
+  </div>
+
+  {{ $pages := .Pages }}
+  {{ if .IsHome }}
+    {{ $mainSections := .Site.Params.mainSections | default (slice "posts") }}
+    {{ $pages = where .Site.RegularPages "Section" "in" $mainSections }}
+  {{ end }}
+
+  {{ if $pages }}
+  <ul class="post-list">
+    {{ range $pages.ByDate.Reverse }}
+    <li class="post-item">
+      <a href="{{ .RelPermalink }}">
+        <span class="post-title">{{ .Title }}</span>
+        <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      </a>
+    </li>
+    {{ end }}
+  </ul>
+  {{ end }}
+</article>
+{{ end }}

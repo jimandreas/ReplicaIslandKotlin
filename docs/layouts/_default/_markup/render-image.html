@@ -1,0 +1,5 @@
+{{- $src := .Destination | relURL -}}
+{{- $alt := .PlainText | safeHTML -}}
+{{- $title := .Title -}}
+<img src="{{ $src }}"{{ with $alt }} alt="{{ . }}"{{ end }}{{ with $title }} title="{{ . }}"{{ end }}>
+{{- /* render-image.html - applies relURL to image paths for correct baseURL handling */ -}}

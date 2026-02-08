@@ -1,0 +1,11 @@
+{{ define "main" }}
+<article class="page error-page">
+  <header class="page-header">
+    <h1>{{ .Site.Params.notFoundHeader | default "Page Not Found" }}</h1>
+  </header>
+  <div class="page-content">
+    <p>{{ .Site.Params.notFoundText | default "Sorry, the page you're looking for doesn't exist." }}</p>
+    <p><a href="{{ "/" | relURL }}">Return to homepage</a></p>
+  </div>
+</article>
+{{ end }}
