@@ -19,6 +19,7 @@
 package com.replica.replicaisland.ui
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.pm.ActivityInfo
 import android.graphics.Paint
 import android.graphics.drawable.AnimationDrawable
@@ -49,6 +50,7 @@ class ConversationDialogFragment : DialogFragment(), TypewriterTextView.Typewrit
         private const val ARG_INDEX = "index"
         private const val ARG_CHARACTER = "character"
         const val TAG = "ConversationDialogFragment"
+        const val REQUEST_KEY = "conversation_dialog_request"
 
         /**
          * Factory method to create a new instance with conversation parameters.
@@ -71,6 +73,11 @@ class ConversationDialogFragment : DialogFragment(), TypewriterTextView.Typewrit
     private var okArrow: ImageView? = null
     private var okAnimation: AnimationDrawable? = null
     private var typewriterTextView: TypewriterTextView? = null
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        parentFragmentManager.setFragmentResult(REQUEST_KEY, bundleOf())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -146,6 +146,21 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
             }
         }
 
+        // Register fragment result listeners for dialog dismissal to resume the game
+        supportFragmentManager.setFragmentResultListener(
+            ConversationDialogFragment.REQUEST_KEY,
+            this
+        ) { _, _ ->
+            mGame!!.onResume(this, true)
+        }
+
+        supportFragmentManager.setFragmentResultListener(
+            DiaryDialogFragment.REQUEST_KEY,
+            this
+        ) { _, _ ->
+            mGame!!.onResume(this, true)
+        }
+
         gLSurfaceView = findViewById<View>(R.id.glsurfaceview) as GLSurfaceView
         pauseMessage = findViewById(R.id.pausedMessage)
         waitMessage = findViewById(R.id.pleaseWaitMessage)
@@ -693,14 +708,17 @@ class AndouKun : AppCompatActivity(), SensorEventListener {
             GameFlowEvent.EVENT_SHOW_DIARY -> {
                 val level = LevelTree.fetch(levelRow, levelIndex)
                 level.diaryCollected = true
+                mGame!!.onPause()
                 DiaryDialogFragment.newInstance(level.dialogResources!!.diaryEntry)
                     .show(supportFragmentManager, DiaryDialogFragment.TAG)
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER1 -> {
+                mGame!!.onPause()
                 ConversationDialogFragment.newInstance(levelRow, levelIndex, index, 1)
                     .show(supportFragmentManager, ConversationDialogFragment.TAG)
             }
             GameFlowEvent.EVENT_SHOW_DIALOG_CHARACTER2 -> {
+                mGame!!.onPause()
                 ConversationDialogFragment.newInstance(levelRow, levelIndex, index, 2)
                     .show(supportFragmentManager, ConversationDialogFragment.TAG)
             }

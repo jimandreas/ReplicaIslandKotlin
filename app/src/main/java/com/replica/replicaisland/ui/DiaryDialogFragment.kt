@@ -19,6 +19,7 @@
 package com.replica.replicaisland.ui
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.pm.ActivityInfo
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
@@ -44,6 +45,7 @@ class DiaryDialogFragment : DialogFragment() {
     companion object {
         private const val ARG_TEXT_RESOURCE = "text"
         const val TAG = "DiaryDialogFragment"
+        const val REQUEST_KEY = "diary_dialog_request"
 
         /**
          * Factory method to create a new instance with the specified text resource.
@@ -53,6 +55,11 @@ class DiaryDialogFragment : DialogFragment() {
                 arguments = bundleOf(ARG_TEXT_RESOURCE to textResource)
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        parentFragmentManager.setFragmentResult(REQUEST_KEY, bundleOf())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
