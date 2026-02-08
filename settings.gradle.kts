@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ReplicaIslandKotlin"
 include(":app")
+include(":levelviewer")
  
