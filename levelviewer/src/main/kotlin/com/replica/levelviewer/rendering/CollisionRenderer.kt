@@ -35,7 +35,7 @@ class CollisionRenderer {
                 val segments = collisionData.tiles[tileIndex] ?: continue
 
                 val baseX = x * TILE_SIZE
-                val baseY = (worldHeight - 1 - y) * TILE_SIZE
+                val baseY = y * TILE_SIZE
 
                 for (seg in segments) {
                     val sx = baseX + seg.startX

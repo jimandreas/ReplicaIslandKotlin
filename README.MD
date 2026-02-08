@@ -115,6 +115,25 @@ You can fix this by checking the box `On-Screen Controls` in the `Configure` men
 
 ![Config box](docs/img/README-usage-02.PNG)
 
+## Level Viewer Desktop Utility
+
+A standalone Kotlin/JVM desktop tool that parses the game's binary level files and tile atlases to render overhead views of entire levels, similar to the original author's level visualizations.
+
+**Launch:**
+```bash
+./gradlew :levelviewer:run
+```
+
+**Features:**
+- Level selection tree organized by game progression groups
+- Tile rendering using the game's theme-specific atlases (grass, island, sewage, cave, lab, tutorial)
+- Collision overlay showing line segments from `collision.bin`
+- Object spawn location visualization
+- Zoom (mouse wheel) and pan (click-drag)
+- Export to PNG
+
+The viewer parses the same binary formats used by the game engine: level `.bin` files (signature 96), TiledWorld blocks (signature 42), and collision data (signature 52). All formats use little-endian byte order.
+
 ## Development Status
 
 Actively maintained and updated for modern Android development practices.

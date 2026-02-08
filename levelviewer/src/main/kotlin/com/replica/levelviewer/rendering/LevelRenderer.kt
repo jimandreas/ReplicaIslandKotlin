@@ -72,7 +72,10 @@ class LevelRenderer(private val atlasCache: TileAtlasCache) {
                 if (tileIndex < 0) continue
                 val tile = atlasCache.getTile(layer.themeIndex, tileIndex) ?: continue
                 val destX = x * TILE_SIZE
-                val destY = (worldHeight - 1 - y) * TILE_SIZE
+                // y=0 in the file is the TOP of the world (the game flips Y when
+                // reading tiles in TiledVertexGrid: tilesPerWorldColumn - 1 - tileY),
+                // so no world Y-flip is needed for screen coordinates.
+                val destY = y * TILE_SIZE
                 g.drawImage(tile, destX, destY, null)
             }
         }
@@ -86,7 +89,7 @@ class LevelRenderer(private val atlasCache: TileAtlasCache) {
                 val color = OBJECT_COLORS[tileIndex] ?: OBJECT_COLORS[-1]!!
                 g.color = Color(color.red, color.green, color.blue, 180)
                 val destX = x * TILE_SIZE + TILE_SIZE / 4
-                val destY = (worldHeight - 1 - y) * TILE_SIZE + TILE_SIZE / 4
+                val destY = y * TILE_SIZE + TILE_SIZE / 4
                 g.fillOval(destX, destY, TILE_SIZE / 2, TILE_SIZE / 2)
                 g.color = Color(color.red, color.green, color.blue, 255)
                 g.drawOval(destX, destY, TILE_SIZE / 2, TILE_SIZE / 2)

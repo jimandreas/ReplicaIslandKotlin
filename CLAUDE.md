@@ -23,6 +23,12 @@ Replica Island is a side-scrolling platformer game for Android, fully converted 
 
 # Lint check (integrated in build)
 ./gradlew lint
+
+# Run level viewer desktop utility
+./gradlew :levelviewer:run
+
+# Run level viewer tests
+./gradlew :levelviewer:test
 ```
 
 ## Build Configuration
@@ -87,7 +93,21 @@ Rendering occurs on a separate thread. The game thread queues render commands wh
 - **res/xml/leveltree.xml** - Non-linear level progression tree
 - **tools/ExtractPoints.js** - Photoshop script to extract collision data from paths
 
+## Level Viewer Subproject (`levelviewer/`)
+
+A standalone Kotlin/JVM + Swing desktop utility that parses the game's binary level files and tile atlases to render overhead level views. Launch with `./gradlew :levelviewer:run`.
+
+### Structure
+- **data/** - Binary parsers: `LevelFileParser` (signature 96), `TiledWorldParser` (signature 42), `CollisionParser` (signature 52), `LevelTreeParser` (XML), `BinaryUtils` (little-endian readers)
+- **model/** - Data classes: `LevelData`, `TileLayer`, `CollisionData`, `LevelEntry`
+- **rendering/** - `TileAtlasCache` (loads atlas PNGs, extracts 32x32 tiles), `LevelRenderer` (composites tile layers), `CollisionRenderer` (draws collision line segments)
+- **ui/** - `LevelViewerFrame` (main window), `LevelListPanel` (JTree), `LevelCanvas` (scrollable/zoomable), `ToolBar` (zoom/toggles/export)
+
+### Key Y-axis note
+In the binary tile data, y=0 is the **top** of the world. The game flips Y when reading tiles in `TiledVertexGrid.kt:77` (`tilesPerWorldColumn - 1 - tileY`). The level viewer renders without a world Y-flip to match.
+
 ## Entry Points
 
 - **Main Menu**: `com.replica.replicaisland.ui.MainMenuActivity` (defined in AndroidManifest.xml)
 - **Game Activity**: `com.replica.replicaisland.AndouKun`
+- **Level Viewer**: `com.replica.levelviewer.MainKt` (desktop JVM)
