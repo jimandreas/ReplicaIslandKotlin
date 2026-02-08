@@ -81,6 +81,11 @@ android {
         buildConfig = true
         resValues = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -100,6 +105,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     testImplementation(libs.jupiter)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     debugImplementation(libs.androidx.fragment.testing.manifest)
     androidTestImplementation(libs.androidx.fragment.testing)
 }
