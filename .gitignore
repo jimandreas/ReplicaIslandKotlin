@@ -51,6 +51,9 @@ gradle/signing.properties
 *.keystore
 *.jks
 
+# Hugo build lock
+docs/.hugo_build.lock
+
 # Claude - not tracked
 .claude
 
