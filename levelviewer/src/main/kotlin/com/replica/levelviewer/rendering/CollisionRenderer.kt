@@ -4,7 +4,6 @@ import com.replica.levelviewer.model.CollisionData
 import com.replica.levelviewer.model.TileLayer
 import java.awt.BasicStroke
 import java.awt.Color
-import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 

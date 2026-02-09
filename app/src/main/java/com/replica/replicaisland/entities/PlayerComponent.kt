@@ -278,7 +278,7 @@ class PlayerComponent : GameComponent() {
                             }
                         }
                         val ghost = factory.spawnPlayerGhost(x, y, parentObject, ghostTime)
-                        manager.add(ghost!!)
+                        manager.add(ghost)
                         ghostActive = true
                         val camera = sSystemRegistry.cameraSystem
                         if (camera != null) {
@@ -324,8 +324,8 @@ class PlayerComponent : GameComponent() {
                 val y = parentObject.position.y
                 val smoke1 = factory.spawnDust(x, y - 16, true)
                 val smoke2 = factory.spawnDust(x + 32, y - 16, false)
-                manager.add(smoke1!!)
-                manager.add(smoke2!!)
+                manager.add(smoke1)
+                manager.add(smoke2)
             }
         }
         if (timer2 > 0.0f && time - timer2 > STOMP_DELAY_TIME) {
@@ -359,7 +359,7 @@ class PlayerComponent : GameComponent() {
 
     private fun stateDead(time: Float, timeDelta: Float, parentObject: GameObject?) {
         if (mTouchingGround && parentObject!!.currentAction !== GameObject.ActionType.DEATH) {
-            parentObject!!.currentAction = GameObject.ActionType.DEATH
+            parentObject.currentAction = GameObject.ActionType.DEATH
             parentObject.velocity.zero()
             parentObject.targetVelocity.zero()
         }

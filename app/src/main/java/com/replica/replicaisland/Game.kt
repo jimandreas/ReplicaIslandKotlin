@@ -23,7 +23,6 @@ package com.replica.replicaisland
 
 import android.content.Context
 import android.os.Build
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.Toast

@@ -1,3 +1,5 @@
+@file:Suppress("CanBeParameter", "CanBeParameter")
+
 package com.replica.levelviewer.ui
 
 import com.replica.levelviewer.model.LevelEntry

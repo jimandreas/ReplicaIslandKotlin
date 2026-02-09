@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SeekBarPreference
 import com.replica.replicaisland.R
+import androidx.core.content.withStyledAttributes
 
 class SliderPreferenceCompat @JvmOverloads constructor(
     context: Context,
@@ -34,15 +35,15 @@ class SliderPreferenceCompat @JvmOverloads constructor(
     private var maxText: String? = null
 
     init {
-        val a = context.obtainStyledAttributes(
+        context.withStyledAttributes(
             attrs,
             R.styleable.SliderPreference,
             defStyleAttr,
             defStyleRes
-        )
-        minText = a.getString(R.styleable.SliderPreference_minText)
-        maxText = a.getString(R.styleable.SliderPreference_maxText)
-        a.recycle()
+        ) {
+            minText = getString(R.styleable.SliderPreference_minText)
+            maxText = getString(R.styleable.SliderPreference_maxText)
+        }
 
         layoutResource = R.layout.slider_preference_compat
         max = MAX_SLIDER_VALUE

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION", "UNCHECKED_CAST")
+@file:Suppress("DEPRECATION", "UNCHECKED_CAST", "KotlinConstantConditions",
+    "SimplifyBooleanWithConstants"
+)
 
 package com.replica.replicaisland.ui
 

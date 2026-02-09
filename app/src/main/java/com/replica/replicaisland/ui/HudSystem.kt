@@ -72,7 +72,7 @@ class HudSystem : BaseObject() {
     private var rubyDigitsChanged = false
     private var fPS = 0
     private val fPSLocation: Vector2 = Vector2()
-    private val fPSDigits: IntArray
+    private val fPSDigits: IntArray = IntArray(MAX_DIGITS)
     private var fPSDigitsChanged = false
     private var showFPS = false
     private val digitDrawables: Array<DrawableBitmap?> = arrayOfNulls(10)
@@ -451,7 +451,9 @@ class HudSystem : BaseObject() {
         private const val FUEL_INCREASE_BAR_SPEED = 2.0f
         private const val FLY_BUTTON_X = -12.0f
         private const val FLY_BUTTON_Y = -5.0f
-        private const val STOMP_BUTTON_X = 85.0f
+//        private const val STOMP_BUTTON_X = 85.0f
+        // tweak the stomp location to match where the game appears to sense it.
+        private const val STOMP_BUTTON_X = 115.0f
         private const val STOMP_BUTTON_Y = -10.0f
         private const val STOMP_BUTTON_SCALE = 0.65f
         private const val COLLECTABLE_EDGE_PADDING = 8
@@ -466,7 +468,6 @@ class HudSystem : BaseObject() {
     }
 
     init {
-        fPSDigits = IntArray(MAX_DIGITS)
         movementSliderBaseLocation = Vector2()
         movementSliderButtonLocation = Vector2()
         reset()

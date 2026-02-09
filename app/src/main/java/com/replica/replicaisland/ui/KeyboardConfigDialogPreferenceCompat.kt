@@ -29,10 +29,10 @@ class KeyboardConfigDialogPreferenceCompat @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
 
-    val leftPrefKey: String?
-    val rightPrefKey: String?
-    val jumpPrefKey: String?
-    val attackPrefKey: String?
+    var leftPrefKey: String?
+    var rightPrefKey: String?
+    var jumpPrefKey: String?
+    var attackPrefKey: String?
 
     private var prefsManager: PreferencesManager? = null
 

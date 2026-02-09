@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("UNCHECKED_CAST", "LocalVariableName")
+@file:Suppress("UNCHECKED_CAST", "LocalVariableName", "EmptyMethod", "EmptyMethod", "EmptyMethod",
+    "EmptyMethod", "EmptyMethod"
+)
 
 package com.replica.replicaisland
 
@@ -21,7 +23,6 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.SystemClock
-import com.replica.replicaisland.core.BaseObject
 import com.replica.replicaisland.rendering.DrawableBitmap
 import com.replica.replicaisland.rendering.MatrixHelper
 import com.replica.replicaisland.rendering.OpenGLSystem

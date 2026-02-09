@@ -32,14 +32,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         // Setup YesNoDialogPreference listener
-        findPreference<YesNoDialogPreferenceCompat>(KEY_ERASE_GAME)?.let { pref ->
-            pref.setListener(activity as? YesNoDialogPreferenceCompat.YesNoDialogListener)
-        }
+        findPreference<YesNoDialogPreferenceCompat>(KEY_ERASE_GAME)?.setListener(activity as? YesNoDialogPreferenceCompat.YesNoDialogListener)
 
         // Setup KeyboardConfigDialogPreference with PreferencesManager
-        findPreference<KeyboardConfigDialogPreferenceCompat>(KEY_CONFIG)?.let { pref ->
-            pref.setPreferencesManager(PreferencesManager.getInstance(requireContext()))
-        }
+        findPreference<KeyboardConfigDialogPreferenceCompat>(KEY_CONFIG)?.setPreferencesManager(PreferencesManager.getInstance(requireContext()))
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference) {

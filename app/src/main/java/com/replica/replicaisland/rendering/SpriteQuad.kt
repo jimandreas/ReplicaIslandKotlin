@@ -20,7 +20,6 @@ import android.opengl.GLES20
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
-import java.nio.ShortBuffer
 
 /**
  * A shared unit quad (4 vertices, 2 triangles) in a VBO.
@@ -37,14 +36,10 @@ import java.nio.ShortBuffer
 class SpriteQuad {
     private var positionVboId: Int = 0
     private var indexVboId: Int = 0
-    private val texCoordBuffer: FloatBuffer
+    private val texCoordBuffer: FloatBuffer = ByteBuffer.allocateDirect(4 * 2 * FLOAT_SIZE)
+        .order(ByteOrder.nativeOrder())
+        .asFloatBuffer()
     private var initialized = false
-
-    init {
-        texCoordBuffer = ByteBuffer.allocateDirect(4 * 2 * FLOAT_SIZE)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-    }
 
     fun initialize() {
         if (initialized) return

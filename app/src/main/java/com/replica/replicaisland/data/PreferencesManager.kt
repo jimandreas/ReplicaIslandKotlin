@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 /**
  * Facade for preference access during migration period.
@@ -130,106 +131,106 @@ class PreferencesManager private constructor(context: Context) {
     // Writes to both SharedPreferences AND DataStore
 
     fun setSoundEnabled(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_SOUND_ENABLED, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_SOUND_ENABLED, enabled) }
         scope.launch { repository.setSoundEnabled(enabled) }
     }
 
     fun setSafeMode(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_SAFE_MODE, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_SAFE_MODE, enabled)}
         scope.launch { repository.setSafeMode(enabled) }
     }
 
     fun setClickAttack(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_CLICK_ATTACK, enabled)}
         scope.launch { repository.setClickAttack(enabled) }
     }
 
     fun setMovementSensitivity(sensitivity: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_MOVEMENT_SENSITIVITY, sensitivity).apply()
+        sharedPrefs.edit { putInt(PreferenceConstants.PREFERENCE_MOVEMENT_SENSITIVITY, sensitivity)}
         scope.launch { repository.setMovementSensitivity(sensitivity) }
     }
 
     fun setScreenControls(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_SCREEN_CONTROLS, enabled)}
         scope.launch { repository.setScreenControls(enabled) }
     }
 
     fun setDebugEnabled(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_ENABLE_DEBUG, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_ENABLE_DEBUG, enabled) }
         scope.launch { repository.setDebugEnabled(enabled) }
     }
 
     fun setStatsEnabled(enabled: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_STATS_ENABLED, enabled).apply()
+        sharedPrefs.edit { putBoolean(PreferenceConstants.PREFERENCE_STATS_ENABLED, enabled) }
         scope.launch { repository.setStatsEnabled(enabled) }
     }
 
     fun saveLevelProgress(row: Int, index: Int, completed: Int) {
-        sharedPrefs.edit()
-            .putInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, row)
-            .putInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, index)
-            .putInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, completed)
-            .apply()
+        sharedPrefs.edit {
+            putInt(PreferenceConstants.PREFERENCE_LEVEL_ROW, row)
+                .putInt(PreferenceConstants.PREFERENCE_LEVEL_INDEX, index)
+                .putInt(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED, completed)
+        }
         scope.launch { repository.saveLevelProgress(row, index, completed) }
     }
 
     fun setLinearMode(mode: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_LINEAR_MODE, mode).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_LINEAR_MODE, mode) }
         scope.launch { repository.setLinearMode(mode) }
     }
 
     fun setDifficulty(difficulty: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_DIFFICULTY, difficulty).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_DIFFICULTY, difficulty) }
         scope.launch { repository.setDifficulty(difficulty) }
     }
 
     fun setTotalGameTime(time: Float) {
-        sharedPrefs.edit().putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, time).apply()
+        sharedPrefs.edit {putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, time) }
         scope.launch { repository.setTotalGameTime(time) }
     }
 
     fun setPearlsCollected(count: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, count).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, count) }
         scope.launch { repository.setPearlsCollected(count) }
     }
 
     fun setPearlsTotal(count: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, count).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, count) }
         scope.launch { repository.setPearlsTotal(count) }
     }
 
     fun setRobotsDestroyed(count: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, count).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, count) }
         scope.launch { repository.setRobotsDestroyed(count) }
     }
 
     fun setLastEnding(ending: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_LAST_ENDING, ending).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_LAST_ENDING, ending) }
         scope.launch { repository.setLastEnding(ending) }
     }
 
     fun setExtrasUnlocked(unlocked: Boolean) {
-        sharedPrefs.edit().putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, unlocked).apply()
+        sharedPrefs.edit {putBoolean(PreferenceConstants.PREFERENCE_EXTRAS_UNLOCKED, unlocked) }
         scope.launch { repository.setExtrasUnlocked(unlocked) }
     }
 
     fun saveKeyConfig(leftKey: Int, rightKey: Int, jumpKey: Int, attackKey: Int) {
-        sharedPrefs.edit()
-            .putInt(PreferenceConstants.PREFERENCE_LEFT_KEY, leftKey)
-            .putInt(PreferenceConstants.PREFERENCE_RIGHT_KEY, rightKey)
-            .putInt(PreferenceConstants.PREFERENCE_JUMP_KEY, jumpKey)
-            .putInt(PreferenceConstants.PREFERENCE_ATTACK_KEY, attackKey)
-            .apply()
+        sharedPrefs.edit {
+                putInt(PreferenceConstants.PREFERENCE_LEFT_KEY, leftKey)
+                    .putInt(PreferenceConstants.PREFERENCE_RIGHT_KEY, rightKey)
+                    .putInt(PreferenceConstants.PREFERENCE_JUMP_KEY, jumpKey)
+                    .putInt(PreferenceConstants.PREFERENCE_ATTACK_KEY, attackKey)
+        }
         scope.launch { repository.saveKeyConfig(leftKey, rightKey, jumpKey, attackKey) }
     }
 
     fun setSessionId(sessionId: Long) {
-        sharedPrefs.edit().putLong(PreferenceConstants.PREFERENCE_SESSION_ID, sessionId).apply()
+        sharedPrefs.edit {putLong(PreferenceConstants.PREFERENCE_SESSION_ID, sessionId) }
         scope.launch { repository.setSessionId(sessionId) }
     }
 
     fun setLastVersion(version: Int) {
-        sharedPrefs.edit().putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, version).apply()
+        sharedPrefs.edit {putInt(PreferenceConstants.PREFERENCE_LAST_VERSION, version) }
         scope.launch { repository.setLastVersion(version) }
     }
 
@@ -239,30 +240,33 @@ class PreferencesManager private constructor(context: Context) {
         pearlsTotal: Int,
         robotsDestroyed: Int
     ) {
-        sharedPrefs.edit()
-            .putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, totalGameTime)
-            .putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, pearlsCollected)
-            .putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, pearlsTotal)
-            .putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, robotsDestroyed)
-            .apply()
-        scope.launch { repository.saveGameStats(totalGameTime, pearlsCollected, pearlsTotal, robotsDestroyed) }
+        sharedPrefs.edit {
+                putFloat(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME, totalGameTime)
+                    .putInt(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED, pearlsCollected)
+                    .putInt(PreferenceConstants.PREFERENCE_PEARLS_TOTAL, pearlsTotal)
+                    .putInt(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED, robotsDestroyed)
+        }
+        scope.launch {
+            repository.saveGameStats(
+                totalGameTime,
+                pearlsCollected, pearlsTotal, robotsDestroyed) }
     }
 
     /**
      * Clears all game progress data (used when erasing save game).
      */
     fun clearGameProgress() {
-        sharedPrefs.edit()
-            .remove(PreferenceConstants.PREFERENCE_LEVEL_ROW)
-            .remove(PreferenceConstants.PREFERENCE_LEVEL_INDEX)
-            .remove(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED)
-            .remove(PreferenceConstants.PREFERENCE_LINEAR_MODE)
-            .remove(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME)
-            .remove(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED)
-            .remove(PreferenceConstants.PREFERENCE_PEARLS_TOTAL)
-            .remove(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED)
-            .remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
-            .apply()
+        sharedPrefs.edit {
+            remove(PreferenceConstants.PREFERENCE_LEVEL_ROW)
+                .remove(PreferenceConstants.PREFERENCE_LEVEL_INDEX)
+                .remove(PreferenceConstants.PREFERENCE_LEVEL_COMPLETED)
+                .remove(PreferenceConstants.PREFERENCE_LINEAR_MODE)
+                .remove(PreferenceConstants.PREFERENCE_TOTAL_GAME_TIME)
+                .remove(PreferenceConstants.PREFERENCE_PEARLS_COLLECTED)
+                .remove(PreferenceConstants.PREFERENCE_PEARLS_TOTAL)
+                .remove(PreferenceConstants.PREFERENCE_ROBOTS_DESTROYED)
+                .remove(PreferenceConstants.PREFERENCE_DIFFICULTY)
+        }
         scope.launch { repository.clearGameProgress() }
     }
 

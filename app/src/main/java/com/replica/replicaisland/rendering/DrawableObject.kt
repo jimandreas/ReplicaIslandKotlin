@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("SameReturnValue", "SameReturnValue")
+
 package com.replica.replicaisland.rendering
 
 import com.replica.replicaisland.utils.AllocationGuard

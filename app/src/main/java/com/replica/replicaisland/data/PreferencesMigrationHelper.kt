@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("SameParameterValue")
+
 package com.replica.replicaisland.data
 
 import android.content.Context
@@ -22,6 +24,7 @@ import android.util.Log
 import com.replica.replicaisland.ui.PreferenceConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
 
 /**
  * One-time migration helper from SharedPreferences to DataStore.
@@ -126,7 +129,7 @@ class PreferencesMigrationHelper(private val context: Context) {
             }
 
             // Mark migration complete
-            sharedPrefs.edit().putBoolean(MIGRATION_COMPLETE_KEY, true).apply()
+            sharedPrefs.edit { putBoolean(MIGRATION_COMPLETE_KEY, true)}
             Log.d(TAG, "Preferences migration completed successfully")
         }
     }
