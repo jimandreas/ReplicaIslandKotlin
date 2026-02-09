@@ -11,31 +11,31 @@ are screen captured images from the
 presentations by Chris Pruett during Google I/O 2009 and 2010.
 See the [Links](links/) for more information.
 
-![Screenshot](images/01-GameEngineArchitecture.PNG)
+![Screenshot](/images/01-GameEngineArchitecture.PNG)
 <br>
-![Screenshot](images/02-GameGraph.PNG)
+![Screenshot](/images/02-GameGraph.PNG)
 <br>
-![Screenshot](images/03-GameThreads.PNG)
+![Screenshot](/images/03-GameThreads.PNG)
 <br>
-![Screenshot](images/04-ChrisPruettViews.PNG)
+![Screenshot](/images/04-ChrisPruettViews.PNG)
 <br>
-![Screenshot](images/05-StepOne-MemoryManagement.PNG)
+![Screenshot](/images/05-StepOne-MemoryManagement.PNG)
 <br>
-![Screenshot](images/06-SpriteMethodTest.PNG)
+![Screenshot](/images/06-SpriteMethodTest.PNG)
 <br>
-![Screenshot](images/07-StepTwo-DontCallFunctions.PNG)
+![Screenshot](/images/07-StepTwo-DontCallFunctions.PNG)
 <br>
-![Screenshot](images/08-AndroidDrawingMethods.PNG)
+![Screenshot](/images/08-AndroidDrawingMethods.PNG)
 <br>
-![Screenshot](images/11-01-DrawingInReplicaIsland.PNG)
+![Screenshot](/images/11-01-DrawingInReplicaIsland.PNG)
 <br>
-![Screenshot](images/11-02-DrawingInReplicaIsland.PNG)
+![Screenshot](/images/11-02-DrawingInReplicaIsland.PNG)
 <br>
-![Screenshot](images/11-03-DualThreadApproach.PNG)
+![Screenshot](/images/11-03-DualThreadApproach.PNG)
 <br>
-![Screenshot](images/11-04-UglyInputSystem.PNG)
+![Screenshot](/images/11-04-UglyInputSystem.PNG)
 <br>
-![Screenshot](images/11-05-CurrentInputSystem.PNG)
+![Screenshot](/images/11-05-CurrentInputSystem.PNG)
 <br>
 
 ## Level Viewer Desktop Utility
@@ -57,5 +57,5 @@ The tile atlases (grass, island, sewage, cave, lab, tutorial) are standard PNG s
 
 Launch with `./gradlew :levelviewer:run`. The screenshot below shows the first level (Memory #000) with the sewer tileset, the game's title art, and the original author credits rendered from tile data.
 
-![Level Viewer Screenshot](images/LevelViewerScreenshot.png)
+![Level Viewer Screenshot](/images/LevelViewerScreenshot.png)
 <br>
