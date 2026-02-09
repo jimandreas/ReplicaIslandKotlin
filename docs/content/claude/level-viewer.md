@@ -8,7 +8,7 @@ draft: false
 
 A standalone Kotlin/JVM + Swing desktop application that parses Replica Island's binary level files and tile atlases to render overhead views of entire game levels. This reproduces the kind of level visualizations that Chris Pruett created for the original Replica Island player metrics pages, where heat maps of player deaths were overlaid on bird's-eye level renders.
 
-![Level Viewer Screenshot](/images/LevelViewerScreenshot.png)
+![Level Viewer Screenshot](images/LevelViewerScreenshot.png)
 
 The screenshot above shows Memory #000 — the game's first level — rendered with the sewer tileset. The title art and original author credits are visible, composed entirely from tile data.
 
