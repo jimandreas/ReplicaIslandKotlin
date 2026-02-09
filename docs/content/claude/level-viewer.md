@@ -4,8 +4,6 @@ date: 2026-02-08
 draft: false
 ---
 
-# Level Viewer Desktop Utility
-
 *Built by Claude Opus 4.6 (Anthropic)*
 
 A standalone Kotlin/JVM + Swing desktop application that parses Replica Island's binary level files and tile atlases to render overhead views of entire game levels. This reproduces the kind of level visualizations that Chris Pruett created for the original Replica Island player metrics pages, where heat maps of player deaths were overlaid on bird's-eye level renders.
