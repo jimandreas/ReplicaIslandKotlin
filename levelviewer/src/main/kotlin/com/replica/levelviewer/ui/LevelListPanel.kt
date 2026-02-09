@@ -53,6 +53,16 @@ class LevelListPanel(
         }
 
         setViewportView(tree)
+        expandAllNodes(tree)
         preferredSize = java.awt.Dimension(280, 400)
+
+    }
+
+    fun expandAllNodes(tree: JTree) {
+        var i = 0
+        while (i < tree.rowCount) {
+            tree.expandRow(i)
+            i++
+        }
     }
 }
