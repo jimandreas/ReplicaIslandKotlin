@@ -44,9 +44,9 @@ class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(
         val factory = sSystemRegistry.gameObjectFactory
         val objectsToKillCount = markedForDeathObjects.count
         if (factory != null && objectsToKillCount > 0) {
-            val deathArray: Array<Any?> = markedForDeathObjects.array as Array<Any?>
+            val deathArray = markedForDeathObjects.array
             for (x in 0 until objectsToKillCount) {
-                factory.destroy(deathArray[x] as GameObject)
+                factory.destroy(deathArray[x]!!)
             }
             markedForDeathObjects.clear()
         }
@@ -60,7 +60,7 @@ class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(
         val objects = fetchObjects()
         val count = objects.count
         if (count > 0) {
-            val objectArray: Array<Any?> = objects.array as Array<Any?>
+            val objectArray = objects.array
             for (i in count - 1 downTo 0) {
                 val gameObject = objectArray[i] as GameObject?
                 val distance2 = cameraFocus.distance2(gameObject!!.position)
@@ -85,7 +85,7 @@ class GameObjectManager(private val maxActivationRadius: Float) : ObjectManager(
         inactiveObjects.sort(false)
         val inactiveCount = inactiveObjects.count
         if (inactiveCount > 0) {
-            val inactiveArray: Array<Any?> = inactiveObjects.array as Array<Any?>
+            val inactiveArray = inactiveObjects.array
             for (i in inactiveCount - 1 downTo 0) {
                 val gameObject = inactiveArray[i] as GameObject?
                 val position = gameObject!!.position

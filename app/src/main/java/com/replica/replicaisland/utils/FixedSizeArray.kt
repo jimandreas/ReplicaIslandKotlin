@@ -42,6 +42,7 @@ class FixedSizeArray<T> : AllocationGuard {
     private var mSorted: Boolean
     private var mSorter: Sorter<T?>
 
+    @Suppress("UNCHECKED_CAST")
     constructor(size: Int) : super() {
         if (BuildConfig.DEBUG && size <= 0) {
             error("Assertion failed")
@@ -53,6 +54,7 @@ class FixedSizeArray<T> : AllocationGuard {
         mSorter = StandardSorter()
     }
 
+    @Suppress("UNCHECKED_CAST")
     constructor(size: Int, comparator: Comparator<T?>?) : super() {
         //assert(size > 0)
         mContents = arrayOfNulls<Any>(size) as Array<T?>
@@ -192,6 +194,7 @@ class FixedSizeArray<T> : AllocationGuard {
      * @param object  The object to search for.
      * @return  The index of the object in the array, or -1 if the object is not found.
      */
+    @Suppress("UNCHECKED_CAST")
     fun find(`object`: T, ignoreComparator: Boolean): Int {
         var index = -1
         val count = count
@@ -202,7 +205,7 @@ class FixedSizeArray<T> : AllocationGuard {
             index = if (comparator != null) {
                 Arrays.binarySearch(contents, `object`, comparator)
             } else {
-                Arrays.binarySearch(contents, `object`)
+                Arrays.binarySearch(contents as Array<Any?>, `object` as Any)
             }
             // Arrays.binarySearch() returns a negative insertion index if the object isn't found,
             // but we just want a boolean.

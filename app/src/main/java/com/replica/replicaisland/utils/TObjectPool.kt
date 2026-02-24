@@ -26,6 +26,7 @@ abstract class TObjectPool<T> : ObjectPool {
     constructor() : super()
     constructor(size: Int) : super(size)
 
+    @Suppress("UNCHECKED_CAST")
     public override fun allocate(): T {
         return super.allocate() as T
     }

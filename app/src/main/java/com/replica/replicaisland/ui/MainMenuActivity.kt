@@ -20,6 +20,7 @@ package com.replica.replicaisland.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.core.content.ContextCompat
 import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.os.Build
@@ -185,14 +186,14 @@ class MainMenuActivity : AppCompatActivity() {
             val row = prefsManager.getLevelRow()
             val index = prefsManager.getLevelIndex()
             if (row != 0 || index != 0) {
-                (mStartButton as ImageView).setImageDrawable(resources.getDrawable(R.drawable.ui_button_continue))
+                (mStartButton as ImageView).setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ui_button_continue))
                 mStartButton!!.setOnClickListener(sContinueButtonListener)
             } else {
-                (mStartButton as ImageView).setImageDrawable(resources.getDrawable(R.drawable.ui_button_start))
+                (mStartButton as ImageView).setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ui_button_start))
                 mStartButton!!.setOnClickListener(sStartButtonListener)
             }
             val touch: TouchFilter
-            val sdkVersion = Build.VERSION.SDK.toInt()
+            val sdkVersion = Build.VERSION.SDK_INT
             touch = if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
                 SingleTouchFilter()
             } else {

@@ -209,6 +209,7 @@ class ConversationDialogActivity : Activity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     class TypewriterTextView : AppCompatTextView {
         private var currentCharacter = 0
         private var lastTime: Long = 0
